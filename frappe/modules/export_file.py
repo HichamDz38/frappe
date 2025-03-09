@@ -50,7 +50,7 @@ def write_document_file(doc, record_module=None, create_init=True, folder_name=N
 	# write the data file
 	path = os.path.join(folder, f"{fname}.json")
 	with open(path, "w+") as txtfile:
-		txtfile.write(frappe.as_json(doc_export))
+		txtfile.write(frappe.as_json(doc_export) + "\n")
 	print(f"Wrote document file for {doc.doctype} {doc.name} at {path}")
 
 
