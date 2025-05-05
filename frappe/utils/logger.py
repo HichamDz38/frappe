@@ -113,6 +113,7 @@ def set_log_level(level: Literal["ERROR", "WARNING", "WARN", "INFO", "DEBUG"], m
 		logger_name = "{}-{}".format(module, site or "all")
 		try:
 			logger = frappe.loggers[logger_name]
+			logger.setLevel(getattr(logging, (level or "").upper(), None) or default_log_level)
 		except KeyError:
 			pass
 	else:
