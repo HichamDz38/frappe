@@ -1082,8 +1082,12 @@ class TestDBQuery(IntegrationTestCase):
 		class VirtualDocType:
 			@staticmethod
 			def get_list(args=None, limit_page_length=0, doctype=None):
+				from frappe.types.filter import FilterTuple
+
 				# Backward compatibility
-				self.assertEqual(args["filters"], [["Virtual DocType", "name", "=", "test"]])
+				self.assertEqual(
+					args["filters"], [FilterTuple(doctype="Virtual DocType", fieldname="name", value="test")]
+				)
 
 				self.assertEqual(limit_page_length, 1)
 				self.assertEqual(doctype, "Virtual DocType")
@@ -1191,6 +1195,19 @@ class TestDBQuery(IntegrationTestCase):
 		count = frappe.get_list("Language", ["SUM(1)", "COUNT(*)"], as_list=1, order_by=None)[0]
 		self.assertEqual(count[0], frappe.db.count("Language"))
 		self.assertEqual(count[1], frappe.db.count("Language"))
+
+	def test_ifnull_none(self):
+		query = frappe.get_all("DocField", {"fieldname": None}, run=0)
+		self.assertIn("''", query)
+		self.assertNotIn("\\'", query)
+		self.assertNotIn("ifnull", query)
+
+	def test_ifnull_fallback_types(self):
+		query = frappe.get_all("DocField", {"fieldname": ("!=", None)}, run=0)
+		# Fallbacks should always be of correct type
+		self.assertIn("''", query)
+		self.assertNotIn("0", query)
+		self.assertNotIn("ifnull", query)
 
 
 class TestReportView(IntegrationTestCase):

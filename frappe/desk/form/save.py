@@ -20,14 +20,18 @@ def savedocs(doc, action):
 	if doc.get("__islocal") and doc.name.startswith("new-" + doc.doctype.lower().replace(" ", "-")):
 		# required to relink missing attachments if they exist.
 		doc.__temporary_name = doc.name
+
+	for child in doc.get_all_children():
+		child.__temporary_name = child.name
+
 	set_local_name(doc)
 
 	# action
 	doc.docstatus = {
-		"Save": DocStatus.draft(),
-		"Submit": DocStatus.submitted(),
-		"Update": DocStatus.submitted(),
-		"Cancel": DocStatus.cancelled(),
+		"Save": DocStatus.DRAFT,
+		"Submit": DocStatus.SUBMITTED,
+		"Update": DocStatus.SUBMITTED,
+		"Cancel": DocStatus.CANCELLED,
 	}[action]
 
 	if doc.docstatus.is_submitted():
@@ -43,7 +47,8 @@ def savedocs(doc, action):
 	send_updated_docs(doc)
 
 	add_data_to_monitor(doctype=doc.doctype, action=action)
-	frappe.msgprint(frappe._("Saved"), indicator="green", alert=True)
+	status_message = "Submitted" if doc.docstatus.is_submitted() else "Saved"
+	frappe.msgprint(frappe._(status_message), indicator="green", alert=True)
 
 
 @frappe.whitelist()

@@ -510,6 +510,9 @@ class TestDB(IntegrationTestCase):
 
 		self.assertEqual(frappe.db.exists(dt, [["name", "=", dn]]), dn)
 
+	def test_estimated_count(self):
+		self.assertGreater(frappe.db.estimate_count("DocField"), 100)
+
 	def test_datetime_serialization(self):
 		dt = now_datetime()
 		dt = dt.replace(microsecond=0)
@@ -549,6 +552,60 @@ class TestDB(IntegrationTestCase):
 			)
 
 		frappe.db.delete("ToDo", {"description": test_body})
+
+	def test_bulk_update(self):
+		test_body = f"test_bulk_update - {random_string(10)}"
+
+		frappe.db.bulk_insert(
+			"ToDo",
+			["name", "description"],
+			[[f"ToDo Test Bulk Update {i}", test_body] for i in range(20)],
+			ignore_duplicates=True,
+		)
+
+		record_names = frappe.get_all("ToDo", filters={"description": test_body}, pluck="name")
+
+		new_descriptions = {name: f"{test_body} - updated - {random_string(10)}" for name in record_names}
+
+		# update with same fields to update
+		frappe.db.bulk_update(
+			"ToDo", {name: {"description": new_descriptions[name]} for name in record_names}
+		)
+
+		# check if all records were updated
+		updated_records = dict(
+			frappe.get_all(
+				"ToDo", filters={"name": ("in", record_names)}, fields=["name", "description"], as_list=True
+			)
+		)
+		self.assertDictEqual(new_descriptions, updated_records)
+
+		# update with different fields to update
+		updates = {
+			record_names[0]: {"priority": "High", "status": "Closed"},
+			record_names[1]: {"status": "Closed"},
+		}
+		frappe.db.bulk_update("ToDo", updates)
+
+		priority, status = frappe.db.get_value("ToDo", record_names[0], ["priority", "status"])
+
+		self.assertEqual(priority, "High")
+		self.assertEqual(status, "Closed")
+
+		# further updates with different fields to update
+		updates = {record_names[0]: {"status": "Open"}, record_names[1]: {"priority": "Low"}}
+		frappe.db.bulk_update("ToDo", updates)
+
+		priority, status = frappe.db.get_value("ToDo", record_names[0], ["priority", "status"])
+		self.assertEqual(priority, "High")  # should stay the same
+		self.assertEqual(status, "Open")
+
+		priority, status = frappe.db.get_value("ToDo", record_names[1], ["priority", "status"])
+		self.assertEqual(priority, "Low")
+		self.assertEqual(status, "Closed")  # should stay the same
+
+		# cleanup
+		frappe.db.delete("ToDo", {"name": ("in", record_names)})
 
 	def test_count(self):
 		frappe.db.delete("Note")
@@ -1197,14 +1254,15 @@ class TestPostgresSchemaQueryIndependence(ExtIntegrationTestCase):
 		self.assertEqual(columns, ["col_a", "col_b"])
 
 		frappe.conf["db_schema"] = "alt_schema"
-		frappe.cache.delete_key("table_columns")  # remove table columns cache for next try from alt_schema
+		# remove table columns cache for next try from alt_schema
+		frappe.client_cache.delete_keys("table_columns::*")
 
 		# should have received the columns of the table from alt_schema
 		columns = frappe.db.get_table_columns(self.test_table_name)
 		self.assertEqual(columns, ["col_c", "col_d"])
 
 		del frappe.conf["db_schema"]
-		frappe.cache.delete_key("table_columns")
+		frappe.client_cache.delete_keys("table_columns::*")
 
 	def test_describe(self) -> None:
 		self.assertSequenceEqual([("col_a",), ("col_b",)], frappe.db.describe(self.test_table_name))
@@ -1220,7 +1278,7 @@ class TestPostgresSchemaQueryIndependence(ExtIntegrationTestCase):
 		frappe.db.add_index("User", ("col_c",))
 
 		del frappe.conf["db_schema"]
-		frappe.cache.delete_key("table_columns")
+		frappe.client_cache.delete_keys("table_columns::*")
 
 		# the index creation in the default schema should fail
 		with self.assertSqlException():
@@ -1324,20 +1382,16 @@ class TestDbConnectWithEnvCredentials(IntegrationTestCase):
 			frappe.init(self.current_site, force=True)
 			frappe.connect()
 
-			with self.assertRaises(Exception) as cm:
+			with self.assertRaises(frappe.db.OperationalError) as cm:
 				frappe.db.connect()
-
-			self.assertTrue(re.search(r"(host name|server on) [\"']iqx.local[\"']", str(cm.exception)))
 
 		# with wrong user name
 		with set_env_variable("FRAPPE_DB_USER", "uname"):
 			frappe.init(self.current_site, force=True)
 			frappe.connect()
 
-			with self.assertRaises(Exception) as cm:
+			with self.assertRaises(frappe.db.OperationalError) as cm:
 				frappe.db.connect()
-
-			self.assertTrue(re.search(r"user [\"']uname[\"']", str(cm.exception)))
 
 		# with wrong password
 		with set_env_variable("FRAPPE_DB_PASSWORD", "pass"):
@@ -1356,10 +1410,8 @@ class TestDbConnectWithEnvCredentials(IntegrationTestCase):
 			frappe.init(self.current_site, force=True)
 			frappe.connect()
 
-			with self.assertRaises(Exception) as cm:
+			with self.assertRaises(frappe.db.OperationalError) as cm:
 				frappe.db.connect()
-
-			self.assertTrue(re.search("(port 1111 failed|Errno 111)", str(cm.exception)))
 
 		# now with configured settings without any influences from env
 		# finally connect should work without any error (when no wrong credentials are given via ENV)

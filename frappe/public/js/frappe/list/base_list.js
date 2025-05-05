@@ -172,7 +172,6 @@ frappe.views.BaseList = class BaseList {
 		this.page.main.addClass("layout-main-list");
 		this.page.page_form.removeClass("row").addClass("flex");
 		this.hide_page_form && this.page.page_form.hide();
-		this.hide_sidebar && this.$page.addClass("no-list-sidebar");
 		this.setup_page_head();
 	}
 
@@ -277,7 +276,10 @@ frappe.views.BaseList = class BaseList {
 	}
 
 	setup_side_bar() {
-		if (this.hide_sidebar || !frappe.boot.desk_settings.list_sidebar) return;
+		if (this.page.disable_sidebar_toggle) {
+			return;
+		}
+
 		this.list_sidebar = new frappe.views.ListSidebar({
 			doctype: this.doctype,
 			stats: this.stats,
@@ -791,7 +793,7 @@ class FilterArea {
 		});
 	}
 
-	make_standard_filters() {
+	async make_standard_filters() {
 		this.standard_filters_wrapper = this.list_view.page.page_form.find(
 			".standard-filter-section"
 		);
@@ -807,12 +809,24 @@ class FilterArea {
 			});
 		}
 
-		if (this.list_view.custom_filter_configs) {
-			this.list_view.custom_filter_configs.forEach((config) => {
-				config.onchange = () => this.debounced_refresh_list_view();
-			});
+		if (
+			this.list_view.custom_filter_configs ||
+			this.list_view.settings.custom_filter_configs
+		) {
+			const custom_filter_configs =
+				this.list_view.custom_filter_configs ||
+				this.list_view.settings.custom_filter_configs;
+			await Promise.resolve(
+				typeof custom_filter_configs === "function"
+					? custom_filter_configs()
+					: custom_filter_configs
+			).then((configs) => {
+				configs.forEach((config) => {
+					config.onchange = () => this.debounced_refresh_list_view();
+				});
 
-			fields = fields.concat(this.list_view.custom_filter_configs);
+				fields = fields.concat(configs);
+			});
 		}
 
 		const doctype_fields = this.list_view.meta.fields;
@@ -822,8 +836,9 @@ class FilterArea {
 			doctype_fields
 				.filter(
 					(df) =>
-						df.fieldname === title_field ||
-						(df.in_standard_filter && frappe.model.is_value_type(df.fieldtype))
+						(df.fieldname === title_field ||
+							(df.in_standard_filter && frappe.model.is_value_type(df.fieldtype))) &&
+						frappe.perm.has_perm(this.list_view.doctype, df.permlevel)
 				)
 				.map((df) => {
 					let options = df.options;
@@ -904,7 +919,7 @@ class FilterArea {
 		$(`<div class="filter-selector">
 			<div class="btn-group">
 				<button class="btn btn-default btn-sm filter-button">
-					<span class="filter-icon">
+					<span class="filter-icon button-icon">
 						${frappe.utils.icon("es-line-filter")}
 					</span>
 					<span class="button-label hidden-xs">
@@ -912,7 +927,7 @@ class FilterArea {
 					<span>
 				</button>
 				<button class="btn btn-default btn-sm filter-x-button" title="${__("Clear all filters")}">
-					<span class="filter-icon">
+					<span class="filter-icon button-icon">
 						${frappe.utils.icon("es-small-close")}
 					</span>
 				</button>

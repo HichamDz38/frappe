@@ -32,6 +32,7 @@ from frappe.utils import (
 	today,
 )
 from frappe.utils.data import sha256_hash
+from frappe.utils.html_utils import sanitize_html
 from frappe.utils.password import check_password, get_password_reset_limit
 from frappe.utils.password import update_password as _update_password
 from frappe.utils.user import get_system_managers
@@ -182,6 +183,7 @@ class User(Document):
 		self.populate_role_profile_roles()
 		self.check_roles_added()
 		self.set_system_user()
+		self.clean_name()
 		self.set_full_name()
 		self.check_enable_disable()
 		self.ensure_unique_roles()
@@ -195,6 +197,8 @@ class User(Document):
 		self.validate_allowed_modules()
 		self.validate_user_image()
 		self.set_time_zone()
+		if self.restrict_ip:
+			self.validate_ip_addr()
 
 		if self.language == "Loading...":
 			self.language = None
@@ -225,8 +229,6 @@ class User(Document):
 		# Remove invalid roles and add new ones
 		self.roles = [r for r in self.roles if r.role in new_roles]
 		self.append_roles(*new_roles)
-
-	from frappe.deprecation_dumpster import validate_roles
 
 	def move_role_profile_name_to_role_profiles(self):
 		"""This handles old role_profile_name field if programatically set.
@@ -309,6 +311,11 @@ class User(Document):
 	def has_website_permission(self, ptype, user, verbose=False):
 		"""Return True if current user is the session user."""
 		return self.name == frappe.session.user
+
+	def clean_name(self):
+		for field in ("first_name", "middle_name", "last_name"):
+			if field_value := self.get(field):
+				self.set(field, sanitize_html(field_value, always_sanitize=True))
 
 	def set_full_name(self):
 		self.full_name = " ".join(filter(None, [self.first_name, self.last_name]))
@@ -433,7 +440,7 @@ class User(Document):
 		if password_expired:
 			url = "/update-password?key=" + key + "&password_expired=true"
 
-		link = get_url(url)
+		link = get_url(url, allow_header_override=False)
 		if send_email:
 			self.password_reset_mail(link)
 
@@ -441,7 +448,7 @@ class User(Document):
 
 	def get_fullname(self):
 		"""get first_name space last_name"""
-		return (self.first_name or "") + (self.first_name and " " or "") + (self.last_name or "")
+		return (self.first_name or "") + ((self.first_name and " ") or "") + (self.last_name or "")
 
 	def password_reset_mail(self, link):
 		reset_password_template = frappe.db.get_system_setting("reset_password_template")
@@ -501,8 +508,8 @@ class User(Document):
 		args.update(add_args)
 
 		sender = (
-			frappe.session.user not in STANDARD_USERS and get_formatted_email(frappe.session.user) or None
-		)
+			frappe.session.user not in STANDARD_USERS and get_formatted_email(frappe.session.user)
+		) or None
 
 		if custom_template:
 			from frappe.email.doctype.email_template.email_template import get_email_template
@@ -547,17 +554,6 @@ class User(Document):
 
 		# delete shares
 		frappe.db.delete("DocShare", {"user": self.name})
-		# delete messages
-		table = DocType("Communication")
-		frappe.db.delete(
-			table,
-			filters=(
-				(table.communication_type.isin(["Chat", "Notification"]))
-				& (table.reference_doctype == "User")
-				& ((table.reference_name == self.name) | table.owner == self.name)
-			),
-			run=False,
-		)
 		# unlink contact
 		table = DocType("Contact")
 		frappe.qb.update(table).where(table.user == self.name).set(table.user, None).run()
@@ -576,9 +572,6 @@ class User(Document):
 		# Delete OAuth data
 		frappe.db.delete("OAuth Authorization Code", {"user": self.name})
 		frappe.db.delete("Token Cache", {"user": self.name})
-
-		# Delete EPS data
-		frappe.db.delete("Energy Point Log", {"user": self.name})
 
 		# Remove user link from Workflow Action
 		frappe.db.set_value("Workflow Action", {"user": self.name}, "user", None)
@@ -816,12 +809,15 @@ class User(Document):
 			},
 		)
 
+	def validate_ip_addr(self):
+		self.restrict_ip = ",".join(self.get_restricted_ip_list())
+
 
 @frappe.whitelist()
 def get_timezones():
-	import pytz
+	import zoneinfo
 
-	return {"timezones": pytz.all_timezones}
+	return {"timezones": zoneinfo.available_timezones()}
 
 
 @frappe.whitelist()
@@ -889,6 +885,8 @@ def update_password(
 	_update_password(user, new_password, logout_all_sessions=cint(logout_all_sessions))
 
 	user_doc, redirect_url = reset_user_data(user)
+
+	user_doc.validate_reset_password()
 
 	# get redirect url from cache
 	redirect_to = frappe.cache.hget("redirect_after_login", user)
@@ -1089,41 +1087,34 @@ def reset_password(user: str) -> str:
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def user_query(doctype, txt, searchfield, start, page_len, filters):
-	from frappe.desk.reportview import get_filters_cond, get_match_cond
-
 	doctype = "User"
-	conditions = []
 
-	user_type_condition = "and user_type != 'Website User'"
-	if filters and filters.get("ignore_user_type") and frappe.session.data.user_type == "System User":
-		user_type_condition = ""
-	filters and filters.pop("ignore_user_type", None)
+	list_filters = {
+		"enabled": 1,
+		"docstatus": ["<", 2],
+	}
 
-	txt = f"%{txt}%"
-	return frappe.db.sql(
-		"""SELECT `name`, CONCAT_WS(' ', first_name, middle_name, last_name)
-        FROM `tabUser`
-        WHERE `enabled`=1
-            {user_type_condition}
-            AND `docstatus` < 2
-            AND `name` NOT IN ({standard_users})
-            AND ({key} LIKE %(txt)s
-                OR CONCAT_WS(' ', first_name, middle_name, last_name) LIKE %(txt)s)
-            {fcond} {mcond}
-        ORDER BY
-            CASE WHEN `name` LIKE %(txt)s THEN 0 ELSE 1 END,
-            CASE WHEN concat_ws(' ', first_name, middle_name, last_name) LIKE %(txt)s
-                THEN 0 ELSE 1 END,
-            NAME asc
-        LIMIT %(page_len)s OFFSET %(start)s
-    """.format(
-			user_type_condition=user_type_condition,
-			standard_users=", ".join(frappe.db.escape(u) for u in STANDARD_USERS),
-			key=searchfield,
-			fcond=get_filters_cond(doctype, filters, conditions),
-			mcond=get_match_cond(doctype),
-		),
-		dict(start=start, page_len=page_len, txt=txt),
+	# Check if we have a search term, and decide the filters depending on the search term
+	or_filters = [[searchfield, "like", f"%{txt}%"]]
+	if "name" in searchfield:
+		or_filters += [[field, "like", f"%{txt}%"] for field in ("first_name", "middle_name", "last_name")]
+
+	if filters:
+		if not (filters.get("ignore_user_type") and frappe.session.data.user_type == "System User"):
+			list_filters["user_type"] = ["!=", "Website User"]
+
+		filters.pop("ignore_user_type", None)
+		list_filters.update(filters)
+
+	return frappe.get_list(
+		doctype,
+		filters=list_filters,
+		fields=["name", "full_name"],
+		limit_start=start,
+		limit_page_length=page_len,
+		order_by="name asc",
+		or_filters=or_filters,
+		as_list=True,
 	)
 
 
@@ -1326,7 +1317,7 @@ def get_restricted_ip_list(user):
 	if not user.restrict_ip:
 		return
 
-	return [i.strip() for i in user.restrict_ip.split(",")]
+	return [i.strip() for i in user.restrict_ip.strip().split(",")]
 
 
 @frappe.whitelist(methods=["POST"])

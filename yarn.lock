@@ -1485,15 +1485,15 @@ fraction.js@^4.3.6:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-charts@2.0.0-rc22:
-  version "2.0.0-rc22"
-  resolved "https://registry.yarnpkg.com/frappe-charts/-/frappe-charts-2.0.0-rc22.tgz#9a5a747febdc381a1d4d7af96e89cf519dfba8c0"
-  integrity sha512-N7f/8979wJCKjusOinaUYfMxB80YnfuVLrSkjpj4LtyqS0BGS6SuJxUnb7Jl4RWUFEIs7zEhideIKnyLeFZF4Q==
+frappe-charts@^2.0.0-rc26:
+  version "2.0.0-rc26"
+  resolved "https://registry.yarnpkg.com/frappe-charts/-/frappe-charts-2.0.0-rc26.tgz#9632d620b92f2043cebd192a8899119f5715524b"
+  integrity sha512-0vyXcwcekIeYA6pxCHGcRdG8llC6hpGR91nkbwRGSnBYMKomX2AQtfgTlIKMrE9nmAkewJeZsTx1scni8Ry0iA==
 
-frappe-datatable@1.17.16:
-  version "1.17.16"
-  resolved "https://registry.yarnpkg.com/frappe-datatable/-/frappe-datatable-1.17.16.tgz#4e7bf3b50dad5bc048f95ccd7ca7da91e04844ab"
-  integrity sha512-BJgWFX8msHZcS1mw2xbuaY1YdH1dBXUIuREVmqH5z1p78GusPaDV8sbWskTS5yVBUklMrMq2VfBTUsJXjvl+wg==
+frappe-datatable@1.18.1:
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/frappe-datatable/-/frappe-datatable-1.18.1.tgz#3736d991251a2a90439a039380b218f8736de4c0"
+  integrity sha512-qaVveRnOypPRCGrH2ACoiDVDmanTh/rhh0x1NVaK3GaVVSuDKVWZUiIXGenG5Qv1vTL2jITiuunl6qx20M7DQw==
   dependencies:
     hyperlist "^1.0.0-beta"
     lodash "^4.17.5"
@@ -2230,9 +2230,9 @@ ms@^2.1.1:
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
 nanoid@^3.3.6:
-  version "3.3.7"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.7.tgz#d0c301a691bc8d54efa0a2226ccf3fe2fd656bd8"
-  integrity sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==
+  version "3.3.8"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.8.tgz#b1be3030bee36aaff18bacb375e5cce521684baf"
+  integrity sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==
 
 native-request@^1.0.5:
   version "1.1.0"

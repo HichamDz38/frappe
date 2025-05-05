@@ -305,6 +305,10 @@ frappe.ui.Filter = class {
 			this.field.set_value(old_text);
 		}
 
+		if (Array.isArray(old_text) && df.fieldtype !== old_fieldtype) {
+			this.field.set_value(this.value);
+		}
+
 		this.bind_filter_field_events();
 	}
 
@@ -500,7 +504,8 @@ frappe.ui.filter_utils = {
 	},
 
 	get_default_condition(df) {
-		if (df.fieldtype == "Data") {
+		const meta = frappe.get_meta(df.parent);
+		if (df.fieldtype == "Data" && !meta?.is_large_table) {
 			return "like";
 		} else if (df.fieldtype == "Date" || df.fieldtype == "Datetime") {
 			return "Between";
@@ -607,9 +612,19 @@ frappe.ui.filter_utils = {
 
 	get_timespan_options(periods) {
 		const period_map = {
-			Last: ["Week", "Month", "Quarter", "6 months", "Year"],
+			Last: [
+				"7 Days",
+				"14 Days",
+				"30 Days",
+				"90 Days",
+				"Week",
+				"Month",
+				"Quarter",
+				"6 months",
+				"Year",
+			],
 			This: ["Week", "Month", "Quarter", "Year"],
-			Next: ["Week", "Month", "Quarter", "6 months", "Year"],
+			Next: ["7 Days", "14 Days", "30 Days", "Week", "Month", "Quarter", "6 months", "Year"],
 		};
 		let options = [];
 		periods.forEach((period) => {

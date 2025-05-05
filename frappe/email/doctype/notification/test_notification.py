@@ -68,7 +68,8 @@ class TestNotification(IntegrationTestCase):
 	def test_new_and_save(self):
 		"""Check creating a new communication triggers a notification."""
 		communication = frappe.new_doc("Communication")
-		communication.communication_type = "Comment"
+		communication.communication_type = "Communication"
+		communication.sender_full_name = "__test_notification_sender__"
 		communication.subject = "test"
 		communication.content = "test"
 		communication.insert(ignore_permissions=True)
@@ -465,7 +466,7 @@ class TestNotification(IntegrationTestCase):
 			frappe.db.delete("Notification Log", {"subject": n.subject})
 
 			user = frappe.get_doc("User", "test@example.com")
-			user.birth_date = frappe.utils.add_days(user.birth_date, 1)
+			user.birth_date = frappe.utils.add_days(user.birth_date, 1).date()
 			user.save()
 
 			user.reload()
@@ -509,6 +510,7 @@ class TestNotification(IntegrationTestCase):
 		self.assertEqual(notification.enabled, 1)
 
 
+# ruff: noqa: RUF001
 """
 PROOF OF TEST for TestNotificationOffsetRange below.
 

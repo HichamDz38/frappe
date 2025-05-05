@@ -2,6 +2,7 @@
 # License: MIT. See LICENSE
 
 import frappe
+import frappe.defaults
 from frappe import _
 from frappe.model import no_value_fields
 from frappe.model.document import Document
@@ -60,6 +61,7 @@ class SystemSettings(Document):
 		float_precision: DF.Literal["", "2", "3", "4", "5", "6", "7", "8", "9"]
 		force_user_to_reset_password: DF.Int
 		force_web_capture_mode_for_uploads: DF.Check
+		hide_empty_read_only_fields: DF.Check
 		hide_footer_in_auto_email_reports: DF.Check
 		language: DF.Link
 		lifespan_qrcode_image: DF.Int
@@ -69,7 +71,7 @@ class SystemSettings(Document):
 		logout_on_password_reset: DF.Check
 		max_auto_email_report_per_user: DF.Int
 		max_file_size: DF.Int
-		minimum_password_score: DF.Literal["2", "3", "4"]
+		minimum_password_score: DF.Literal["1", "2", "3", "4"]
 		number_format: DF.Literal[
 			"#,###.##",
 			"#.###,##",
@@ -175,9 +177,7 @@ class SystemSettings(Document):
 
 	def on_update(self):
 		self.set_defaults()
-
-		frappe.cache.delete_value("system_settings")
-		frappe.cache.delete_value("time_zone")
+		clear_system_settings_cache()
 
 		if frappe.flags.update_last_reset_password_date:
 			update_last_reset_password_date()
@@ -219,3 +219,30 @@ def load():
 			defaults[df.fieldname] = all_defaults.get(df.fieldname)
 
 	return {"timezones": get_all_timezones(), "defaults": defaults}
+
+
+cache_key = frappe.get_document_cache_key("System Settings", "System Settings")
+
+
+def get_system_settings(key: str):
+	"""Return the value associated with the given `key` from System Settings DocType."""
+	if not (system_settings := getattr(frappe.local, "system_settings", None)):
+		try:
+			system_settings = frappe.client_cache.get_doc("System Settings")
+			frappe.local.system_settings = system_settings
+		except frappe.DoesNotExistError:  # possible during new install
+			frappe.clear_last_message()
+			return
+
+	return system_settings.get(key)
+
+
+def clear_system_settings_cache():
+	frappe.client_cache.delete_value(cache_key)
+	frappe.cache.delete_value("system_settings")
+	frappe.cache.delete_value("time_zone")
+
+
+def sync_system_settings():
+	if frappe.db.get_single_value("System Settings", "currency") is None:
+		frappe.db.set_single_value("System Settings", "currency", frappe.defaults.get_defaults()["currency"])

@@ -1,3 +1,5 @@
+from typing import Union
+
 from typing_extensions import override
 
 
@@ -11,13 +13,6 @@ class DocRef:
 	def __value__(self) -> str:
 		# Used when requiring its value representation for db interactions, serializations, etc
 		return self.name
-
-	@override
-	def __hash__(self) -> int:
-		if self.name:
-			return hash(self.doctype + self.name)
-		else:
-			raise ValueError("Only named documents can be hashed; maybe the document is unsaved.")
 
 	@override
 	def __str__(self) -> str:

@@ -5,14 +5,13 @@ import io
 import json
 import os
 import sys
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from decimal import ROUND_HALF_UP, Decimal, localcontext
 from enum import Enum
 from io import StringIO
 from mimetypes import guess_type
 from unittest.mock import patch
 
-import pytz
 from hypothesis import given
 from hypothesis import strategies as st
 from PIL import Image
@@ -25,7 +24,6 @@ from frappe.utils import (
 	add_trackers_to_url,
 	ceil,
 	dict_to_str,
-	evaluate_filters,
 	execute_in_shell,
 	floor,
 	flt,
@@ -60,6 +58,7 @@ from frappe.utils.data import (
 	cint,
 	cstr,
 	duration_to_seconds,
+	evaluate_filters,
 	expand_relative_urls,
 	get_datetime,
 	get_first_day_of_week,
@@ -69,6 +68,7 @@ from frappe.utils.data import (
 	get_url_to_form,
 	get_year_ending,
 	getdate,
+	is_invalid_date_string,
 	now_datetime,
 	nowtime,
 	pretty_date,
@@ -217,6 +217,20 @@ class TestFilters(IntegrationTestCase):
 
 		for filter, expected_result in test_cases:
 			self.assertEqual(evaluate_filters(doc, filter), expected_result, msg=f"{filter}")
+
+	def test_timespan(self):
+		doc = {
+			"doctype": "User",
+			"last_password_reset_date": getdate(),
+		}
+		self.assertTrue(evaluate_filters(doc, [("last_password_reset_date", "Timespan", "today")]))
+		self.assertFalse(evaluate_filters(doc, [("last_password_reset_date", "Timespan", "last year")]))
+
+		doc = {
+			"doctype": "User",
+			"last_password_reset_date": None,
+		}
+		self.assertFalse(evaluate_filters(doc, [("last_password_reset_date", "Timespan", "today")]))
 
 
 class TestMoney(IntegrationTestCase):
@@ -668,10 +682,23 @@ class TestDateUtils(IntegrationTestCase):
 		self.assertEqual(get_year_ending(date(2021, 1, 1)), date(2021, 12, 31))
 		self.assertEqual(get_year_ending(date(2021, 1, 31)), date(2021, 12, 31))
 
+	@given(st.datetimes())
+	def test_get_datetime(self, original):
+		if is_invalid_date_string(str(original)):
+			return
+		parsed = get_datetime(str(original))
+		self.assertEqual(parsed, original)
+
+	@given(st.datetimes(timezones=st.timezones()))
+	def test_get_datetime_tz_aware(self, original):
+		if is_invalid_date_string(str(original)):
+			return
+		parsed = get_datetime(str(original))
+		self.assertEqual(parsed, original)
+
 	def test_pretty_date(self):
 		from frappe import _
 
-		# differnt cases
 		now = get_datetime()
 
 		test_cases = {
@@ -692,6 +719,8 @@ class TestDateUtils(IntegrationTestCase):
 
 		for dt, exp_message in test_cases.items():
 			self.assertEqual(pretty_date(dt), exp_message)
+
+		self.assertEqual(pretty_date(add_to_date(now, days=-5), mini=True), "5d")
 
 	def test_date_from_timegrain(self):
 		start_date = getdate("2021-01-01")
@@ -736,9 +765,9 @@ class TestResponse(IntegrationTestCase):
 					minute=23,
 					second=23,
 					microsecond=23,
-					tzinfo=pytz.utc,
+					tzinfo=timezone.utc,
 				),
-				time(hour=23, minute=23, second=23, microsecond=23, tzinfo=pytz.utc),
+				time(hour=23, minute=23, second=23, microsecond=23, tzinfo=timezone.utc),
 				timedelta(days=10, hours=12, minutes=120, seconds=10),
 			],
 			"float": [
