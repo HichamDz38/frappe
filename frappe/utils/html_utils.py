@@ -483,7 +483,6 @@ acceptable_attributes = [
 	"prompt",
 	"radiogroup",
 	"readonly",
-	"rel",
 	"repeat-max",
 	"repeat-min",
 	"replace",
