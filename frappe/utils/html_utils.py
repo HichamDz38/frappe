@@ -119,6 +119,7 @@ def clean_email_html(html):
 		attributes={"*": {"border", "colspan", "rowspan", "src", "href", "style", "id"}},
 		filter_style_properties=allowed_css_properties,
 		strip_comments=True,
+		url_schemes=nh3.ALLOWED_URL_SCHEMES.union({"cid", "data"}),
 	)
 
 
@@ -168,6 +169,7 @@ def sanitize_html(html, linkify=False, always_sanitize=False):
 		generic_attribute_prefixes={"data-"},
 		strip_comments=False,
 		filter_style_properties=set(bleach_allowlist.all_styles),
+		url_schemes=nh3.ALLOWED_URL_SCHEMES.union({"cid"}),
 	)
 
 	return escaped_html
