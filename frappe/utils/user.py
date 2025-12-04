@@ -9,7 +9,7 @@ import frappe.share
 from frappe import _dict
 from frappe.boot import get_allowed_reports
 from frappe.core.doctype.domain_settings.domain_settings import get_active_modules
-from frappe.permissions import AUTOMATIC_ROLES, get_roles, get_valid_perms
+from frappe.permissions import AUTOMATIC_ROLES, get_rights, get_roles, get_valid_perms
 from frappe.query_builder import DocType, Order
 from frappe.query_builder.functions import Concat_ws
 
@@ -59,7 +59,7 @@ class UserPermissions:
 
 			return user
 
-		if not frappe.flags.in_install_db and not frappe.flags.in_test:
+		if not frappe.flags.in_install_db and not frappe.in_test:
 			user_doc = frappe.cache.hget("user_doc", self.name, get_user_doc)
 			if user_doc:
 				self.doc = frappe.get_doc(user_doc)
@@ -101,7 +101,8 @@ class UserPermissions:
 			if dt not in self.perm_map:
 				self.perm_map[dt] = {}
 
-			for k in frappe.permissions.rights:
+			rights = get_rights(dt)
+			for k in rights:
 				if not self.perm_map[dt].get(k):
 					self.perm_map[dt][k] = r.get(k)
 
@@ -160,7 +161,9 @@ class UserPermissions:
 						getattr(self, "can_" + key).append(dt)
 
 				if not dtp.get("istable"):
-					if not dtp.get("issingle") and not dtp.get("read_only"):
+					if frappe.session.user == "Administrator":
+						self.can_search.append(dt)
+					elif not dtp.get("issingle") and not dtp.get("read_only"):
 						self.can_search.append(dt)
 					if dtp.get("module") not in self.allow_modules:
 						if active_modules and dtp.get("module") not in active_modules:
@@ -189,8 +192,6 @@ class UserPermissions:
 				pluck="doc_type",
 				filters={"property": "allow_import", "value": "1"},
 			)
-
-		frappe.cache.hset("can_import", frappe.session.user, self.can_import)
 
 	def get_defaults(self):
 		import frappe.defaults
@@ -224,6 +225,7 @@ class UserPermissions:
 				"language",
 				"last_name",
 				"mute_sounds",
+				"show_absolute_datetime_in_timeline",
 				"send_me_a_copy",
 				"user_type",
 				"onboarding_status",

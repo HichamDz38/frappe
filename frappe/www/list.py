@@ -27,7 +27,14 @@ def get_context(context, **dict_params):
 
 
 @frappe.whitelist(allow_guest=True)
-def get(doctype, txt=None, limit_start=0, limit=20, pathname=None, **kwargs):
+def get(
+	doctype: str,
+	txt: str | None = None,
+	limit_start: int = 0,
+	limit: int = 20,
+	pathname: str | None = None,
+	**kwargs,
+):
 	"""Return processed HTML page for a standard listing."""
 	limit_start = cint(limit_start)
 	raw_result = get_list_data(doctype, txt, limit_start, limit=limit + 1, **kwargs)
@@ -56,7 +63,7 @@ def get(doctype, txt=None, limit_start=0, limit=20, pathname=None, **kwargs):
 			new_context.doc = frappe.get_doc(doc.doctype, doc.name)
 			new_context.update(new_context.doc.as_dict())
 
-		if not frappe.flags.in_test:
+		if not frappe.in_test:
 			pathname = pathname or frappe.local.request.path
 			new_context["pathname"] = pathname.strip("/ ")
 		new_context.update(list_context)
@@ -76,7 +83,14 @@ def get(doctype, txt=None, limit_start=0, limit=20, pathname=None, **kwargs):
 
 @frappe.whitelist(allow_guest=True)
 def get_list_data(
-	doctype, txt=None, limit_start=0, fields=None, cmd=None, limit=20, web_form_name=None, **kwargs
+	doctype: str,
+	txt: str | None = None,
+	limit_start: int = 0,
+	fields: list | None = None,
+	cmd: str | None = None,
+	limit: int = 20,
+	web_form_name: str | None = None,
+	**kwargs,
 ):
 	"""Return processed HTML page for a standard listing."""
 	limit_start = cint(limit_start)
@@ -155,8 +169,11 @@ def prepare_filters(doctype, controller, kwargs):
 				filters[key] = val
 
 	# filter the filters to include valid fields only
+	from frappe.model.meta import DEFAULT_FIELD_LABELS
+
 	for fieldname in list(filters.keys()):
-		if not meta.has_field(fieldname):
+		# add a check for default fields, as they are not present in meta.fields
+		if not meta.has_field(fieldname) and fieldname not in DEFAULT_FIELD_LABELS.keys():
 			del filters[fieldname]
 
 	return filters
@@ -194,7 +211,7 @@ def get_list_context(context, doctype, web_form_name=None):
 
 	# get context from web form module
 	if web_form_name:
-		web_form = frappe.get_doc("Web Form", web_form_name)
+		web_form = frappe.get_lazy_doc("Web Form", web_form_name)
 		list_context = update_context_from_module(get_web_form_module(web_form), list_context)
 
 	# get path from '/templates/' folder of the doctype
@@ -222,8 +239,10 @@ def get_list(
 	if not filters:
 		filters = []
 
+	distinct = False
 	if not fields:
-		fields = "distinct *"
+		fields = "*"
+		distinct = True
 
 	if or_filters is None:
 		or_filters = []
@@ -250,4 +269,5 @@ def get_list(
 		limit_page_length=limit_page_length,
 		ignore_permissions=ignore_permissions,
 		order_by=order_by,
+		distinct=distinct,
 	)

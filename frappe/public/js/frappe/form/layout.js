@@ -36,7 +36,6 @@ frappe.ui.form.Layout = class Layout {
 			this.setup_tabbed_layout();
 		}
 
-		this.setup_tab_events();
 		this.frm && this.setup_tooltip_events();
 		this.render();
 	}
@@ -130,7 +129,9 @@ frappe.ui.form.Layout = class Layout {
 
 		// Add block color and append to parent container `form-message-container`
 		const block_color =
-			color && ["yellow", "blue", "red", "green", "orange"].includes(color) ? color : "blue";
+			color && ["yellow", "blue", "red", "green", "orange", "white"].includes(color)
+				? color
+				: "blue";
 		$html.addClass(block_color).appendTo(this.message);
 
 		// Show parent container if hidden
@@ -246,6 +247,14 @@ frappe.ui.form.Layout = class Layout {
 	}
 
 	init_field(df, parent, render = false) {
+		if (df.mask) {
+			let masked_fields = frappe.get_meta(this.doctype).masked_fields || [];
+			if (masked_fields.includes(df.fieldname)) {
+				df.fieldtype = "Data";
+				df.read_only = 1;
+			}
+		}
+
 		const fieldobj = frappe.ui.form.make_control({
 			df: df,
 			doctype: this.doctype,

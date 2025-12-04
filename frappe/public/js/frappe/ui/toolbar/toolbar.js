@@ -17,8 +17,7 @@ frappe.ui.toolbar.Toolbar = class {
 			$(this).closest(".dropdown-menu").prev().dropdown("toggle");
 		});
 
-		this.setup_awesomebar();
-		this.setup_notifications();
+		// this.setup_awesomebar();
 		this.setup_help();
 		this.setup_read_only_mode();
 		this.setup_announcement_widget();
@@ -28,12 +27,30 @@ frappe.ui.toolbar.Toolbar = class {
 	make() {
 		this.bind_events();
 		$(document).trigger("toolbar_setup");
-		$(".navbar-brand .app-logo").on("click", () => {
-			frappe.app.sidebar.set_height();
-			frappe.app.sidebar.toggle_sidebar();
-		});
+		this.navbar = $(".navbar-brand");
+		this.app_logo = this.navbar.find(".app-logo");
+		this.bind_click();
+	}
+	change_toolbar() {
+		$(".navbar .container").css("max-width", "43%");
+		$(".navbar-brand").css("display", "block");
+		$(".navbar-brand .app-logo").attr("src", frappe.boot.navbar_settings.app_logo);
+		let nav_elements = $(".navbar-nav").children();
+		$("form").css("display", "none");
+		$("");
+		for (let i = 0; i < nav_elements.length - 1; i++) {
+			$(nav_elements[i]).attr("style", "display: none !important");
+			$(nav_elements[i]).find("*").attr("style", "display: none !important");
+		}
 	}
 
+	bind_click() {
+		$(".navbar-brand .app-logo").on("click", (event) => {
+			frappe.app.sidebar.set_height();
+			frappe.app.sidebar.toggle_width();
+			frappe.app.sidebar.prevent_scroll();
+		});
+	}
 	bind_events() {
 		// clear all custom menus on page change
 		$(document).on("page-change", function () {
@@ -163,28 +180,31 @@ frappe.ui.toolbar.Toolbar = class {
 		}
 	}
 
-	setup_awesomebar() {
-		if (frappe.boot.desk_settings.search_bar) {
-			let awesome_bar = new frappe.search.AwesomeBar();
-			awesome_bar.setup("#navbar-search");
-
-			frappe.search.utils.make_function_searchable(
-				frappe.utils.generate_tracking_url,
-				__("Generate Tracking URL")
-			);
-
-			if (frappe.model.can_read("RQ Job")) {
-				frappe.search.utils.make_function_searchable(function () {
-					frappe.set_route("List", "RQ Job");
-				}, __("Background Jobs"));
-			}
+	add_back_button() {
+		if (!frappe.is_mobile()) return;
+		this.navbar = $(".navbar-brand");
+		let doctype = frappe.get_route()[1];
+		let list_view_route = `/app/${frappe.router.convert_from_standard_route([
+			"list",
+			doctype,
+		])}`;
+		this.navbar.attr("href", list_view_route);
+		this.navbar.html("");
+		this.navbar.html(frappe.utils.icon("arrow-left", "md"));
+	}
+	show_app_logo() {
+		let route = frappe.get_route();
+		if (route[0] == "List") {
+			this.navbar.html("");
+			this.navbar.html(this.app_logo);
+			this.navbar.attr("href", "");
+			this.bind_click();
+		} else if (route[0] == "Form") {
+			this.add_back_button();
 		}
 	}
-
-	setup_notifications() {
-		if (frappe.boot.desk_settings.notifications && frappe.session.user !== "Guest") {
-			this.notifications = new frappe.ui.Notifications();
-		}
+	set_app_logo(logo_url) {
+		$(".navbar-brand .app-logo").attr("src", logo_url);
 	}
 };
 

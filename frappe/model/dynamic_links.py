@@ -13,7 +13,7 @@ dynamic_link_queries = [
 		`tabDocField`.fieldname, `tabDocField`.options
 	from `tabDocField`, `tabDocType`
 	where `tabDocField`.fieldtype='Dynamic Link' and
-	`tabDocType`.`name`=`tabDocField`.parent and `tabDocType`.is_virtual = 0
+	`tabDocType`.`name`=`tabDocField`.parent and `tabDocType`.is_virtual = 0 and `tabDocField`.is_virtual = 0
 	order by `tabDocType`.read_only, `tabDocType`.in_create""",
 	"""select `tabCustom Field`.dt as parent,
 		`tabDocType`.read_only, `tabDocType`.in_create,
@@ -32,7 +32,7 @@ def get_dynamic_link_map(for_delete=False):
 
 	Note: Will not map single doctypes
 	"""
-	if getattr(frappe.local, "dynamic_link_map", None) is None or frappe.flags.in_test:
+	if getattr(frappe.local, "dynamic_link_map", None) is None or frappe.in_test:
 		# Build from scratch
 		dynamic_link_map = {}
 		for df in get_dynamic_links():

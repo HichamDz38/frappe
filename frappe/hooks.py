@@ -3,7 +3,7 @@ import os
 from . import __version__ as app_version
 
 app_name = "frappe"
-app_title = "Framework"
+app_title = "Frappe Framework"
 app_publisher = "Frappe Technologies"
 app_description = "Full stack web framework with Python, Javascript, MariaDB, Redis, Node"
 app_license = "MIT"
@@ -15,6 +15,9 @@ app_email = "developers@frappe.io"
 
 before_install = "frappe.utils.install.before_install"
 after_install = "frappe.utils.install.after_install"
+
+after_app_install = "frappe.utils.install.auto_generate_icons_and_sidebar"
+after_app_uninstall = "frappe.utils.install.delete_desktop_icon_and_sidebar"
 
 page_js = {"setup-wizard": "public/js/frappe/setup_wizard.js"}
 
@@ -37,6 +40,7 @@ app_include_css = [
 app_include_icons = [
 	"/assets/frappe/icons/timeless/icons.svg",
 	"/assets/frappe/icons/espresso/icons.svg",
+	"/assets/frappe/icons/icons.svg",
 ]
 
 doctype_js = {
@@ -54,19 +58,15 @@ web_include_icons = [
 email_css = ["email.bundle.css"]
 
 website_route_rules = [
-	{"from_route": "/blog/<category>", "to_route": "Blog Post"},
 	{"from_route": "/kb/<category>", "to_route": "Help Article"},
-	{"from_route": "/newsletters", "to_route": "Newsletter"},
 	{"from_route": "/profile", "to_route": "me"},
-	{"from_route": "/app/<path:app_path>", "to_route": "app"},
+	{"from_route": "/desk/<path:app_path>", "to_route": "desk"},
 ]
 
 website_redirects = [
-	{"source": r"/desk(.*)", "target": r"/app\1"},
-	{
-		"source": "/.well-known/openid-configuration",
-		"target": "/api/method/frappe.integrations.oauth2.openid_configuration",
-	},
+	{"source": r"/app/(.*)", "target": r"/desk/\1"},
+	{"source": "/apps", "target": "/desk"},
+	{"source": "/app", "target": "/desk"},
 ]
 
 base_template = "templates/base.html"
@@ -88,13 +88,14 @@ on_session_creation = [
 	"frappe.core.doctype.user.user.notify_admin_access_to_system_manager",
 ]
 
+on_login = "frappe.desk.doctype.note.note._get_unseen_notes"
 on_logout = "frappe.core.doctype.session_default_settings.session_default_settings.clear_session_defaults"
 
 # PDF
 pdf_header_html = "frappe.utils.pdf.pdf_header_html"
 pdf_body_html = "frappe.utils.pdf.pdf_body_html"
 pdf_footer_html = "frappe.utils.pdf.pdf_footer_html"
-
+pdf_generator = "frappe.utils.pdf.get_chrome_pdf"
 # permissions
 
 permission_query_conditions = {
@@ -115,6 +116,7 @@ permission_query_conditions = {
 	"Workflow Action": "frappe.workflow.doctype.workflow_action.workflow_action.get_permission_query_conditions",
 	"Prepared Report": "frappe.core.doctype.prepared_report.prepared_report.get_permission_query_condition",
 	"File": "frappe.core.doctype.file.file.get_permission_query_conditions",
+	"User Invitation": "frappe.core.doctype.user_invitation.user_invitation.get_permission_query_conditions",
 }
 
 has_permission = {
@@ -132,6 +134,7 @@ has_permission = {
 	"File": "frappe.core.doctype.file.file.has_permission",
 	"Prepared Report": "frappe.core.doctype.prepared_report.prepared_report.has_permission",
 	"Notification Settings": "frappe.desk.doctype.notification_settings.notification_settings.has_permission",
+	"User Invitation": "frappe.core.doctype.user_invitation.user_invitation.has_permission",
 }
 
 has_website_permission = {"Address": "frappe.contacts.doctype.address.address.has_website_permission"}
@@ -157,6 +160,7 @@ doc_events = {
 			"frappe.automation.doctype.assignment_rule.assignment_rule.update_due_date",
 			"frappe.core.doctype.user_type.user_type.apply_permissions_for_non_standard_user_type",
 			"frappe.core.doctype.permission_log.permission_log.make_perm_log",
+			"frappe.search.sqlite_search.update_doc_index",
 		],
 		"after_rename": "frappe.desk.notifications.clear_doctype_notifications",
 		"on_cancel": [
@@ -167,6 +171,7 @@ doc_events = {
 		"on_trash": [
 			"frappe.desk.notifications.clear_doctype_notifications",
 			"frappe.workflow.doctype.workflow_action.workflow_action.process_workflow_actions",
+			"frappe.search.sqlite_search.delete_doc_index",
 		],
 		"on_update_after_submit": [
 			"frappe.workflow.doctype.workflow_action.workflow_action.process_workflow_actions",
@@ -208,6 +213,9 @@ scheduler_events = {
 			"frappe.utils.global_search.sync_global_search",
 			"frappe.deferred_insert.save_to_db",
 			"frappe.automation.doctype.reminder.reminder.send_reminders",
+			"frappe.model.utils.link_count.update_link_count",
+			"frappe.search.sqlite_search.build_index_if_not_exists",
+			"frappe.pulse.client.send_queued_events",
 		],
 		# 10 minutes
 		"0/10 * * * *": [
@@ -220,17 +228,15 @@ scheduler_events = {
 	},
 	"all": [
 		"frappe.email.queue.flush",
+		"frappe.email.queue.retry_sending_emails",
 		"frappe.monitor.flush",
 		"frappe.integrations.doctype.google_calendar.google_calendar.sync",
 	],
-	"hourly": [
-		"frappe.email.doctype.newsletter.newsletter.send_scheduled_email",
-	],
+	"hourly": [],
 	# Maintenance queue happen roughly once an hour but don't align with wall-clock time of *:00
 	# Use these for when you don't care about when the job runs but just need some guarantee for
 	# frequency.
 	"hourly_maintenance": [
-		"frappe.model.utils.link_count.update_link_count",
 		"frappe.model.utils.user_settings.sync_user_settings",
 		"frappe.desk.page.backups.backups.delete_downloadable_backups",
 		"frappe.desk.form.document_follow.send_hourly_updates",
@@ -239,6 +245,7 @@ scheduler_events = {
 		"frappe.twofactor.delete_all_barcodes_for_users",
 		"frappe.oauth.delete_oauth2_data",
 		"frappe.website.doctype.web_page.web_page.check_publish_status",
+		"frappe.desk.utils.delete_old_exported_report_files",
 	],
 	"daily": [
 		"frappe.desk.doctype.event.event.send_event_digest",
@@ -247,30 +254,21 @@ scheduler_events = {
 	],
 	"daily_long": [],
 	"daily_maintenance": [
-		"frappe.integrations.doctype.dropbox_settings.dropbox_settings.take_backups_daily",
-		"frappe.integrations.doctype.s3_backup_settings.s3_backup_settings.take_backups_daily",
-		"frappe.integrations.doctype.google_drive.google_drive.daily_backup",
 		"frappe.email.doctype.auto_email_report.auto_email_report.send_daily",
 		"frappe.desk.notifications.clear_notifications",
 		"frappe.sessions.clear_expired_sessions",
 		"frappe.website.doctype.personal_data_deletion_request.personal_data_deletion_request.remove_unverified_record",
-		"frappe.integrations.doctype.google_contacts.google_contacts.sync",
 		"frappe.automation.doctype.auto_repeat.auto_repeat.make_auto_repeat_entry",
 		"frappe.core.doctype.log_settings.log_settings.run_log_clean_up",
+		"frappe.core.doctype.user_invitation.user_invitation.mark_expired_invitations",
 	],
 	"weekly_long": [
-		"frappe.integrations.doctype.dropbox_settings.dropbox_settings.take_backups_weekly",
-		"frappe.integrations.doctype.s3_backup_settings.s3_backup_settings.take_backups_weekly",
 		"frappe.desk.form.document_follow.send_weekly_updates",
 		"frappe.utils.change_log.check_for_update",
-		"frappe.integrations.doctype.google_drive.google_drive.weekly_backup",
 		"frappe.desk.doctype.changelog_feed.changelog_feed.fetch_changelog_feed",
 	],
 	"monthly": [
 		"frappe.email.doctype.auto_email_report.auto_email_report.send_monthly",
-	],
-	"monthly_long": [
-		"frappe.integrations.doctype.s3_backup_settings.s3_backup_settings.take_backups_monthly"
 	],
 }
 
@@ -291,7 +289,10 @@ setup_wizard_exception = [
 ]
 
 before_migrate = ["frappe.core.doctype.patch_log.patch_log.before_migrate"]
-after_migrate = ["frappe.website.doctype.website_theme.website_theme.after_migrate"]
+after_migrate = [
+	"frappe.website.doctype.website_theme.website_theme.after_migrate",
+	"frappe.search.sqlite_search.build_index_in_background",
+]
 
 otp_methods = ["OTP App", "Email", "SMS"]
 
@@ -367,11 +368,9 @@ global_search_doctypes = {
 		{"doctype": "ToDo"},
 		{"doctype": "Note"},
 		{"doctype": "Event"},
-		{"doctype": "Blog Post"},
 		{"doctype": "Dashboard"},
 		{"doctype": "Country"},
 		{"doctype": "Currency"},
-		{"doctype": "Newsletter"},
 		{"doctype": "Letter Head"},
 		{"doctype": "Workflow"},
 		{"doctype": "Web Page"},
@@ -423,6 +422,7 @@ ignore_links_on_delete = [
 	"Route History",
 	"Access Log",
 	"Permission Log",
+	"Desktop Icon",
 ]
 
 # Request Hooks
@@ -430,6 +430,7 @@ before_request = [
 	"frappe.recorder.record",
 	"frappe.monitor.start",
 	"frappe.rate_limiter.apply",
+	"frappe.integrations.oauth2.set_cors_for_privileged_requests",
 ]
 
 after_request = [
@@ -568,6 +569,8 @@ default_log_clearing_doctypes = {
 	"Activity Log": 90,
 	"Route History": 90,
 	"OAuth Bearer Token": 30,
+	"API Request Log": 90,
+	"Email Queue Recipient": 30,  # this is added as a dummy placeholder and clearing is handled by Email Queue itself
 }
 
 # These keys will not be erased when doing frappe.clear_cache()
@@ -579,4 +582,20 @@ persistent_cache_keys = [
 	"monitor-transactions",
 	"rate-limit-counter-*",
 	"rl:*",
+]
+
+user_invitation = {
+	"allowed_roles": {
+		"System Manager": [],
+	},
+}
+
+
+add_to_apps_screen = [
+	{
+		"name": app_name,
+		"logo": app_logo_url,
+		"title": app_title,
+		"route": app_home,
+	}
 ]

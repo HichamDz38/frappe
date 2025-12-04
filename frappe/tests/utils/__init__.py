@@ -1,10 +1,40 @@
 import logging
+import os
+from functools import wraps
 
 import frappe
 
 logger = logging.Logger(__file__)
 
 from .generators import *
+
+
+def whitelist_for_tests(**whitelist_kwargs):
+	"""Decorator to whitelist test endpoints.
+
+	Only allows access when running in test mode or running a development server with testing enabled.
+	Supports all parameters that @frappe.whitelist() accepts.
+
+	Usage:
+		@whitelist_for_tests(allow_guest=True)
+		def my_guest_test_endpoint():
+			...
+	"""
+
+	def decorator(fn):
+		@wraps(fn)
+		def wrapper(*args, **kwargs):
+			if not (
+				frappe.in_test or (frappe._dev_server and frappe.conf.allow_tests) or os.environ.get("CI")
+			):
+				frappe.throw(  # nosemgrep: frappe-missing-translate-function-python
+					'Test endpoints are only available when running in test mode or running a development server ("bench start") with the "allow_tests" site config enabled'
+				)
+			return fn(*args, **kwargs)
+
+		return frappe.whitelist(**whitelist_kwargs)(wrapper)
+
+	return decorator
 
 
 def check_orpahned_doctypes():
@@ -24,6 +54,12 @@ def check_orpahned_doctypes():
 		frappe.throw(
 			"Following doctypes exist in DB without controller.\n {}".format("\n".join(orpahned_doctypes))
 		)
+
+
+def toggle_test_mode(enable: bool):
+	"""Enable or disable `frappe.in_test` (and related deprecated flag)"""
+	frappe.in_test = enable
+	frappe.local.flags.in_test = enable
 
 
 from frappe.deprecation_dumpster import (

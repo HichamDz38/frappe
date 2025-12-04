@@ -29,8 +29,8 @@ from frappe.utils.data import add_to_date
 
 @frappe.whitelist()
 def clear():
+	# updating session causes a commit, explicit commit not needed
 	frappe.local.session_obj.update(force=True)
-	frappe.local.db.commit()
 	clear_user_cache(frappe.session.user)
 	frappe.response["message"] = _("Cache Cleared")
 
@@ -96,7 +96,7 @@ def delete_session(sid=None, user=None, reason="Session Expired"):
 
 	logout_feed(user, reason)
 	frappe.db.delete("Sessions", {"sid": sid})
-	frappe.db.commit()
+	frappe.db.commit(chain=True)
 
 	frappe.cache.hdel("session", sid)
 
@@ -170,7 +170,7 @@ def get():
 	bootinfo["lang"] = frappe.translate.get_user_lang()
 	bootinfo["disable_async"] = frappe.conf.disable_async
 
-	bootinfo["setup_complete"] = cint(frappe.get_system_settings("setup_complete"))
+	bootinfo["setup_complete"] = frappe.is_setup_complete()
 	bootinfo["apps_data"] = {
 		"apps": get_apps() or [],
 		"is_desk_apps": 1 if bool(is_desk_apps(get_apps())) else 0,
@@ -181,6 +181,7 @@ def get():
 	bootinfo["user"]["impersonated_by"] = frappe.session.data.get("impersonated_by")
 	bootinfo["navbar_settings"] = frappe.client_cache.get_doc("Navbar Settings")
 	bootinfo.has_app_updates = has_app_update_notifications()
+	bootinfo.show_external_link_warning = frappe.get_system_settings("show_external_link_warning")
 
 	return bootinfo
 
@@ -199,7 +200,7 @@ def get_csrf_token():
 
 def generate_csrf_token():
 	frappe.local.session.data.csrf_token = frappe.generate_hash()
-	if not frappe.flags.in_test:
+	if not frappe.in_test:
 		frappe.local.session_obj.update(force=True)
 
 
@@ -256,6 +257,9 @@ class Session:
 		self.data.data.user = self.user
 		self.data.data.session_ip = frappe.local.request_ip
 
+		if frappe.request:
+			self.data.data.user_agent = frappe.request.headers.get("User-Agent")
+
 		if session_end:
 			self.data.data.session_end = session_end
 
@@ -266,6 +270,7 @@ class Session:
 			self.data.data.update(
 				{
 					"last_updated": frappe.utils.now(),
+					"creation": frappe.utils.now(),
 					"session_expiry": get_expiry_period(),
 					"full_name": self.full_name,
 					"user_type": self.user_type,
@@ -277,7 +282,7 @@ class Session:
 			self.insert_session_record()
 
 			# update user
-			user = frappe.get_doc("User", self.data["user"])
+			user = frappe.get_lazy_doc("User", self.data["user"])
 			user_doctype = frappe.qb.DocType("User")
 			(
 				frappe.qb.update(user_doctype)
@@ -418,6 +423,7 @@ class Session:
 		) and not frappe.flags.read_only:
 			self.data.data.last_updated = now
 			self.data.data.lang = str(frappe.lang)
+			self.data.data.session_ip = frappe.local.request_ip
 
 			Sessions = frappe.qb.DocType("Sessions")
 			# update sessions table
@@ -433,7 +439,7 @@ class Session:
 
 			frappe.db.set_value("User", frappe.session.user, "last_active", now, update_modified=False)
 
-			frappe.db.commit()
+			frappe.db.commit(chain=True)
 			updated_in_db = True
 			frappe.cache.hset("session", self.sid, self.data)
 

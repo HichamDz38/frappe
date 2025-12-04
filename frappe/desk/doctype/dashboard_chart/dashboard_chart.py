@@ -10,7 +10,7 @@ from frappe.boot import get_allowed_report_names
 from frappe.model.document import Document
 from frappe.model.naming import append_number_if_name_exists
 from frappe.modules.export_file import export_to_files
-from frappe.utils import cint, get_datetime, getdate, has_common, now_datetime, nowdate
+from frappe.utils import cint, flt, get_datetime, getdate, has_common, now_datetime, nowdate
 from frappe.utils.dashboard import cache_source
 from frappe.utils.data import format_date
 from frappe.utils.dateutils import (
@@ -56,7 +56,7 @@ def get_permission_query_conditions(user):
 			or `tabDashboard Chart`.`module` is NULL""".format(allowed_modules=",".join(allowed_modules))
 
 	return f"""
-		((`tabDashboard Chart`.`chart_type` in ('Count', 'Sum', 'Average')
+		((`tabDashboard Chart`.`chart_type` in ('Count', 'Sum', 'Average', 'Group By')
 		and {doctype_condition})
 		or
 		(`tabDashboard Chart`.`chart_type` = 'Report'
@@ -201,7 +201,7 @@ def get_chart_config(chart, filters, timespan, timegrain, from_date, to_date):
 
 	data = frappe.get_list(
 		doctype,
-		fields=[datefield, f"SUM({value_field})", "COUNT(*)"],
+		fields=[datefield, {"SUM": value_field}, {"COUNT": "*"}],
 		filters=filters,
 		group_by=datefield,
 		order_by=datefield,
@@ -244,7 +244,7 @@ def get_heatmap_chart_config(chart, filters, heatmap_year):
 			doctype,
 			fields=[
 				timestamp_field,
-				f"{aggregate_function}({value_field})",
+				{aggregate_function: value_field},
 			],
 			filters=filters,
 			group_by=f"date({datefield})",
@@ -270,11 +270,11 @@ def get_group_by_chart_config(chart, filters) -> dict | None:
 		doctype,
 		fields=[
 			f"{group_by_field} as name",
-			f"{aggregate_function}({value_field}) as count",
+			{aggregate_function: value_field, "as": "count"},
 		],
 		filters=filters,
 		parent_doctype=chart.parent_document_type,
-		group_by=group_by_field,
+		group_by=group_by_field if "." in group_by_field else f"`tab{doctype}`.`{group_by_field}`",
 		order_by="count desc",
 		ignore_ifnull=True,
 	)
@@ -313,8 +313,8 @@ def get_result(data, timegrain, from_date, to_date, chart_type):
 		for d in result:
 			count = 0
 			while data_index < len(data) and getdate(data[data_index][0]) <= d[0]:
-				d[1] += cint(data[data_index][1])
-				count += cint(data[data_index][2])
+				d[1] += flt(data[data_index][1])
+				count += flt(data[data_index][2])
 				data_index += 1
 			if chart_type == "Average" and count != 0:
 				d[1] = d[1] / count

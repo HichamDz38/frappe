@@ -158,9 +158,11 @@ class DocType(Document):
 		queue_in_background: DF.Check
 		quick_entry: DF.Check
 		read_only: DF.Check
+		recipient_account_field: DF.Data | None
 		restrict_to_domain: DF.Link | None
 		route: DF.Data | None
 		row_format: DF.Literal["Dynamic", "Compressed"]
+		rows_threshold_for_grid_search: DF.Int
 		search_fields: DF.Data | None
 		sender_field: DF.Data | None
 		sender_name_field: DF.Data | None
@@ -321,7 +323,7 @@ class DocType(Document):
 
 	def check_developer_mode(self):
 		"""Throw exception if not developer mode or via patch"""
-		if frappe.flags.in_patch or frappe.flags.in_test:
+		if frappe.flags.in_patch or frappe.in_test:
 			return
 
 		if not frappe.conf.get("developer_mode") and not self.custom:
@@ -593,7 +595,7 @@ class DocType(Document):
 			global_search_fields_after_update.append("name")
 
 		if set(global_search_fields_before_update) != set(global_search_fields_after_update):
-			now = (not frappe.request) or frappe.flags.in_test or frappe.flags.in_install
+			now = (not frappe.request) or frappe.in_test or frappe.flags.in_install
 			frappe.enqueue("frappe.utils.global_search.rebuild_for_doctype", now=now, doctype=self.name)
 
 	def set_base_class_for_controller(self):
@@ -1640,13 +1642,20 @@ def validate_fields(meta: Meta):
 				title=_("Invalid Option"),
 			)
 
-		if meta.is_virtual != child_doctype_meta.is_virtual:
-			error_msg = " should be virtual." if meta.is_virtual else " cannot be virtual."
+		if meta.is_virtual and not child_doctype_meta.is_virtual:
 			frappe.throw(
-				_("Child Table {0} for field {1}" + error_msg).format(
+				_("Child Table {0} for field {1} must be virtual").format(
 					frappe.bold(doctype), frappe.bold(docfield.fieldname)
 				),
 				title=_("Invalid Option"),
+			)
+
+		if not meta.is_virtual and child_doctype_meta.is_virtual and not docfield.is_virtual:
+			frappe.throw(
+				_("Field {0} must be a virtual field to support virtual doctype.").format(
+					frappe.bold(docfield.fieldname)
+				),
+				title=_("Virtual tables must be virtual fields"),
 			)
 
 	def check_max_height(docfield):
@@ -1657,6 +1666,18 @@ def validate_fields(meta: Meta):
 		if docfield.fieldtype == "Rating":
 			if docfield.options and (int(docfield.options) > 10 or int(docfield.options) < 3):
 				frappe.throw(_("Options for Rating field can range from 3 to 10"))
+
+	def check_decimal_config(docfield):
+		if docfield.fieldtype not in ("Currency", "Float", "Percent"):
+			return
+
+		if docfield.length and docfield.precision:
+			if cint(docfield.precision) > cint(docfield.length):
+				frappe.throw(
+					_("Precision ({0}) for {1} cannot be greater than its length ({2}).").format(
+						docfield.precision, frappe.bold(docfield.label), docfield.length
+					)
+				)
 
 	fields = meta.get("fields")
 	fieldname_list = [d.fieldname for d in fields]
@@ -1680,6 +1701,7 @@ def validate_fields(meta: Meta):
 		scrub_options_in_select(d)
 		validate_fetch_from(d)
 		validate_data_field_type(d)
+		check_decimal_config(d)
 
 		if not frappe.flags.in_migrate or in_ci:
 			check_unique_fieldname(meta.get("name"), d.fieldname)

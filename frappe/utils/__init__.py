@@ -19,8 +19,9 @@ from collections.abc import (
 )
 from email.header import decode_header, make_header
 from email.utils import formataddr, parseaddr
-from typing import TypeAlias, TypedDict
+from typing import Any, Generic, TypeAlias, TypedDict
 
+import orjson
 from werkzeug.test import Client
 
 from frappe.deprecation_dumpster import gzip_compress, gzip_decompress, make_esc
@@ -104,8 +105,10 @@ def get_formatted_email(user, mail=None):
 		return cstr(make_header(decode_header(formataddr((fullname, mail)))))
 
 
-def extract_email_id(email):
+def extract_email_id(email: str) -> str:
 	"""fetch only the email part of the Email Address"""
+	if not email:
+		return ""
 	return cstr(parse_addr(email)[1])
 
 
@@ -140,6 +143,9 @@ def validate_phone_number(phone_number, throw=False):
 	"""Return True if valid phone number."""
 	if not phone_number:
 		return False
+
+	if not isinstance(phone_number, str):
+		phone_number = str(phone_number)
 
 	phone_number = phone_number.strip()
 	match = PHONE_NUMBER_PATTERN.match(phone_number)
@@ -257,6 +263,44 @@ def validate_url(
 	return is_valid
 
 
+def validate_iban(iban: str, throw: bool = False) -> bool:
+	from frappe import _
+
+	valid = is_valid_iban(iban)
+	if not valid and throw:
+		frappe.throw(frappe._("'{0}' is not a valid IBAN").format(frappe.bold(iban)))
+
+	return valid
+
+
+def is_valid_iban(iban: str) -> bool:
+	"""
+	Algorithm: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN
+	"""
+	if not iban:
+		return False
+
+	def encode_char(c):
+		# Position in the alphabet (A=1, B=2, ...) plus nine
+		return str(9 + ord(c) - 64)
+
+	# remove whitespaces, upper case to get the right number from ord()
+	iban = iban.replace(" ", "").upper()
+
+	# Move country code and checksum from the start to the end
+	flipped = iban[4:] + iban[:4]
+
+	# Encode characters as numbers
+	encoded = [encode_char(c) if ord(c) >= 65 and ord(c) <= 90 else c for c in flipped]
+
+	try:
+		to_check = int("".join(encoded))
+	except ValueError:
+		return False
+
+	return to_check % 97 == 1
+
+
 def random_string(length: int) -> str:
 	"""generate a random string"""
 	import string
@@ -269,7 +313,7 @@ def has_gravatar(email: str) -> str:
 	"""Return gravatar url if user has set an avatar at gravatar.com."""
 	import requests
 
-	if frappe.flags.in_import or frappe.flags.in_install or frappe.flags.in_test:
+	if frappe.flags.in_import or frappe.flags.in_install or frappe.in_test:
 		# no gravatar if via upload
 		# since querying gravatar for every item will be slow
 		return ""
@@ -308,18 +352,16 @@ def get_traceback(with_context: bool = False) -> str:
 	"""Return the traceback of the Exception."""
 	from traceback_with_variables import iter_exc_lines
 
-	exc = sys.exception()
-	if not exc:
+	exc_type, exc_value, exc_tb = sys.exc_info()
+
+	if not any([exc_type, exc_value, exc_tb]):
 		return ""
 
-	if exc.__cause__:
-		exc = exc.__cause__
-
 	if with_context:
-		trace_list = iter_exc_lines(exc, fmt=_get_traceback_sanitizer())
+		trace_list = iter_exc_lines(fmt=_get_traceback_sanitizer())
 		tb = "\n".join(trace_list)
 	else:
-		trace_list = traceback.format_exception(exc)
+		trace_list = traceback.format_exception(exc_type, exc_value, exc_tb)
 		tb = "".join(cstr(t) for t in trace_list)
 
 	bench_path = get_bench_path() + "/"
@@ -568,7 +610,7 @@ def get_disk_usage():
 	files_path = get_files_path()
 	if not os.path.exists(files_path):
 		return 0
-	err, out = execute_in_shell(f"du -hsm {files_path}")
+	_err, out = execute_in_shell(f"du -hsm {files_path}")
 	return cint(out.split("\n")[-2].split("\t")[0])
 
 
@@ -807,7 +849,7 @@ def get_site_info():
 	kwargs = {
 		"fields": ["user", "creation", "full_name"],
 		"filters": {"operation": "Login", "status": "Success"},
-		"limit": "10",
+		"limit": 10,
 	}
 
 	site_info = {
@@ -816,7 +858,7 @@ def get_site_info():
 		"country": system_settings.country,
 		"language": system_settings.language or "english",
 		"time_zone": system_settings.time_zone,
-		"setup_complete": cint(system_settings.setup_complete),
+		"setup_complete": frappe.is_setup_complete(),
 		"scheduler_enabled": system_settings.enable_scheduler,
 		# usage
 		"emails_sent": get_emails_sent_this_month(),
@@ -832,18 +874,7 @@ def get_site_info():
 		site_info.update(frappe.get_attr(method_name)(site_info) or {})
 
 	# dumps -> loads to prevent datatype conflicts
-	return json.loads(frappe.as_json(site_info))
-
-
-def parse_json(val: str):
-	"""
-	Parses json if string else return
-	"""
-	if isinstance(val, str):
-		val = json.loads(val)
-	if isinstance(val, dict):
-		val = frappe._dict(val)
-	return val
+	return orjson.loads(frappe.as_json(site_info))
 
 
 def get_db_count(*args):
@@ -864,7 +895,7 @@ def get_db_count(*args):
 	for doctype in args:
 		db_count[doctype] = frappe.db.count(doctype)
 
-	return json.loads(frappe.as_json(db_count))
+	return orjson.loads(frappe.as_json(db_count))
 
 
 def call(fn, *args, **kwargs):
@@ -880,12 +911,12 @@ def call(fn, *args, **kwargs):
 	        via terminal:
 	                bench --site erpnext.local execute frappe.utils.call --args '''["frappe.get_all", "Activity Log"]''' --kwargs '''{"fields": ["user", "creation", "full_name"], "filters":{"Operation": "Login", "Status": "Success"}, "limit": "10"}'''
 	"""
-	return json.loads(frappe.as_json(frappe.call(fn, *args, **kwargs)))
+	return orjson.loads(frappe.as_json(frappe.call(fn, *args, **kwargs)))
 
 
 def get_safe_filters(filters):
 	try:
-		filters = json.loads(filters)
+		filters = orjson.loads(filters)
 
 		if isinstance(filters, int | float):
 			filters = frappe.as_unicode(filters)
@@ -1045,7 +1076,7 @@ def safe_json_loads(*args):
 
 	for arg in args:
 		try:
-			arg = json.loads(arg)
+			arg = orjson.loads(arg)
 		except Exception:
 			pass
 
@@ -1155,46 +1186,59 @@ def safe_eval(code, eval_globals=None, eval_locals=None):
 	return safe_eval(code, eval_globals, eval_locals)
 
 
-class cached_property(functools.cached_property):
-	"""
-	A simpler `functools.cached_property` implementation without locks.
-	This isn't needed in Python 3.12+, since lock was removed in newer versions.
-	Hence, in those versions, it returns the `functools.cached_property` object.
+def create_folder(path, with_init=False):
+	"""Create a folder in the given path and add an `__init__.py` file (optional).
 
-	This does not prevent a possible race condition in multi-threaded usage.
-	The getter function could run more than once on the same instance,
-	with the latest run setting the cached value. If the cached property is
-	idempotent or otherwise not harmful to run more than once on an instance,
-	this is fine. If synchronization is needed, implement the necessary locking
-	inside the decorated getter function or around the cached property access.
-	"""
+	:param path: Folder path.
+	:param with_init: Create `__init__.py` in the new folder."""
+	from frappe.utils import touch_file
 
-	def __new__(cls, func):
-		if sys.version_info.minor >= 12:
-			return functools.cached_property(func)
+	if not os.path.exists(path):
+		os.makedirs(path)
 
-		return super().__new__(cls)
+		if with_init:
+			touch_file(os.path.join(path, "__init__.py"))
 
-	def __init__(self, func):
-		self.func = func
-		self.attrname = None
-		self.__doc__ = func.__doc__
-		self.__module__ = func.__module__
 
-	def __set_name__(self, owner, name):
-		if self.attrname is None:
-			self.attrname = name
+cached_property = functools.cached_property
+if sys.version_info.minor < 12:
+	T = TypeVar("T")
 
-		elif name != self.attrname:
-			raise TypeError(
-				"Cannot assign the same cached_property to two different names "
-				f"({self.attrname!r} and {name!r})."
-			)
+	class cached_property(functools.cached_property, Generic[T]):
+		"""
+		A simpler `functools.cached_property` implementation without locks.
+		This isn't needed in Python 3.12+, since lock was removed in newer versions.
+		Hence, in those versions, it returns the `functools.cached_property` object.
 
-	def __get__(self, instance, owner=None):
-		if instance is None:
-			return self
+		This does not prevent a possible race condition in multi-threaded usage.
+		The getter function could run more than once on the same instance,
+		with the latest run setting the cached value. If the cached property is
+		idempotent or otherwise not harmful to run more than once on an instance,
+		this is fine. If synchronization is needed, implement the necessary locking
+		inside the decorated getter function or around the cached property access.
+		"""
 
-		value = self.func(instance)
-		instance.__dict__[self.attrname] = value
-		return value
+		def __init__(self, func: Callable[[Any], T]):
+			self.func = func
+			self.attrname = None
+			self.__doc__ = func.__doc__
+			self.__module__ = func.__module__
+
+		def __set_name__(self, owner, name):
+			if self.attrname is None:
+				self.attrname = name
+
+			elif name != self.attrname:
+				raise TypeError(
+					"Cannot assign the same cached_property to two different names "
+					f"({self.attrname!r} and {name!r})."
+				)
+
+		def __get__(self, instance, owner=None) -> T:
+			if instance is None:
+				return self
+
+			value = self.func(instance)
+			instance.__dict__[self.attrname] = value
+			return value
+# end: custom cached_property implementation

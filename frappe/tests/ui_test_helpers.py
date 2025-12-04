@@ -1,19 +1,16 @@
+import os
+
 import frappe
 from frappe import _
 from frappe.permissions import AUTOMATIC_ROLES
+from frappe.tests.test_helpers import create_test_blog_category
+from frappe.tests.utils import whitelist_for_tests
 from frappe.utils import add_to_date, now
 
 UI_TEST_USER = "frappe@example.com"
 
 
-def whitelist_for_tests(fn):
-	if frappe.request and not frappe.flags.in_test and not getattr(frappe.local, "dev_server", 0):
-		frappe.throw("Cannot run UI tests. Use a development server with `bench start`")
-
-	return frappe.whitelist()(fn)
-
-
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_if_not_exists(doc):
 	"""Create records if they dont exist.
 	Will check for uniqueness by checking if a record exists with these field value pairs
@@ -43,11 +40,11 @@ def create_if_not_exists(doc):
 	return names
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_todo_records():
 	frappe.db.truncate("ToDo")
 
-	frappe.get_doc(
+	todo_1 = frappe.get_doc(
 		{
 			"doctype": "ToDo",
 			"date": add_to_date(now(), days=7),
@@ -73,11 +70,13 @@ def create_todo_records():
 			"doctype": "ToDo",
 			"date": add_to_date(now(), months=-2),
 			"description": "this is fourth todo",
+			"reference_type": "ToDo",
+			"reference_name": todo_1.name,
 		}
 	).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def prepare_webform_test():
 	for note in frappe.get_all("Note", pluck="name"):
 		frappe.delete_doc("Note", note, force=True)
@@ -85,21 +84,49 @@ def prepare_webform_test():
 	frappe.delete_doc_if_exists("Web Form", "note")
 
 
-@whitelist_for_tests
-def create_communication_record():
-	doc = frappe.get_doc(
+@whitelist_for_tests()
+def create_doctype_for_attachment():
+	create_test_blog_category()
+	doc = frappe.get_doc("Test Blog Category", "_Test Blog Category 2")
+	return doc
+
+
+@whitelist_for_tests()
+def create_datetime_test_doctype():
+	dt = frappe.new_doc("DocType")
+	dt.module = "Core"
+	dt.name = "Test Datetime Precision"
+	dt.custom = 1
+	dt.is_submittable = 1
+	dt.autoname = "autoincrement"
+	dt.append(
+		"fields",
 		{
-			"doctype": "Communication",
-			"recipients": "test@gmail.com",
-			"subject": "Test Form Communication 1",
-			"communication_date": frappe.utils.now_datetime(),
-		}
+			"fieldname": "datetime",
+			"fieldtype": "Datetime",
+			"label": "Datetime",
+		},
 	)
+	dt.append(
+		"permissions",
+		{
+			"role": "System Manager",
+			"read": 1,
+			"submit": 1,
+		},
+	)
+	dt.insert(ignore_if_duplicate=True)
+
+
+@whitelist_for_tests()
+def create_datetime_test_record():
+	doc = frappe.new_doc("Test Datetime Precision")
+	doc.datetime = frappe.utils.now_datetime()
 	doc.insert()
 	return doc
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def setup_workflow():
 	from frappe.workflow.doctype.workflow.test_workflow import create_todo_workflow
 
@@ -108,7 +135,7 @@ def setup_workflow():
 	frappe.clear_cache()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_contact_phone_nos_records():
 	if frappe.get_all("Contact", {"first_name": "Test Contact"}):
 		return
@@ -120,7 +147,7 @@ def create_contact_phone_nos_records():
 	doc.insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_doctype(name, fields):
 	fields = frappe.parse_json(fields)
 	if frappe.db.exists("DocType", name):
@@ -138,7 +165,7 @@ def create_doctype(name, fields):
 	).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_child_doctype(name, fields):
 	fields = frappe.parse_json(fields)
 	if frappe.db.exists("DocType", name):
@@ -156,7 +183,7 @@ def create_child_doctype(name, fields):
 	).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_contact_records():
 	if frappe.get_all("Contact", {"first_name": "Test Form Contact 1"}):
 		return
@@ -166,7 +193,7 @@ def create_contact_records():
 	insert_contact("Test Form Contact 3", "12345")
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_multiple_todo_records():
 	if frappe.get_all("ToDo", {"description": "Multiple ToDo 1"}):
 		return
@@ -182,7 +209,7 @@ def insert_contact(first_name, phone_number):
 	doc.insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_form_tour():
 	if frappe.db.exists("Form Tour", {"name": "Test Form Tour"}):
 		return
@@ -232,7 +259,7 @@ def create_form_tour():
 	tour.insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_data_for_discussions():
 	web_page = create_web_page("Test page for discussions", "test-page-discussions", False)
 	create_topic_and_reply(web_page)
@@ -288,7 +315,7 @@ def create_topic_and_reply(web_page):
 		reply.save()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def update_webform_to_multistep():
 	if not frappe.db.exists("Web Form", "update-profile-duplicate"):
 		doc = frappe.get_doc("Web Form", "edit-profile")
@@ -300,7 +327,7 @@ def update_webform_to_multistep():
 		_doc.save()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def update_child_table(name):
 	doc = frappe.get_doc("DocType", name)
 	if len(doc.fields) == 1:
@@ -318,7 +345,7 @@ def update_child_table(name):
 		doc.save()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def insert_doctype_with_child_table_record(name):
 	if frappe.get_all(name, {"title": "Test Grid Search"}):
 		return
@@ -364,7 +391,7 @@ def insert_doctype_with_child_table_record(name):
 	doc.insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def insert_translations():
 	translation = [
 		{
@@ -394,38 +421,10 @@ def insert_translations():
 	]
 
 	for doc in translation:
-		if not frappe.db.exists("doc"):
-			frappe.get_doc(doc).insert()
+		frappe.get_doc(doc).insert(ignore_if_duplicate=True)
 
 
-@whitelist_for_tests
-def create_blog_post():
-	blog_category = frappe.get_doc(
-		{"name": "general", "doctype": "Blog Category", "title": "general"}
-	).insert(ignore_if_duplicate=True)
-
-	blogger = frappe.get_doc(
-		{
-			"name": "attachment blogger",
-			"doctype": "Blogger",
-			"full_name": "attachment blogger",
-			"short_name": "attachment blogger",
-		}
-	).insert(ignore_if_duplicate=True)
-
-	return frappe.get_doc(
-		{
-			"name": "test-blog-attachment-post",
-			"doctype": "Blog Post",
-			"title": "test-blog-attachment-post",
-			"blog_category": blog_category.name,
-			"blogger": blogger.name,
-			"content_type": "Rich Text",
-		},
-	).insert(ignore_if_duplicate=True)
-
-
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_test_user(username=None):
 	name = username or UI_TEST_USER
 
@@ -453,7 +452,7 @@ def create_test_user(username=None):
 	frappe.db.set_single_value("Workspace Settings", "workspace_setup_completed", 1)
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def setup_tree_doctype():
 	frappe.delete_doc_if_exists("DocType", "Custom Tree", force=True)
 
@@ -477,7 +476,7 @@ def setup_tree_doctype():
 		frappe.get_doc({"doctype": "Custom Tree", "tree": "All Trees"}).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def setup_image_doctype():
 	frappe.delete_doc_if_exists("DocType", "Custom Image", force=True)
 
@@ -496,7 +495,7 @@ def setup_image_doctype():
 	).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def setup_inbox():
 	frappe.db.delete("User Email")
 	doc = frappe.new_doc("Email Account")
@@ -508,7 +507,7 @@ def setup_inbox():
 	user.save()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def setup_default_view(view, force_reroute=None):
 	frappe.delete_doc_if_exists("Property Setter", "Event-main-default_view")
 	frappe.delete_doc_if_exists("Property Setter", "Event-main-force_re_route_to_default_view")
@@ -539,7 +538,7 @@ def setup_default_view(view, force_reroute=None):
 		).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_kanban():
 	if not frappe.db.exists("Custom Field", "Note-kanban"):
 		frappe.get_doc(
@@ -581,12 +580,12 @@ def create_kanban():
 		).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_todo(description):
 	return frappe.get_doc({"doctype": "ToDo", "description": description}).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_todo_with_attachment_limit(description):
 	from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 
@@ -595,7 +594,7 @@ def create_todo_with_attachment_limit(description):
 	return frappe.get_doc({"doctype": "ToDo", "description": description}).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def create_admin_kanban():
 	if not frappe.db.exists("Kanban Board", "Admin Kanban"):
 		frappe.get_doc(
@@ -624,7 +623,7 @@ def create_admin_kanban():
 		).insert()
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def add_remove_role(action, user, role):
 	user_doc = frappe.get_doc("User", user)
 	if action == "remove":
@@ -633,7 +632,7 @@ def add_remove_role(action, user, role):
 		user_doc.add_roles(role)
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def publish_realtime(
 	event=None,
 	message=None,
@@ -654,7 +653,7 @@ def publish_realtime(
 	)
 
 
-@whitelist_for_tests
+@whitelist_for_tests()
 def publish_progress(duration=3, title=None, doctype=None, docname=None):
 	# This should consider session user and only show it to current user.
 	frappe.enqueue(slow_task, duration=duration, title=title, doctype=doctype, docname=docname)
@@ -668,3 +667,10 @@ def slow_task(duration, title, doctype, docname):
 	for i in range(steps + 1):
 		frappe.publish_progress(i * 10, title=title, doctype=doctype, docname=docname)
 		time.sleep(int(duration) / steps)
+
+
+@whitelist_for_tests()
+def empty_my_workspaces():
+	my_workspaces = frappe.get_doc("Workspace Sidebar", "My Workspaces")
+	my_workspaces.items = []
+	my_workspaces.save()

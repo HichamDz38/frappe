@@ -13,16 +13,7 @@ from frappe.desk.form.load import get_attachments
 from frappe.email.doctype.email_account.email_account import notify_unreplied
 from frappe.email.email_body import get_message_id
 from frappe.email.receive import Email, InboundMail, SentEmailInInboxError
-from frappe.tests import IntegrationTestCase, UnitTestCase
-
-
-class UnitTestEmailAccount(UnitTestCase):
-	"""
-	Unit tests for EmailAccount.
-	Use this class for testing individual functions and methods.
-	"""
-
-	pass
+from frappe.tests import IntegrationTestCase
 
 
 class TestEmailAccount(IntegrationTestCase):
@@ -532,7 +523,7 @@ class TestInboundMail(IntegrationTestCase):
 		mail_content = self.get_test_mail(fname="incoming-1.raw")
 		message_id = Email(mail_content).message_id
 		# Create new communication record in DB
-		communication = self.new_communication(message_id=message_id)
+		communication = self.new_communication(message_id=message_id, sent_or_received="Received")
 
 		email_account = frappe.get_doc("Email Account", "_Test Email Account 1")
 		inbound_mail = InboundMail(mail_content, email_account, 12345, 1)

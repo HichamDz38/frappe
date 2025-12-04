@@ -89,7 +89,7 @@ class RQJob(Document):
 	def get_matching_job_ids(filters) -> list[str]:
 		filters = make_filter_dict(filters or [])
 
-		queues = _eval_filters(filters.get("queue"), QUEUES)
+		queues = _eval_filters(filters.get("queue"), QUEUES + get_custom_queues())
 		statuses = _eval_filters(filters.get("status"), JOB_STATUSES)
 
 		matched_job_ids = []
@@ -111,6 +111,16 @@ class RQJob(Document):
 			send_stop_job_command(connection=get_redis_conn(), job_id=self.job_id)
 		except InvalidJobOperation:
 			frappe.msgprint(_("Job is not running."), title=_("Invalid Operation"))
+
+	@check_permissions
+	def cancel(self):
+		if self.status == "queued":
+			self.job.cancel()
+		else:
+			frappe.msgprint(
+				_("Job is in {0} state and can't be cancelled").format(self.status),
+				title=_("Invalid Operation"),
+			)
 
 	@staticmethod
 	def get_count(filters=None) -> int:
@@ -233,3 +243,9 @@ def get_all_queued_jobs():
 @frappe.whitelist()
 def stop_job(job_id):
 	frappe.get_doc("RQ Job", job_id).stop_job()
+
+
+@frappe.whitelist()
+def get_custom_queues():
+	frappe.has_permission("RQ Job", throw=True)
+	return list((frappe.conf.workers or {}).keys())

@@ -1,3 +1,7 @@
+@mixin grid-focus() {
+	outline: none;
+	border: 1px solid var(--gray-400) !important;
+}
 .form-grid {
 	border: 1px solid var(--table-border-color);
 	border-radius: var(--border-radius-md);
@@ -24,9 +28,11 @@
 		border-top-left-radius: var(--border-radius-md);
 		border-top-right-radius: var(--border-radius-md);
 
-		.row-check,
+		.row-check {
+			border-top-left-radius: var(--border-radius-md);
+		}
 		.row .col:last-child {
-			border-radius: var(--border-radius-md);
+			border-top-right-radius: var(--border-radius-md);
 		}
 	}
 
@@ -45,6 +51,7 @@
 		.search {
 			// TODO: Align with table grid without overwriting padding if possible
 			padding: 4px 7px 4px 7px !important;
+			background-color: var(--fg-color);
 		}
 	}
 
@@ -133,6 +140,9 @@
 	.row-index {
 		left: 31px;
 	}
+	button.col:focus-visible {
+		outline: 1px solid #c9c9c9;
+	}
 }
 
 .grid-empty,
@@ -152,17 +162,19 @@
 	display: flex;
 	vertical-align: middle;
 }
-
+.grid-static-col:focus-visible {
+	@include grid-focus();
+}
 .grid-static-col,
 .row-index {
-	// height: 38px;
+	height: 43px;
 	max-height: 200px;
 
 	&.search {
 		padding: 7px !important;
 
 		input {
-			height: -webkit-fill-available;
+			height: 100%;
 			padding: 3px 7px;
 		}
 	}
@@ -292,7 +304,7 @@
 			border: 0px;
 			padding-top: 10px;
 			padding-bottom: 10px;
-			height: 38px;
+			height: auto;
 		}
 
 		.link-btn {
@@ -302,7 +314,6 @@
 
 		.form-control:focus {
 			border-color: $text-muted;
-			z-index: 2;
 		}
 
 		.has-error .form-control {
@@ -337,8 +348,8 @@
 	}
 
 	.grid-static-col[data-fieldtype="Rating"] .field-area {
-		margin-top: 1rem;
-		margin-left: 1rem;
+		margin-top: 0.6rem;
+		margin-left: 0.5rem;
 	}
 
 	.grid-static-col[data-fieldtype="Code"],
@@ -370,14 +381,6 @@
 		div[data-fieldname="options"],
 		div[data-fieldtype="Text Editor"] {
 			height: 40px;
-		}
-	}
-	.grid-row:not(.grid-row-open) {
-		.awesomplete > ul {
-			position: fixed !important;
-			left: auto !important;
-			top: auto;
-			width: 250px !important;
 		}
 	}
 	.grid-static-col {
@@ -412,11 +415,6 @@
 	background-color: var(--fg-color);
 
 	@include transition(0.2s);
-	// REDESIGN TODO: Fix border bottom for last item
-	&:last-child {
-		border-bottom-left-radius: var(--border-radius);
-		border-bottom-right-radius: var(--border-radius);
-	}
 
 	td {
 		vertical-align: top;
@@ -511,15 +509,24 @@
 	overflow: auto;
 	margin: auto;
 	padding: var(--padding-sm) var(--padding-md);
-	max-width: 865px;
 	position: fixed;
 	top: 5%;
 	left: 50%;
 	transform: translate(-50%, 0%);
-	width: 100%;
+	width: 80%;
+
+	body:not(.full-width) & {
+		max-width: var(--page-max-width);
+	}
+
+	// Adjust position when sidebar is expanded to avoid collision
+	.body-sidebar-container.expanded ~ .main-section & {
+		left: calc(50% + var(--sidebar-width, 220px) / 2);
+	}
+
 	.grid-form-body {
 		max-height: 80vh;
-		overflow: scroll;
+		overflow: auto;
 	}
 }
 
@@ -576,11 +583,16 @@
 
 .grid-pagination {
 	padding: 0;
+	display: flex;
+	.last-page {
+		margin-left: 5px;
+	}
 }
 
 .page-text {
 	display: inline-block;
 	cursor: default;
+	margin-right: 6px;
 }
 
 .current-page-number {
@@ -673,14 +685,19 @@
 }
 .column-limit-reached {
 	background-color: var(--subtle-accent);
-	border-top-left-radius: var(--border-radius-md);
-	border-top-right-radius: var(--border-radius-md);
+	border-radius: var(--border-radius-md);
 	border: 1px solid var(--table-border-color);
 	overflow-y: hidden;
 	.form-grid {
 		display: grid;
 		grid-auto-rows: min-content;
 		border: unset;
+		&:focus-visible {
+			@include grid-focus();
+		}
+		.grid-static-col .grid-body {
+			height: 40px;
+		}
 		.grid-static-col.col-xs-1 {
 			flex: 1 0 60px;
 			width: 60px;

@@ -3,16 +3,17 @@
 
 import re
 import string
+from collections.abc import KeysView, ValuesView
 from functools import cached_property, wraps
 
 import frappe
 from frappe.query_builder.builder import MariaDB, Postgres, SQLite
 from frappe.query_builder.functions import Function
-from frappe.types import DocRef
+from frappe.utils import CallbackManager
 
 Query = str | MariaDB | Postgres | SQLite
 QueryValues = tuple | list | dict | None
-FilterValue = DocRef | str | int | bool
+FilterValue = str | int | bool
 
 EmptyQueryValues = object()
 FallBackDateTimeStr = "0001-01-01 00:00:00.000000"
@@ -24,15 +25,17 @@ NestedSetHierarchy = (
 	"not descendants of",
 	"descendants of (inclusive)",
 )
-# split when whitespace or backtick is found
-QUERY_TYPE_PATTERN = re.compile(r"\s*([^\s`]*)")
+# split when non-alphabetical character is found
+QUERY_TYPE_PATTERN = re.compile(r"\s*([A-Za-z]*)")
 
 
 def convert_to_value(o: FilterValue):
-	if hasattr(o, "__value__"):
-		return o.__value__()
 	if isinstance(o, bool):
 		return int(o)
+	elif isinstance(o, dict):
+		return frappe.as_json(o)
+	elif isinstance(o, (KeysView, ValuesView)):
+		return tuple(convert_to_value(item) for item in o)
 	return o
 
 
@@ -53,6 +56,28 @@ def get_doctype_name(table_name: str) -> str:
 		table_name = table_name.replace("tab", "", 1)
 	table_name = table_name.replace("`", "")
 	return table_name.replace('"', "")
+
+
+def get_doctype_sort_info(doctype: str) -> tuple[str, str]:
+	"""
+	Get sort_field and sort_order for a DocType from meta.
+
+	Args:
+		doctype: The DocType name
+
+	Returns:
+		Tuple of (sort_field, sort_order) with defaults ("creation", "DESC") if not found
+	"""
+	from frappe.database.query import CORE_DOCTYPES
+
+	if doctype in CORE_DOCTYPES:
+		return "creation", "DESC"
+
+	try:
+		meta = frappe.get_meta(doctype)
+		return meta.sort_field or "creation", meta.sort_order or "DESC"
+	except frappe.DoesNotExistError:
+		return "creation", "DESC"
 
 
 class LazyString:
@@ -112,3 +137,66 @@ def dangerously_reconnect_on_connection_abort(func):
 			raise
 
 	return wrapper
+
+
+class CommitAfterResponseManager(CallbackManager):
+	__slots__ = ()
+
+	def run(self):
+		db = getattr(frappe.local, "db", None)
+		if not db:
+			# try reconnecting to the database
+			frappe.connect(set_admin_as_user=False)
+			db = frappe.local.db
+
+		savepoint_name = "commit_after_response"
+
+		while self._functions:
+			_func = self._functions.popleft()
+			try:
+				db.savepoint(savepoint_name)
+				_func()
+			except Exception:
+				db.rollback(save_point=savepoint_name)
+				frappe.log_error(title="Error executing commit_after_response callback")
+
+		db.commit()  # nosemgrep
+
+
+def commit_after_response(func):
+	"""
+	Runs and commits some queries after response is sent.
+	Works only if in a request context and not in tests.
+	Calls function immediately otherwise.
+	"""
+
+	request = getattr(frappe.local, "request", False)
+	if not request or frappe.in_test:
+		func()
+		return
+
+	callback_manager = getattr(request, "commit_after_response", None)
+	if callback_manager is None:
+		# if no callback manager, create one
+		callback_manager = CommitAfterResponseManager()
+		request.commit_after_response = callback_manager
+		request.after_response.add(callback_manager.run)
+
+	callback_manager.add(func)
+
+
+def drop_index_if_exists(table: str, index: str):
+	import click
+
+	if not frappe.db.has_index(table, index):
+		click.echo(f"- Skipped {index} index for {table} because it doesn't exist")
+		return
+
+	try:
+		frappe.db.sql_ddl(f"ALTER TABLE `{table}` DROP INDEX `{index}`")
+	except Exception as e:
+		frappe.log_error("Failed to drop index")
+		click.secho(f"x Failed to drop index {index} from {table}\n {e!s}", fg="red")
+		return
+
+	click.echo(f"✓ dropped {index} index from {table}")

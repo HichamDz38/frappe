@@ -66,6 +66,9 @@ class HTTPRequest:
 		elif frappe.get_request_header("REMOTE_ADDR"):
 			frappe.local.request_ip = frappe.get_request_header("REMOTE_ADDR")
 
+		elif frappe.request and getattr(frappe.request, "remote_addr", None):
+			frappe.local.request_ip = frappe.request.remote_addr
+
 		else:
 			frappe.local.request_ip = "127.0.0.1"
 
@@ -107,9 +110,12 @@ class HTTPRequest:
 		)
 
 		# Check if the referrer or origin is in the allowed list
-		return (referrer and any(referrer.startswith(allowed) for allowed in allowed_referrers)) or (
-			origin and any(origin == allowed for allowed in allowed_referrers)
-		)
+		if referrer:
+			referrer_parsed = urlparse(referrer)
+			if any(referrer_parsed.netloc == urlparse(allowed).netloc for allowed in allowed_referrers):
+				return True
+
+		return origin in allowed_referrers if origin else False
 
 
 class LoginManager:
@@ -131,7 +137,7 @@ class LoginManager:
 				self.make_session(resume=True)
 				self.get_user_info()
 				self.set_user_info(resume=True)
-			except AttributeError:
+			except (AttributeError, frappe.DoesNotExistError):
 				self.user = "Guest"
 				self.get_user_info()
 				self.make_session()
@@ -195,7 +201,7 @@ class LoginManager:
 			frappe.local.cookie_manager.set_cookie("system_user", "yes", deduplicate=True)
 			if not resume:
 				frappe.local.response["message"] = "Logged In"
-				frappe.local.response["home_page"] = get_default_path() or "/app"
+				frappe.local.response["home_page"] = get_default_path() or "/desk"
 
 		if not resume:
 			frappe.response["full_name"] = self.full_name
@@ -487,7 +493,10 @@ def validate_ip_address(user):
 	if bypass_restrict_ip_check:
 		return
 
-	frappe.throw(_("Access not allowed from this IP Address"), frappe.AuthenticationError)
+	frappe.throw(
+		_("Access not allowed from this IP Address") + f": {frappe.local.request_ip}",
+		frappe.AuthenticationError,
+	)
 
 
 def get_login_attempt_tracker(key: str, raise_locked_exception: bool = True):
@@ -663,7 +672,7 @@ def validate_oauth(authorization_header):
 		required_scopes = frappe.db.get_value("OAuth Bearer Token", token, "scopes").split(
 			get_url_delimiter()
 		)
-		valid, oauthlib_request = get_oauth_server().verify_request(
+		valid, _oauthlib_request = get_oauth_server().verify_request(
 			uri, http_method, body, headers, required_scopes
 		)
 		if valid:
@@ -701,6 +710,9 @@ def validate_auth_via_api_keys(authorization_header):
 
 def validate_api_key_secret(api_key, api_secret, frappe_authorization_source=None):
 	"""frappe_authorization_source to provide api key and secret for a doctype apart from User"""
+	if not api_key or not api_secret:
+		raise frappe.AuthenticationError
+
 	doctype = frappe_authorization_source or "User"
 	docname = frappe.db.get_value(
 		doctype=doctype, filters={"api_key": api_key, "enabled": True}, fieldname=["name"]
@@ -708,8 +720,8 @@ def validate_api_key_secret(api_key, api_secret, frappe_authorization_source=Non
 	if not docname:
 		raise frappe.AuthenticationError
 	form_dict = frappe.local.form_dict
-	doc_secret = get_decrypted_password(doctype, docname, fieldname="api_secret")
-	if api_secret == doc_secret:
+	doc_secret = get_decrypted_password(doctype, docname, fieldname="api_secret", raise_exception=False)
+	if doc_secret and api_secret == doc_secret:
 		if doctype == "User":
 			user = frappe.db.get_value(doctype="User", filters={"api_key": api_key}, fieldname=["name"])
 		else:

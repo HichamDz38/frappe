@@ -2,6 +2,7 @@ import os
 import random
 import signal
 import socket
+import sys
 import time
 from collections import defaultdict
 from collections.abc import Callable
@@ -139,7 +140,7 @@ def enqueue(
 			"unknown", "v17", "Using enqueue with `job_name` is deprecated, use `job_id` instead."
 		)
 
-	if not is_async and not frappe.flags.in_test:
+	if not is_async and not frappe.in_test:
 		from frappe.deprecation_dumpster import deprecation_warning
 
 		deprecation_warning(
@@ -148,7 +149,7 @@ def enqueue(
 			"Using enqueue with is_async=False outside of tests is not recommended, use now=True instead.",
 		)
 
-	call_directly = now or (not is_async and not frappe.flags.in_test)
+	call_directly = now or (not is_async and not frappe.in_test)
 	if call_directly:
 		return frappe.call(method, **kwargs)
 
@@ -243,7 +244,9 @@ def execute_job(site, method, event, job_name, kwargs, user=None, is_async=True,
 		frappe.init(site, force=True)
 		frappe.connect()
 		if os.environ.get("CI"):
-			frappe.flags.in_test = True
+			from frappe.tests.utils import toggle_test_mode
+
+			toggle_test_mode(True)
 
 		if user:
 			frappe.set_user(user)
@@ -270,7 +273,7 @@ def execute_job(site, method, event, job_name, kwargs, user=None, is_async=True,
 		retval = method(**kwargs)
 
 	except (frappe.db.InternalError, frappe.RetryBackgroundJobError) as e:
-		frappe.db.rollback()
+		frappe.db.rollback(chain=True)
 
 		if retry < 5 and (
 			isinstance(e, frappe.RetryBackgroundJobError)
@@ -291,15 +294,15 @@ def execute_job(site, method, event, job_name, kwargs, user=None, is_async=True,
 			raise
 
 	except Exception as e:
-		frappe.db.rollback()
+		frappe.db.rollback(chain=True)
 		frappe.log_error(title=method_name)
 		frappe.monitor.add_data_to_monitor(exception=e.__class__.__name__)
-		frappe.db.commit()
+		frappe.db.commit(chain=True)
 		print(frappe.get_traceback())
 		raise
 
 	else:
-		frappe.db.commit()
+		frappe.db.commit(chain=True)
 		return retval
 
 	finally:
@@ -371,6 +374,7 @@ class FrappeWorker(Worker):
 	def start_frappe_scheduler(self):
 		from frappe.utils.scheduler import start_scheduler
 
+		# TODO: switch to multiprocessing.Process() after further investigating of fork -> forkserver
 		Thread(target=start_scheduler, daemon=True).start()
 
 
@@ -416,7 +420,6 @@ def start_worker_pool(
 
 	WARNING: This feature is considered "EXPERIMENTAL".
 	"""
-
 	_start_sentry()
 
 	# If gc.freeze is done then importing modules before forking allows us to share the memory
@@ -445,9 +448,15 @@ def start_worker_pool(
 		logging_level = "WARNING"
 
 	# TODO: Make this true by default eventually. It's limited to RQ WorkerPool
-	no_fork = sbool(os.environ.get("FRAPPE_BACKGROUND_WORKERS_NOFORK", False))
+	if sbool(os.environ.get("FRAPPE_BACKGROUND_WORKERS_NOFORK", False)):
+		worker_klass = FrappeWorkerNoFork
+	else:
+		if sys.version_info >= (3, 14):
+			import multiprocessing
 
-	worker_klass = FrappeWorkerNoFork if no_fork else FrappeWorker
+			multiprocessing.set_start_method("fork", force=True)
+		worker_klass = FrappeWorker
+
 	pool = WorkerPool(
 		queues=queues,
 		connection=redis_connection,
@@ -590,7 +599,7 @@ def get_redis_conn(username=None, password=None):
 			return RedisQueue.get_connection(**cred)
 	except redis.exceptions.AuthenticationError:
 		log(
-			f'Wrong credentials used for {cred.username or "default user"}. '
+			f"Wrong credentials used for {cred.username or 'default user'}. "
 			"You can reset credentials using `bench create-rq-users` CLI and restart the server",
 			colour="red",
 		)

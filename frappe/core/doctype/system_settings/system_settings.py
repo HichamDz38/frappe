@@ -39,9 +39,11 @@ class SystemSettings(Document):
 			"yyyy-mm-dd", "dd-mm-yyyy", "dd/mm/yyyy", "dd.mm.yyyy", "mm/dd/yyyy", "mm-dd-yyyy"
 		]
 		default_app: DF.Literal[None]
+		delete_background_exported_reports_after: DF.Int
 		deny_multiple_sessions: DF.Check
 		disable_change_log_notification: DF.Check
 		disable_document_sharing: DF.Check
+		disable_product_suggestion: DF.Check
 		disable_standard_email_footer: DF.Check
 		disable_system_update_notification: DF.Check
 		disable_user_pass_login: DF.Check
@@ -66,11 +68,14 @@ class SystemSettings(Document):
 		language: DF.Link
 		lifespan_qrcode_image: DF.Int
 		link_field_results_limit: DF.Int
+		log_api_requests: DF.Check
 		login_with_email_link: DF.Check
 		login_with_email_link_expiry: DF.Int
 		logout_on_password_reset: DF.Check
 		max_auto_email_report_per_user: DF.Int
 		max_file_size: DF.Int
+		max_report_rows: DF.Int
+		max_signups_allowed_per_hour: DF.Int
 		minimum_password_score: DF.Literal["1", "2", "3", "4"]
 		number_format: DF.Literal[
 			"#,###.##",
@@ -85,6 +90,7 @@ class SystemSettings(Document):
 			"#,###",
 		]
 		otp_issuer_name: DF.Data | None
+		otp_sms_template: DF.SmallText | None
 		password_reset_limit: DF.Int
 		rate_limit_email_link_login: DF.Int
 		reset_password_link_expiry_duration: DF.Duration | None
@@ -92,6 +98,8 @@ class SystemSettings(Document):
 		rounding_method: DF.Literal["Banker's Rounding (legacy)", "Banker's Rounding", "Commercial Rounding"]
 		session_expiry: DF.Data | None
 		setup_complete: DF.Check
+		show_absolute_datetime_in_timeline: DF.Check
+		show_external_link_warning: DF.Literal["Never", "Ask", "Always"]
 		store_attached_pdf_document: DF.Check
 		strip_exif_metadata_from_uploaded_images: DF.Check
 		time_format: DF.Literal["HH:mm:ss", "HH:mm"]
@@ -116,16 +124,19 @@ class SystemSettings(Document):
 			if len(parts) != 2 or not (cint(parts[0]) or cint(parts[1])):
 				frappe.throw(_("Session Expiry must be in format {0}").format("hh:mm"))
 
-		if self.enable_two_factor_auth:
-			if self.two_factor_method == "SMS":
-				if not frappe.db.get_single_value("SMS Settings", "sms_gateway_url"):
-					frappe.throw(
-						_("Please setup SMS before setting it as an authentication method, via SMS Settings")
-					)
-			toggle_two_factor_auth(True, roles=["All"])
-		else:
-			self.bypass_2fa_for_retricted_ip_users = 0
-			self.bypass_restrict_ip_check_if_2fa_enabled = 0
+		if self.has_value_changed("enable_two_factor_auth"):
+			if self.enable_two_factor_auth:
+				if self.two_factor_method == "SMS":
+					if not frappe.db.get_single_value("SMS Settings", "sms_gateway_url"):
+						frappe.throw(
+							_(
+								"Please setup SMS before setting it as an authentication method, via SMS Settings"
+							)
+						)
+				toggle_two_factor_auth(True, roles=["All"])
+			else:
+				self.bypass_2fa_for_retricted_ip_users = 0
+				self.bypass_restrict_ip_check_if_2fa_enabled = 0
 
 		frappe.flags.update_last_reset_password_date = False
 		if self.force_user_to_reset_password and not cint(
@@ -136,6 +147,7 @@ class SystemSettings(Document):
 		self.validate_user_pass_login()
 		self.validate_backup_limit()
 		self.validate_file_extensions()
+		self.validate_otp_sms_template()
 
 		if not self.link_field_results_limit:
 			self.link_field_results_limit = 10
@@ -147,15 +159,25 @@ class SystemSettings(Document):
 				_("{0} can not be more than {1}").format(label, 50), alert=True, indicator="yellow"
 			)
 
+	def validate_otp_sms_template(self):
+		if not self.enable_two_factor_auth or self.two_factor_method != "SMS" or not self.otp_sms_template:
+			return
+
+		if "{{otp}}" not in self.otp_sms_template.replace(" ", ""):
+			frappe.throw(
+				_("OTP SMS Template must contain <code>{0}</code> placeholder to insert the OTP.").format(
+					"{{otp}}"
+				)
+			)
+
 	def validate_user_pass_login(self):
 		if not self.disable_user_pass_login:
 			return
 
 		social_login_enabled = frappe.db.exists("Social Login Key", {"enable_social_login": 1})
 		ldap_enabled = frappe.db.get_single_value("LDAP Settings", "enabled")
-		login_with_email_link_enabled = frappe.db.get_single_value("System Settings", "login_with_email_link")
 
-		if not (social_login_enabled or ldap_enabled or login_with_email_link_enabled):
+		if not (social_login_enabled or ldap_enabled or self.login_with_email_link):
 			frappe.throw(
 				_(
 					"Please enable atleast one Social Login Key or LDAP or Login With Email Link before disabling username/password based login."
@@ -221,9 +243,6 @@ def load():
 	return {"timezones": get_all_timezones(), "defaults": defaults}
 
 
-cache_key = frappe.get_document_cache_key("System Settings", "System Settings")
-
-
 def get_system_settings(key: str):
 	"""Return the value associated with the given `key` from System Settings DocType."""
 	if not (system_settings := getattr(frappe.local, "system_settings", None)):
@@ -238,7 +257,7 @@ def get_system_settings(key: str):
 
 
 def clear_system_settings_cache():
-	frappe.client_cache.delete_value(cache_key)
+	frappe.client_cache.delete_value(frappe.get_document_cache_key("System Settings", "System Settings"))
 	frappe.cache.delete_value("system_settings")
 	frappe.cache.delete_value("time_zone")
 

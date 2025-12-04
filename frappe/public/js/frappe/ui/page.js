@@ -36,6 +36,7 @@ frappe.ui.Page = class Page {
 		this.views = {};
 
 		this.make();
+		if (!Object.keys(opts).includes("hide_sidebar")) this.hide_sidebar = false;
 		frappe.ui.pages[frappe.get_route_str()] = this;
 	}
 
@@ -136,7 +137,7 @@ frappe.ui.Page = class Page {
 
 		this.page_actions = this.wrapper.find(".page-actions");
 		this.filters = this.wrapper.find(".filters");
-
+		this.page_head = this.wrapper.find(".page-head");
 		this.btn_primary = this.page_actions.find(".primary-action");
 		this.btn_secondary = this.page_actions.find(".btn-secondary");
 
@@ -526,11 +527,13 @@ frappe.ui.Page = class Page {
 			$li.addClass("user-action").insertBefore(this.divider);
 		}
 
-		// alt shortcut
-		frappe.ui.keys
-			.get_shortcut_group(parent.get(0))
-			.add($link, $link.find(".menu-item-label"));
-
+		// if an shortcut is already set, dont set an alt Shortcut
+		if (!shortcut) {
+			// alt shortcut
+			frappe.ui.keys
+				.get_shortcut_group(parent.get(0))
+				.add($link, $link.find(".menu-item-label"));
+		}
 		return $link;
 	}
 

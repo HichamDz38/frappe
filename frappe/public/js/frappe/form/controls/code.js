@@ -29,6 +29,7 @@ frappe.ui.form.ControlCode = class ControlCode extends frappe.ui.form.ControlTex
 				style="position: absolute; top: 32px; right: 5px;"
 				onmouseover="this.classList.add('btn-default')"
 				onmouseout="this.classList.remove('btn-default')"
+				title="${__("Copy to Clipboard")}"
 			>
 				<svg class="es-icon es-line  icon-sm" style="" aria-hidden="true">
 					<use class="" href="#es-line-copy-light"></use>
@@ -81,6 +82,7 @@ frappe.ui.form.ControlCode = class ControlCode extends frappe.ui.form.ControlTex
 		}
 
 		this.editor.setTheme("ace/theme/tomorrow");
+		this.editor.setOption("placeholder", this.df.placeholder);
 		this.editor.setOption("showPrintMargin", false);
 		this.editor.setOption("wrap", this.df.wrap);
 		this.set_language();
@@ -239,6 +241,10 @@ frappe.ui.form.ControlCode = class ControlCode extends frappe.ui.form.ControlTex
 
 	get_input_value() {
 		return this.editor ? this.editor.session.getValue() : "";
+	}
+
+	set_focus() {
+		this.editor?.focus();
 	}
 
 	load_lib() {

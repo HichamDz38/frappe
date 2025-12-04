@@ -265,8 +265,8 @@ frappe.views.ListSidebar = class ListSidebar {
 					existing.remove();
 				}
 				if (label == "No Tags") {
-					label = "%,%";
-					condition = "not like";
+					label = "not set";
+					condition = "is";
 				}
 				this.list_view.filter_area.add(this.doctype, fieldname, condition, label);
 			}
@@ -294,6 +294,10 @@ frappe.views.ListSidebar = class ListSidebar {
 	}
 
 	add_insights_banner() {
+		if (cint(frappe.boot.sysdefaults.disable_product_suggestion)) {
+			return;
+		}
+
 		if (this.list_view.view != "Report") {
 			return;
 		}
@@ -309,6 +313,10 @@ frappe.views.ListSidebar = class ListSidebar {
 	}
 
 	add_crm_banner() {
+		if (cint(frappe.boot.sysdefaults.disable_product_suggestion)) {
+			return;
+		}
+
 		if (this.list_view.meta.module != "CRM" || this.list_view.view != "List") {
 			return;
 		}
@@ -321,6 +329,10 @@ frappe.views.ListSidebar = class ListSidebar {
 	}
 
 	add_helpdesk_banner() {
+		if (cint(frappe.boot.sysdefaults.disable_product_suggestion)) {
+			return;
+		}
+
 		if (this.list_view.meta.module != "Support" || this.list_view.view != "List") {
 			return;
 		}

@@ -9,11 +9,11 @@ on:
       python-version:
         required: false
         type: string
-        default: '3.13'
+        default: '3.14'
       node-version:
         required: false
         type: number
-        default: 20
+        default: 22
       parallel-runs:
         required: false
         type: number
@@ -44,7 +44,6 @@ jobs:
     timeout-minutes: 30
     env:
       NODE_ENV: "production"
-      PYTHONOPTIMIZE: 2
       # noisy 3rd party library warnings
       PYTHONWARNINGS: "ignore"
       DB_ROOT_PASSWORD: db_root
@@ -56,14 +55,14 @@ jobs:
         index: ${{ fromJson(needs.gen-idx-integration.outputs.indices) }}
     services:
       mariadb:
-        image: mariadb:11.3
+        image: mariadb:11.8
         ports:
           - 3306:3306
         options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=5s --health-timeout=2s --health-retries=3
         env:
           MARIADB_ROOT_PASSWORD: ${{ env.DB_ROOT_PASSWORD }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         name: Environment Setup
         with:
@@ -99,7 +98,12 @@ jobs:
           bench --site test_site execute frappe.utils.install.complete_setup_wizard
           bench --site test_site execute frappe.tests.ui_test_helpers.create_test_user
 
+      - uses: browser-actions/setup-chrome@latest
+      - run: |
+          echo "BROWSER_PATH=$(which chrome)" >> $GITHUB_ENV
+
       - name: Run Tests
+        id: ui-tests
         run: |
           source ${GITHUB_WORKSPACE}/env/bin/activate
           bench --site test_site \
@@ -107,6 +111,7 @@ jobs:
               --with-coverage \
               --headless \
               --parallel \
+              --browser ${{ env.BROWSER_PATH }} \
               --ci-build-id $GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT
         env:
           CYPRESS_RECORD_KEY: 4a48f41c-11b3-425b-aa88-c58048fa69eb
@@ -119,19 +124,33 @@ jobs:
           ( tail -f ${GITHUB_WORKSPACE}/sites/*-coverage*.xml & ) | grep -q "\/coverage"
 
       - name: Upload JS coverage data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: inputs.enable-coverage
         with:
           name: coverage-js-${{ matrix.index }}
           path: ./apps/${{ github.event.repository.name }}/.cypress-coverage/clover.xml
+      - name: Compress Cypress Videos
+        if: always() && steps.ui-tests.outcome == 'failure'
+        run: | 
+            if find ./cypressVideos -mindepth 1 | read; then
+              zip -r cypress_recordings.zip ./cypressVideos
+            fi
+      - name: Upload Cypress Videos
+        if: always() && steps.ui-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v5
+        with:
+          name: Cypress CI Video Recordings
+          path: ./cypress_recordings.zip
+
+        
 
       - name: Upload coverage data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: inputs.enable-coverage
         with:
           name: coverage-py-${{ matrix.index }}
           path: ./sites/*-coverage*.xml
-
+    
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         if: ${{ failure() && contains( github.event.pull_request.labels.*.name, 'debug-gha') }}

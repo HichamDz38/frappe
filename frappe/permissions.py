@@ -6,10 +6,11 @@ import functools
 import frappe
 import frappe.share
 from frappe import _, msgprint
+from frappe.core.doctype.permission_type.permission_type import get_doctype_ptype_map
 from frappe.query_builder import DocType
 from frappe.utils import cint, cstr
 
-rights = (
+std_rights = (
 	"select",
 	"read",
 	"write",
@@ -25,6 +26,8 @@ rights = (
 	"export",
 	"share",
 )
+
+rights = std_rights
 
 
 GUEST_ROLE = "Guest"
@@ -49,7 +52,7 @@ def print_has_permission_check_logs(func):
 		result = func(*args, **kwargs)
 
 		# print only if access denied
-		# and if user is checking his own permission
+		# and if user is checking their own permission
 		if not result and self_perm_check and print_logs:
 			msgprint(("<br>").join(frappe.flags.get("has_permission_check_logs", [])))
 
@@ -129,7 +132,8 @@ def has_permission(
 
 	if doc:
 		if isinstance(doc, str | int):
-			doc = frappe.get_doc(meta.name, doc)
+			# perf: Avoid loading child tables for perm checks
+			doc = frappe.get_lazy_doc(meta.name, doc)
 		perm = get_doc_permissions(doc, user=user, ptype=ptype, debug=debug).get(ptype)
 		if not perm:
 			debug and _debug_log(
@@ -165,7 +169,10 @@ def has_permission(
 			)
 
 	def false_if_not_shared():
-		if ptype not in ("read", "write", "share", "submit", "email", "print"):
+		share_rights = ["read", "write", "share", "submit", "email", "print"]
+		custom_rights = get_doctype_ptype_map().get(doctype, [])
+
+		if ptype not in share_rights + custom_rights:
 			debug and _debug_log(f"Permission type {ptype} can not be shared")
 			return False
 
@@ -235,7 +242,7 @@ def get_doc_permissions(doc, user=None, ptype=None, debug=False):
 			"User is owner of document, so permissions are updated to: " + frappe.as_json(permissions)
 		)
 
-	if not has_user_permission(doc, user, debug=debug):
+	if not has_user_permission(doc, user, debug=debug, ptype=ptype):
 		if is_user_owner():
 			# replace with owner permissions
 			permissions = permissions.get("if_owner", {})
@@ -277,7 +284,7 @@ def get_role_permissions(doctype_meta, user=None, is_owner=None, debug=False):
 
 	if user == "Administrator":
 		debug and _debug_log("all permissions granted because user is Administrator")
-		return allow_everything()
+		return allow_everything(doctype_meta.name)
 
 	if not frappe.local.role_permissions.get(cache_key) or debug:
 		perms = frappe._dict(if_owner={})
@@ -295,7 +302,7 @@ def get_role_permissions(doctype_meta, user=None, is_owner=None, debug=False):
 		has_if_owner_enabled = any(p.get("if_owner", 0) for p in applicable_permissions)
 		perms["has_if_owner_enabled"] = has_if_owner_enabled
 
-		for ptype in rights:
+		for ptype in get_rights(doctype_meta.name):
 			pvalue = any(p.get(ptype, 0) for p in applicable_permissions)
 			# check if any perm object allows perm type
 			perms[ptype] = cint(pvalue)
@@ -322,7 +329,7 @@ def get_user_permissions(user):
 	return get_user_permissions(user)
 
 
-def has_user_permission(doc, user=None, debug=False):
+def has_user_permission(doc, user=None, debug=False, *, ptype=None):
 	"""Return True if User is allowed to view considering User Permissions."""
 	from frappe.core.doctype.user_permission.user_permission import get_user_permissions
 
@@ -333,6 +340,9 @@ def has_user_permission(doc, user=None, debug=False):
 		debug and _debug_log("User is not affected by any user permissions")
 		return True
 
+	doctype = doc.get("doctype")
+	docname = doc.get("name")
+
 	# don't apply strict user permissions for single doctypes since they contain empty link fields
 	apply_strict_user_permissions = (
 		False if doc.meta.issingle else frappe.get_system_settings("apply_strict_user_permissions")
@@ -340,27 +350,46 @@ def has_user_permission(doc, user=None, debug=False):
 	if apply_strict_user_permissions:
 		debug and _debug_log("Strict user permissions will be applied")
 
-	doctype = doc.get("doctype")
-	docname = doc.get("name")
+	if (
+		apply_strict_user_permissions
+		and doc.get("__islocal")
+		and ptype in ("read", "write")
+		and (not docname or (docname and not frappe.db.exists(doctype, docname, cache=True)))
+	):
+		apply_strict_user_permissions = False
+		debug and _debug_log("Strict permissions will be skipped on local document")
 
 	# STEP 1: ---------------------
 	# check user permissions on self
 	if doctype in user_permissions:
-		allowed_docs = get_allowed_docs_for_doctype(user_permissions.get(doctype, []), doctype)
+		doctype_up = user_permissions.get(doctype, [])
+		allowed_docs = get_allowed_docs_for_doctype(doctype_up, doctype)
 
 		# if allowed_docs is empty it states that there is no applicable permission under the current doctype
 
 		# only check if allowed_docs is not empty
-		if allowed_docs and str(docname) not in allowed_docs:
-			# no user permissions for this doc specified
-			debug and _debug_log(
-				"User doesn't have access to this document because of User Permissions, allowed documents: "
-				+ str(allowed_docs)
-			)
-			push_perm_check_log(_("Not allowed for {0}: {1}").format(_(doctype), docname), debug=debug)
-			return False
-		else:
-			debug and _debug_log(f"User Has access to {docname} via User Permissions.")
+		if allowed_docs:
+			not_permitted = True
+			if doc.meta.is_tree and ptype == "create":
+				if parent := doc.get(doc.nsm_parent_field):
+					doc_hide_descendants = {d.doc: d.hide_descendants for d in doctype_up}
+					for d in _get_parent_and_ancestors(doctype, parent):
+						if d in allowed_docs and not doc_hide_descendants[d]:
+							not_permitted = False
+							break
+			else:
+				not_permitted = not docname or str(docname) not in allowed_docs
+
+			if not_permitted:
+				# no user permissions for this doc specified
+				debug and _debug_log(
+					"User doesn't have access to this document because of User Permissions, allowed documents: "
+					+ str(allowed_docs)
+				)
+				push_perm_check_log(_("Not allowed for {0}: {1}").format(_(doctype), docname), debug=debug)
+				return False
+
+		debug and _debug_log(f"User Has access to {docname} via User Permissions.")
 
 	# STEP 2: ---------------------------------
 	# check user permissions in all link fields
@@ -371,7 +400,7 @@ def has_user_permission(doc, user=None, debug=False):
 		#
 		# called for both parent and child records
 
-		meta = frappe.get_meta(d.get("doctype"))
+		meta = frappe.get_meta(d.doctype)
 
 		# check all link fields for user permissions
 		for field in meta.get_link_fields():
@@ -380,7 +409,6 @@ def has_user_permission(doc, user=None, debug=False):
 
 			# empty value, do you still want to apply user permissions?
 			if not d.get(field.fieldname) and not apply_strict_user_permissions:
-				# nah, not strict
 				continue
 
 			if field.options not in user_permissions:
@@ -424,7 +452,7 @@ def has_user_permission(doc, user=None, debug=False):
 	if not check_user_permission_on_link_fields(doc):
 		return False
 
-	for d in doc.get_all_children():
+	for d in doc.get_all_children(include_computed=True):
 		if not check_user_permission_on_link_fields(d):
 			return False
 
@@ -715,9 +743,16 @@ def get_doc_name(doc):
 	return doc if isinstance(doc, str) else str(doc.name)
 
 
-def allow_everything():
+def get_rights(doctype=None):
+	if not doctype:
+		return std_rights
+	custom_rights = get_doctype_ptype_map().get(doctype, [])
+	return list(std_rights) + custom_rights
+
+
+def allow_everything(doctype=None):
 	"""Return a dict with access to everything, eg. {"read": 1, "write": 1, ...}."""
-	return {ptype: 1 for ptype in rights}
+	return {ptype: 1 for ptype in get_rights(doctype)}
 
 
 def get_allowed_docs_for_doctype(user_permissions, doctype):
@@ -780,7 +815,9 @@ def has_child_permission(
 
 	if parent_meta.istable or not (
 		valid_parentfields := [
-			df.fieldname for df in parent_meta.get_table_fields() if df.options == child_doctype
+			df.fieldname
+			for df in parent_meta.get_table_fields(include_computed=True)
+			if df.options == child_doctype
 		]
 	):
 		push_perm_check_log(
@@ -870,3 +907,11 @@ def handle_does_not_exist_error(fn):
 		return fn(e, *args, **kwargs)
 
 	return wrapper
+
+
+def _get_parent_and_ancestors(doctype, parent):
+	yield parent
+
+	from frappe.utils.nestedset import get_ancestors_of
+
+	yield from get_ancestors_of(doctype, parent)

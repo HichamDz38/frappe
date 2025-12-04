@@ -217,7 +217,7 @@ def rename_doc(
 		new_doc.add_comment("Edit", _("renamed from {0} to {1}").format(frappe.bold(old), frappe.bold(new)))
 
 	if merge:
-		frappe.delete_doc(doctype, old)
+		frappe.delete_doc(doctype, old, ignore_permissions=ignore_permissions)
 
 	new_doc.clear_cache()
 	frappe.clear_cache()
@@ -478,16 +478,15 @@ def get_link_fields(doctype: str) -> list[dict]:
 			.inner_join(dt)
 			.on(df.parent == dt.name)
 			.select(df.parent, df.fieldname, dt.issingle.as_("issingle"))
-			.where((df.options == doctype) & (df.fieldtype == "Link"))
+			.where(
+				(df.options == doctype)
+				& (df.fieldtype == "Link")
+				& (dt.is_virtual == 0)
+				& (df.is_virtual == 0)
+			)
 		)
 
-		if frappe.db.has_column("DocField", "is_virtual"):
-			standard_fields_query = standard_fields_query.where(df.is_virtual == 0)
-
-		virtual_doctypes = []
-		if frappe.db.has_column("DocType", "is_virtual"):
-			virtual_doctypes = frappe.get_all("DocType", {"is_virtual": 1}, pluck="name")
-			standard_fields_query = standard_fields_query.where(dt.is_virtual == 0)
+		virtual_doctypes = frappe.get_all("DocType", {"is_virtual": 1}, pluck="name")
 
 		standard_fields = standard_fields_query.run(as_dict=True)
 
@@ -495,7 +494,7 @@ def get_link_fields(doctype: str) -> list[dict]:
 		custom_fields = (
 			frappe.qb.from_(cf)
 			.select(cf.dt.as_("parent"), cf.fieldname, cf_issingle)
-			.where((cf.options == doctype) & (cf.fieldtype == "Link"))
+			.where((cf.options == doctype) & (cf.fieldtype == "Link") & (cf.is_virtual == 0))
 		)
 		if virtual_doctypes:
 			custom_fields = custom_fields.where(cf.dt.notin(virtual_doctypes))

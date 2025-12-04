@@ -60,7 +60,7 @@ def get_context(context) -> PrintContext:
 	if frappe.form_dict.doc:
 		doc = frappe.form_dict.doc
 	else:
-		doc = frappe.get_doc(frappe.form_dict.doctype, frappe.form_dict.name)
+		doc = frappe.get_lazy_doc(frappe.form_dict.doctype, frappe.form_dict.name)
 
 	set_link_titles(doc)
 
@@ -229,7 +229,7 @@ def get_rendered_template(
 		if letter_head.header_script:
 			letter_head.content += f"""
 				<script>
-					{ letter_head.header_script }
+					{letter_head.header_script}
 				</script>
 			"""
 
@@ -238,7 +238,7 @@ def get_rendered_template(
 		if letter_head.footer_script:
 			letter_head.footer += f"""
 				<script>
-					{ letter_head.footer_script }
+					{letter_head.footer_script}
 				</script>
 			"""
 
@@ -308,7 +308,7 @@ def set_title_values_for_link_and_dynamic_link_fields(
 
 
 def set_title_values_for_table_and_multiselect_fields(meta: "Meta", doc: "Document") -> None:
-	for field in meta.get_table_fields():
+	for field in meta.get_table_fields(include_computed=True):
 		if not doc.get(field.fieldname):
 			continue
 
@@ -340,7 +340,7 @@ def get_html_and_style(
 	"""Return `html` and `style` of print format, used in PDF etc."""
 
 	if isinstance(name, str):
-		document = frappe.get_doc(doc, name)
+		document = frappe.get_lazy_doc(doc, name)
 	else:
 		document = frappe.get_doc(json.loads(doc))
 
@@ -371,7 +371,7 @@ def get_rendered_raw_commands(doc: str, name: str | None = None, print_format: s
 	"""Return Rendered Raw Commands of print format, used to send directly to printer."""
 
 	if isinstance(name, str):
-		document = frappe.get_doc(doc, name)
+		document = frappe.get_lazy_doc(doc, name)
 	else:
 		document = frappe.get_doc(json.loads(doc))
 

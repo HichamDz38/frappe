@@ -12,12 +12,14 @@ import re
 import time
 import typing
 from code import compile_command
+from collections import defaultdict
 from enum import Enum
 from functools import lru_cache
 from typing import Any, Literal, Optional, TypeVar
 from urllib.parse import parse_qsl, quote, urlencode, urljoin, urlparse, urlunparse
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+import orjson
 from click import secho
 from dateutil import parser
 from dateutil.parser import ParserError
@@ -80,6 +82,15 @@ URL_NOTATION_PATTERN = re.compile(
 DURATION_PATTERN = re.compile(r"^(?:(\d+d)?((^|\s)\d+h)?((^|\s)\d+m)?((^|\s)\d+s)?)$")
 HTML_TAG_PATTERN = re.compile("<[^>]+>")
 MARIADB_SPECIFIC_COMMENT = re.compile(r"#.*")
+
+# these options are necessary to use orjson with frappe
+#
+# OPT_PASSTHROUGH_DATETIME allows datetime objects to be passed through
+# to the default function without conversion by orjson
+# frappe converts datetime objects differently (__str__) from orjson (RFC 3339)
+#
+# OPT_NON_STR_KEYS slightly reduces performance of orjson, but allows for non-string keys in dicts
+DEFAULT_ORJSON_OPTIONS = orjson.OPT_PASSTHROUGH_DATETIME | orjson.OPT_NON_STR_KEYS
 
 
 class Weekday(Enum):
@@ -640,12 +651,17 @@ def get_time(
 		return time_str
 	elif isinstance(time_str, datetime.timedelta):
 		return (datetime.datetime.min + time_str).time()
+
 	try:
-		return parser.parse(time_str).time()
-	except ParserError as e:
-		if "day" in e.args[1] or "hour must be in" in e.args[0]:
-			return (datetime.datetime.min + parse_timedelta(time_str)).time()
-		raise e
+		# PERF: Our DATE_FORMAT is same as ISO format.
+		return datetime.time.fromisoformat(time_str)
+	except ValueError:
+		try:
+			return parser.parse(time_str).time()
+		except ParserError as e:
+			if "day" in e.args[1] or "hour must be in" in e.args[0]:
+				return (datetime.datetime.min + parse_timedelta(time_str)).time()
+			raise e
 
 
 def get_datetime_str(datetime_obj: DateTimeLikeObject) -> str:
@@ -781,38 +797,37 @@ def format_datetime(datetime_string: DateTimeLikeObject, format_string: str | No
 	return formatted_datetime
 
 
-def format_duration(seconds, hide_days=False):
-	"""Convert the given duration value in float(seconds) to duration format.
+def format_duration(seconds: float | int, hide_days: bool = False) -> str:
+	"""Convert the given duration value in seconds to duration format.
 
-	example: convert 12885 to '3h 34m 45s' where 12885 = seconds in float
+	example:
+	convert 12885 to '3h 34m 45s' where 12885 = seconds in float
+	        -12885 to '-3h 34m 45s'
 	"""
-
 	seconds = cint(seconds)
+	negative = seconds < 0
+	seconds = abs(seconds)
 
-	total_duration = {
-		"days": math.floor(seconds / (3600 * 24)),
-		"hours": math.floor(seconds % (3600 * 24) / 3600),
-		"minutes": math.floor(seconds % 3600 / 60),
-		"seconds": math.floor(seconds % 60),
-	}
+	days = (seconds // (3600 * 24)) if not hide_days else 0
+	hours = ((seconds % (3600 * 24)) // 3600) if not hide_days else (seconds // 3600)
+	minutes = (seconds % 3600) // 60
+	seconds = seconds % 60
 
-	if hide_days:
-		total_duration["hours"] = math.floor(seconds / 3600)
-		total_duration["days"] = 0
+	total_duration = []
 
-	duration = ""
-	if total_duration:
-		if total_duration.get("days"):
-			duration += str(total_duration.get("days")) + "d"
-		if total_duration.get("hours"):
-			duration += " " if len(duration) else ""
-			duration += str(total_duration.get("hours")) + "h"
-		if total_duration.get("minutes"):
-			duration += " " if len(duration) else ""
-			duration += str(total_duration.get("minutes")) + "m"
-		if total_duration.get("seconds"):
-			duration += " " if len(duration) else ""
-			duration += str(total_duration.get("seconds")) + "s"
+	if days:
+		total_duration.append(f"{days}d")
+	if hours:
+		total_duration.append(f"{hours}h")
+	if minutes:
+		total_duration.append(f"{minutes}m")
+	if seconds:
+		total_duration.append(f"{seconds}s")
+
+	duration = " ".join(total_duration)
+
+	if negative and duration:
+		duration = "-" + duration
 
 	return duration
 
@@ -1511,14 +1526,15 @@ def money_in_words(
 		main_currency = d.get("currency", "INR")
 
 	if not fraction_currency:
-		fraction_currency = frappe.db.get_value("Currency", main_currency, "fraction", cache=True) or _(
-			"Cent"
-		)
+		fraction_currency = frappe.db.get_value("Currency", main_currency, "fraction", cache=True)
 
 	number_format = get_number_format()
 
 	fraction_units = frappe.db.get_value("Currency", main_currency, "fraction_units", cache=True)
-	fraction_length = math.ceil(math.log10(fraction_units)) or number_format.precision
+	if fraction_units:
+		fraction_length = math.ceil(math.log10(fraction_units))
+	elif not fraction_units or not fraction_currency:
+		fraction_units = fraction_length = 0
 
 	n = f"%.{fraction_length}f" % number
 
@@ -1616,7 +1632,7 @@ def get_thumbnail_base64_for_image(src: str) -> dict[str, str] | None:
 			return
 
 		try:
-			image, unused_filename, extn = get_local_image(src)
+			image, _unused_filename, extn = get_local_image(src)
 		except OSError:
 			return
 
@@ -1721,7 +1737,15 @@ def comma_or(some_list: list | tuple, add_quotes=True) -> str:
 	If `add_quotes` is True, each item in the list will be wrapped in single quotes.
 	e.g. ['a', 'b', 'c'] -> "'a', 'b' or 'c'"
 	"""
-	return comma_sep(some_list, frappe._("{0} or {1}"), add_quotes)
+	from babel import Locale
+
+	try:
+		locale = Locale.parse(frappe.local.lang, sep="-")
+		pattern = locale.list_patterns["or"]["end"]
+	except Exception:
+		pattern = frappe._("{0} or {1}")
+
+	return comma_sep(some_list, pattern, add_quotes)
 
 
 def comma_and(some_list: list | tuple, add_quotes=True) -> str:
@@ -1731,7 +1755,15 @@ def comma_and(some_list: list | tuple, add_quotes=True) -> str:
 	If `add_quotes` is True, each item in the list will be wrapped in single quotes.
 	e.g. ['a', 'b', 'c'] -> "'a', 'b' and 'c'"
 	"""
-	return comma_sep(some_list, frappe._("{0} and {1}"), add_quotes)
+	from babel import Locale
+
+	try:
+		locale = Locale.parse(frappe.local.lang, sep="-")
+		pattern = locale.list_patterns["standard"]["end"]
+	except Exception:
+		pattern = frappe._("{0} and {1}")
+
+	return comma_sep(some_list, pattern, add_quotes)
 
 
 def comma_sep(some_list: list | tuple, pattern: str, add_quotes=True) -> str:
@@ -1894,17 +1926,32 @@ def get_link_to_report(
 	e.g. get_link_to_report("Revenue Report", "Link Label") returns:
 	        '<a href="https://frappe.io/app/query-report/Revenue%20Report">Link Label</a>'.
 	"""
+	from frappe import _
+
 	if not label:
-		label = name
+		label = _(name)
 
 	if filters:
 		conditions = []
 		for k, v in filters.items():
 			if isinstance(v, list):
-				conditions.extend(
-					str(k) + "=" + '["' + str(value[0] + '"' + "," + '"' + str(value[1]) + '"]')
-					for value in v
-				)
+				for value in v:
+					if value[0] == "between":
+						conditions.append(
+							str(k)
+							+ "="
+							+ '["'
+							+ str(value[0])
+							+ '",["'
+							+ str(value[1][0])
+							+ '","'
+							+ str(value[1][1])
+							+ '"]]'
+						)
+					else:
+						conditions.append(
+							str(k) + "=" + '["' + str(value[0] + '"' + "," + '"' + str(value[1]) + '"]')
+						)
 			else:
 				conditions.append(str(k) + "=" + quote(str(v)))
 
@@ -1972,8 +2019,43 @@ def get_url_to_report_with_filters(name, filters, report_type=None, doctype=None
 	return get_url(uri=f"/app/query-report/{quoted(name)}?{filters}")
 
 
+def get_filtered_list_url(doctype: str, docnames: list[str] | None = None) -> str:
+	"""
+	Get a filtered list view URL for a doctype with specific document names.
+
+	:param doctype: The doctype name
+	:param docnames: List of document names to filter
+
+	:return: URL to the filtered list view
+	"""
+	list_url = get_url_to_list(doctype)
+
+	if not docnames:
+		return list_url
+
+	return "".join((list_url, "?", urlencode({"name": json.dumps(["in", docnames])})))
+
+
+def get_filtered_list_link(doctype: str, docnames: list[str] | None = None, label: str | None = None) -> str:
+	"""
+	Get an HTML link to a filtered list view for a doctype with specific document names.
+
+	:param doctype: The doctype name
+	:param docnames: List of document names to filter
+	:param label: Optional label for the link. If not provided, uses doctype
+
+	:return: HTML link to the filtered list view
+	"""
+	from frappe import _
+
+	url = get_filtered_list_url(doctype, docnames)
+	label = label or _(doctype)
+
+	return f"""<a href="{url}">{label}</a>"""
+
+
 def sql_like(value: str, pattern: str) -> bool:
-	if not isinstance(pattern, str) and isinstance(value, str):
+	if not (isinstance(pattern, str) and isinstance(value, str)):
 		return False
 	if pattern.startswith("%") and pattern.endswith("%"):
 		return pattern.strip("%") in value
@@ -1986,7 +2068,7 @@ def sql_like(value: str, pattern: str) -> bool:
 		return pattern in value
 
 
-def filter_operator_is(value: str, pattern: str) -> bool:
+def filter_operator_is(value: str | None, pattern: str) -> bool:
 	"""Operator `is` can have two values: 'set' or 'not set'."""
 	pattern = pattern.lower()
 
@@ -2047,11 +2129,37 @@ def evaluate_filters(doc: "Mapping", filters: FilterSignature):
 	return True
 
 
-def compare(val1: Any, condition: str, val2: Any, fieldtype: str | None = None):
+def compare(val1: Any, condition: str, val2: Any, fieldtype: str | None = None) -> bool:
+	"""Compare two values using the specified operator with optional fieldtype casting.
+
+	Args:
+		val1: The left operand value to compare
+		condition: The comparison operator (e.g., "=", ">", "is", "in", "like")
+		val2: The right operand value to compare against
+		fieldtype: Optional fieldtype for casting val1 (and val2 for most operators)
+
+	Returns:
+		bool: True if the comparison evaluates to True, False otherwise
+
+	Note:
+	- For "is" operator: No casting is performed to preserve None values
+	- For "in"/"not in" operators: Only val1 is cast (if not None), val2 remains unchanged
+	- For "Timespan" operator: No casting is performed
+	- For other operators: Both val1 and val2 are cast to the specified fieldtype
+	"""
 	if fieldtype:
-		val1 = cast(fieldtype, val1)
-		if condition != "Timespan":
+		if condition in {"is", "Timespan"}:
+			# No casting to preserve original values
+			pass
+		elif condition in {"in", "not in"}:
+			# Cast only val1 (if not None), preserve val2 container
+			if val1 is not None:
+				val1 = cast(fieldtype, val1)
+		else:
+			# Cast both values for comparison operators (=, !=, >, <, >=, <=, like, etc.)
+			val1 = cast(fieldtype, val1)
 			val2 = cast(fieldtype, val2)
+
 	if condition in operator_map:
 		return operator_map[condition](val1, val2)
 
@@ -2115,7 +2223,7 @@ def get_filter(doctype: str, filters: FilterSignature, filters_config=None) -> "
 		meta = frappe.get_meta(f.doctype)
 		if not meta.has_field(f.fieldname):
 			# try and match the doctype name from child tables
-			for df in meta.get_table_fields():
+			for df in meta.get_table_fields(include_computed=True):
 				if frappe.get_meta(df.options).has_field(f.fieldname):
 					f.doctype = df.options
 					break
@@ -2433,9 +2541,33 @@ def guess_date_format(date_string: str) -> str:
 
 def validate_json_string(string: str) -> None:
 	try:
-		json.loads(string)
+		orjson.loads(string)
 	except (TypeError, ValueError):
 		raise frappe.ValidationError
+
+
+def parse_json(val: str):
+	"""
+	Parses json if string else return
+	"""
+	if isinstance(val, str):
+		val = orjson.loads(val)
+	if isinstance(val, dict):
+		val = frappe._dict(val)
+	return val
+
+
+def orjson_dumps(obj, default=None, option=None, decode=True):
+	"""A wrapper around `orjson.dumps`, with some default options set"""
+
+	if option is not None:
+		# user defined options are merged with the default options
+		option = option | DEFAULT_ORJSON_OPTIONS
+	else:
+		option = DEFAULT_ORJSON_OPTIONS
+
+	value = orjson.dumps(obj, default, option)
+	return value.decode() if decode else value
 
 
 class _UserInfo(typing.TypedDict):
@@ -2559,6 +2691,82 @@ def is_site_link(link: str) -> bool:
 	return urlparse(link).netloc == urlparse(frappe.utils.get_url()).netloc
 
 
+def bold(text: str | int | float) -> str:
+	"""Return `text` wrapped in `<strong>` tags."""
+	return f"<strong>{text}</strong>"
+
+
+def safe_encode(param, encoding="utf-8"):
+	try:
+		param = param.encode(encoding)
+	except Exception:
+		pass
+	return param
+
+
+def safe_decode(param, encoding="utf-8", fallback_map: dict | None = None):
+	"""
+	Method to safely decode data into a string
+
+	:param param: The data to be decoded
+	:param encoding: The encoding to decode into
+	:param fallback_map: A fallback map to reference in case of a LookupError
+	:return:
+	"""
+	try:
+		param = param.decode(encoding)
+	except LookupError:
+		try:
+			param = param.decode((fallback_map or {}).get(encoding, "utf-8"))
+		except Exception:
+			pass
+	except Exception:
+		pass
+	return param
+
+
+def as_unicode(text, encoding: str = "utf-8") -> str:
+	"""Convert to unicode if required."""
+	if isinstance(text, str):
+		return text
+	elif text is None:
+		return ""
+	elif isinstance(text, bytes):
+		return str(text, encoding)
+	else:
+		return str(text)
+
+
+def mock(type, size=1, locale="en"):
+	import faker
+
+	results = []
+	fake = faker.Faker(locale)
+	if type not in dir(fake):
+		raise ValueError("Not a valid mock type.")
+	else:
+		for _ in range(size):
+			data = getattr(fake, type)()
+			results.append(data)
+
+	from frappe.utils import squashify
+
+	return squashify(results)
+
+
+# Recursive default dict with arbitrary levels of nesting
+def recursive_defaultdict():
+	return defaultdict(recursive_defaultdict)
+
+
+# This is used in test to count memory overhead of default imports.
+def _get_rss_memory_usage():
+	import psutil
+
+	rss = psutil.Process().memory_info().rss // (1024 * 1024)
+	return rss
+
+
 def add_trackers_to_url(
 	url: str,
 	source: str,
@@ -2643,72 +2851,76 @@ def map_trackers(url_trackers: dict, create: bool = False):
 	return frappe_trackers
 
 
-def bold(text: str | int | float) -> str:
-	"""Return `text` wrapped in `<strong>` tags."""
-	return f"<strong>{text}</strong>"
-
-
-def safe_encode(param, encoding="utf-8"):
-	try:
-		param = param.encode(encoding)
-	except Exception:
-		pass
-	return param
-
-
-def safe_decode(param, encoding="utf-8", fallback_map: dict | None = None):
+def attach_expanded_links(doctype: str, docs: list, fields_to_expand: list):
 	"""
-	Method to safely decode data into a string
+	Expands specified link or dynamic link fields in a list of documents by replacing
+	their linked values (names) with full document records.
 
-	:param param: The data to be decoded
-	:param encoding: The encoding to decode into
-	:param fallback_map: A fallback map to reference in case of a LookupError
-	:return:
+	This function takes a list of documents and a list of link fieldnames that should be
+	expanded. For each specified field, it retrieves all referenced linked records from
+	the corresponding doctypes and replaces the link value in each document with the
+	full linked record (as a dict).
+
+	Args:
+		doctype (str): The parent doctype of the provided documents.
+		docs (list[dict]): A list of document dictionaries whose link fields are to be expanded.
+		fields_to_expand (list[str]): A list of fieldnames corresponding to link or dynamic
+			link fields that should be expanded.
+
+	Returns:
+		None: The function modifies the `docs` list in place.
+
+	Example:
+		>>> docs = [{"customer": "CUST-001"}, {"customer": "CUST-002"}]
+		>>> attach_expanded_links("Sales Invoice", docs, ["customer"])
+		>>> docs[0]["customer"]
+		{
+			"name": "CUST-001",
+			"customer_name": "John Doe",
+			"customer_group": "Retail",
+			...
+		}
+
 	"""
-	try:
-		param = param.decode(encoding)
-	except LookupError:
-		try:
-			param = param.decode((fallback_map or {}).get(encoding, "utf-8"))
-		except Exception:
-			pass
-	except Exception:
-		pass
-	return param
 
+	if not fields_to_expand:
+		return
 
-def as_unicode(text, encoding: str = "utf-8") -> str:
-	"""Convert to unicode if required."""
-	if isinstance(text, str):
-		return text
-	elif text is None:
-		return ""
-	elif isinstance(text, bytes):
-		return str(text, encoding)
-	else:
-		return str(text)
+	meta = frappe.get_meta(doctype)
 
+	link_fields = {f.fieldname: f for f in meta.get_link_fields() + meta.get_dynamic_link_fields()}
 
-def mock(type, size=1, locale="en"):
-	import faker
+	doctype_values = defaultdict(set)
+	field_to_doctype = {}
 
-	results = []
-	fake = faker.Faker(locale)
-	if type not in dir(fake):
-		raise ValueError("Not a valid mock type.")
-	else:
-		for _ in range(size):
-			data = getattr(fake, type)()
-			results.append(data)
+	for fieldname in fields_to_expand:
+		if fieldname not in link_fields:
+			continue
+		e = link_fields[fieldname]
+		link_doctype = e.options
+		field_to_doctype[fieldname] = link_doctype
 
-	from frappe.utils import squashify
+		for li in docs:
+			val = li.get(fieldname)
+			if val:
+				doctype_values[link_doctype].add(val)
 
-	return squashify(results)
+	doctype_title_maps = {}
 
+	for link_doctype, values in doctype_values.items():
+		records = frappe.get_list(
+			link_doctype,
+			filters={"name": ["in", list(values)]},
+			fields=["*"],
+		)
+		doctype_title_maps[link_doctype] = {r["name"]: r for r in records}
 
-# This is used in test to count memory overhead of default imports.
-def _get_rss_memory_usage():
-	import psutil
-
-	rss = psutil.Process().memory_info().rss // (1024 * 1024)
-	return rss
+	for li in docs:
+		for fieldname in fields_to_expand:
+			if fieldname not in field_to_doctype:
+				continue
+			link_doctype = field_to_doctype[fieldname]
+			val = li.get(fieldname)
+			val_title = doctype_title_maps.get(link_doctype, {}).get(val)
+			if val and val_title:
+				li[fieldname] = val_title

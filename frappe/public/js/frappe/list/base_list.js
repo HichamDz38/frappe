@@ -290,11 +290,7 @@ frappe.views.BaseList = class BaseList {
 	}
 
 	toggle_side_bar(show) {
-		let show_sidebar = show || JSON.parse(localStorage.show_sidebar || "true");
-		show_sidebar = !show_sidebar;
-		localStorage.show_sidebar = show_sidebar;
-		this.show_or_hide_sidebar();
-		$(document.body).trigger("toggleListSidebar");
+		frappe.app.sidebar.toggle_sidebar();
 	}
 
 	show_or_hide_sidebar() {
@@ -309,6 +305,7 @@ frappe.views.BaseList = class BaseList {
 				this.show_or_hide_sidebar,
 				this.setup_filter_area,
 				this.setup_sort_selector,
+				this.setup_result_container_area,
 				this.setup_result_area,
 				this.setup_no_result_area,
 				this.setup_freeze_area,
@@ -349,9 +346,23 @@ frappe.views.BaseList = class BaseList {
 		this.refresh();
 	}
 
+	/**
+	 * Sets up a result container area by appending a new `<div>` element with the class `result-container`
+	 * to the `frappe_list` container. This container is used to create a scrollable area for the result content.
+	 */
+	setup_result_container_area() {
+		if (this.view == "List") {
+			this.$frappe_list.append($(`<div class="result-container">`));
+		}
+	}
+
 	setup_result_area() {
 		this.$result = $(`<div class="result">`);
-		this.$frappe_list.append(this.$result);
+		let frappe_list = this.$frappe_list;
+		if (this.view == "List") {
+			frappe_list = this.$frappe_list.find(".result-container");
+		}
+		frappe_list.append(this.$result);
 	}
 
 	setup_no_result_area() {
@@ -438,14 +449,20 @@ frappe.views.BaseList = class BaseList {
 	}
 
 	set_result_height() {
+		if (this.view !== "List") return;
+		this.$result[0].style.removeProperty("height");
 		// place it at the footer of the page
-		this.$result.css({
-			height:
-				window.innerHeight -
-				this.$result.get(0).offsetTop -
-				this.$paging_area.get(0).offsetHeight +
-				"px",
+
+		const resultContainerHeight =
+			window.innerHeight -
+			this.$result.get(0).offsetTop -
+			this.$paging_area.get(0).offsetHeight;
+		this.$result.parent(".result-container").css({
+			height: resultContainerHeight - (frappe.is_mobile() ? 100 : 0) + "px",
 		});
+
+		this.$result[0].style.height =
+			Math.max(this.$result[0].offsetHeight, resultContainerHeight) + "px";
 		this.$no_result.css({
 			height: window.innerHeight - this.$no_result.get(0).offsetTop + "px",
 		});
@@ -594,6 +611,7 @@ frappe.views.BaseList = class BaseList {
 	}
 
 	toggle_result_area() {
+		this.$result.parent(".result-container").toggle(this.data.length > 0);
 		this.$result.toggle(this.data.length > 0);
 		this.$paging_area.toggle(this.data.length > 0);
 		this.$no_result.toggle(this.data.length == 0);
@@ -641,6 +659,40 @@ class FilterArea {
 			300
 		);
 		this.setup();
+		if (frappe.is_mobile()) this.setup_mobile(list_view);
+	}
+	setup_mobile(list_view) {
+		const me = this;
+		this.standard_filters_visible = false;
+		this.standard_filters_wrapper.hide();
+		this.list_view.page.page_form.css("justify-content", "flex-end");
+		$(`<button class="filter-toggle btn btn-default btn-sm filter-button">
+					<span class="filter-icon button-icon">
+						${frappe.utils.icon("funnel-plus")}
+					</span>
+				</button>
+			</div>`)
+			.prependTo(this.$filter_list_wrapper.find(".filter-selector"))
+			.on("click", function () {
+				me.toggle_standard_filter();
+			});
+		let children = list_view.page.page_form.children();
+		list_view.page.page_form.append(children.get().reverse());
+	}
+
+	toggle_standard_filter() {
+		if (this.standard_filters_visible) {
+			this.standard_filters_visible = false;
+			this.standard_filters_wrapper.hide();
+		} else {
+			this.standard_filters_visible = true;
+			this.standard_filters_wrapper.show();
+		}
+		let icon_name = !this.standard_filters_visible ? "funnel-plus" : "funnel-x";
+		this.$filter_list_wrapper
+			.find(".filter-toggle")
+			.find("use")
+			.attr("href", `#icon-${icon_name}`);
 	}
 
 	setup() {

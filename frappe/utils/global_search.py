@@ -219,9 +219,15 @@ def insert_values_for_multiple_docs(all_contents):
 		# ignoring duplicate keys for doctype_name
 		frappe.db.multisql(
 			{
-				"mariadb": """INSERT IGNORE INTO `__global_search`
+				"mariadb": """INSERT INTO `__global_search`
 				(doctype, name, content, published, title, route)
-				VALUES {} """.format(", ".join(batch_values)),
+				VALUES {}
+				ON DUPLICATE KEY UPDATE
+					content=VALUE(content),
+					published=VALUE(published),
+					title=VALUE(title),
+					route=VALUE(route)
+				""".format(", ".join(batch_values)),
 				"postgres": """INSERT INTO `__global_search`
 				(doctype, name, content, published, title, route)
 				VALUES {}
@@ -376,7 +382,7 @@ def sync_global_search():
 			yield value
 
 	item_generator = get_search_queue_item_generator()
-	while search_items := tuple(islice(item_generator, 10_000)):
+	while search_items := tuple(islice(item_generator, 1000)):
 		values = _get_deduped_search_item_values(search_items)
 		sync_values(values)
 
@@ -422,6 +428,7 @@ def sync_value_in_queue(value):
 		frappe.cache.lpush("global_search_queue", json.dumps(value))
 	except redis.exceptions.ConnectionError:
 		# not connected, sync directly
+		assert not frappe.flags.in_test, "Should not fail silently in tests"
 		sync_value(value)
 
 

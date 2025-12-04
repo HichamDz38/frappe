@@ -68,6 +68,10 @@ const argv = yargs
 		description:
 			"Skips build and uses cached build artifacts to update assets.json (used by Bench)",
 	})
+	.option("esbuild-target", {
+		type: "string",
+		description: "Specifies the target of the build output.",
+	})
 	.example("node esbuild --apps frappe,erpnext", "Run build only for frappe and erpnext")
 	.example(
 		"node esbuild --files frappe/website.bundle.js,frappe/desk.bundle.js",
@@ -82,6 +86,7 @@ const FILES_TO_BUILD = argv.files ? argv.files.split(",") : [];
 const WATCH_MODE = Boolean(argv.watch);
 const PRODUCTION = Boolean(argv.production);
 const RUN_BUILD_COMMAND = !WATCH_MODE && Boolean(argv["run-build-command"]);
+const ESBUILD_TARGET = argv["esbuild-target"] || "es2017";
 
 const TOTAL_BUILD_TIME = `${chalk.black.bgGreen(" DONE ")} Total Build Time`;
 const NODE_PATHS = [].concat(
@@ -313,7 +318,7 @@ function get_build_options(files, outdir, plugins) {
 	return {
 		entryPoints: files,
 		entryNames: "[dir]/[name].[hash]",
-		target: ["es2017"],
+		target: [ESBUILD_TARGET],
 		outdir,
 		sourcemap: true,
 		bundle: true,
@@ -472,6 +477,11 @@ async function write_assets_json(metafile) {
 }
 
 async function update_assets_json_in_cache() {
+	// Redis won't be present during docker image build
+	if (process.env.FRAPPE_DOCKER_BUILD) {
+		return;
+	}
+
 	// update assets_json cache in redis, so that it can be read directly by python
 	let client = get_redis_subscriber("redis_cache");
 	// handle error event to avoid printing stack traces
@@ -523,7 +533,7 @@ function run_build_command_for_apps(apps) {
 			log(
 				`\nInstalling dependencies for ${chalk.bold(app)} (because node_modules not found)`
 			);
-			execSync("yarn install", { encoding: "utf8", stdio: "inherit" });
+			execSync("yarn install --frozen-lockfile", { encoding: "utf8", stdio: "inherit" });
 		}
 
 		log("\nRunning build command for", chalk.bold(app));

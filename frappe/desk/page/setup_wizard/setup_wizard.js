@@ -32,7 +32,7 @@ frappe.setup = {
 
 frappe.pages["setup-wizard"].on_page_load = function (wrapper) {
 	if (frappe.boot.setup_complete) {
-		window.location.href = frappe.boot.apps_data.default_path || "/app";
+		window.location.href = frappe.boot.apps_data.default_path || "/desk";
 	}
 	let requires = frappe.boot.setup_wizard_requires || [];
 	frappe.require(requires, function () {
@@ -63,6 +63,13 @@ frappe.pages["setup-wizard"].on_page_show = function () {
 };
 
 frappe.setup.on("before_load", function () {
+	if (
+		frappe.boot.setup_wizard_completed_apps?.length &&
+		frappe.boot.setup_wizard_completed_apps.includes("frappe")
+	) {
+		return;
+	}
+
 	// load slides
 	frappe.setup.slides_settings.forEach((s) => {
 		if (!(s.name === "user" && frappe.boot.developer_mode)) {
@@ -207,7 +214,12 @@ frappe.setup.SetupWizard = class SetupWizard extends frappe.ui.Slides {
 		}
 		setTimeout(function () {
 			// Reload
-			window.location.href = frappe.boot.apps_data.default_path || "/app";
+			let current_route = localStorage.current_route;
+
+			localStorage.current_route = "";
+			localStorage.current_app = "";
+
+			window.location.href = current_route || frappe.boot.apps_data.default_path || "/desk";
 		}, 2000);
 	}
 
@@ -219,7 +231,7 @@ frappe.setup.SetupWizard = class SetupWizard extends frappe.ui.Slides {
 			? frappe.last_response.setup_wizard_failure_message
 			: __("Failed to complete setup");
 
-		this.update_setup_message(__("Could not start up: ") + fail_msg);
+		this.update_setup_message(__("Could not start up:") + " " + fail_msg);
 
 		this.$working_state.find(".title").html(__("Setup failed"));
 
@@ -412,6 +424,13 @@ frappe.setup.slides_settings = [
 				label: __("Allow sending usage data for improving applications"),
 				fieldtype: "Check",
 				default: cint(frappe.telemetry.can_enable()),
+				depends_on: "eval:frappe.telemetry.can_enable()",
+			},
+			{
+				fieldname: "allow_recording_first_session",
+				label: __("Allow recording my first session to improve user experience"),
+				fieldtype: "Check",
+				default: 0,
 				depends_on: "eval:frappe.telemetry.can_enable()",
 			},
 		],
@@ -653,6 +672,7 @@ frappe.setup.utils = {
 		slide.get_input("country").on("change", function () {
 			let data = frappe.setup.data.regional_data;
 			let country = slide.get_input("country").val();
+			country = country.replace(/\s*\([^)]*\)/, "");
 			if (!(country in data.country_info)) return;
 
 			let $timezone = slide.get_input("timezone");

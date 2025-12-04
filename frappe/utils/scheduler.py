@@ -37,7 +37,7 @@ def cprint(*args, **kwargs):
 
 def start_scheduler() -> NoReturn:
 	"""Run enqueue_events_for_all_sites based on scheduler tick.
-	Specify scheduler_interval in seconds in common_site_config.json"""
+	Specify scheduler_tick_interval in seconds in common_site_config.json"""
 
 	tick = get_scheduler_tick()
 	set_niceness()
@@ -170,9 +170,7 @@ def is_scheduler_disabled(verbose=True) -> bool:
 			cprint(f"{frappe.local.site}: frappe.conf.disable_scheduler is SET")
 		return True
 
-	scheduler_disabled = not frappe.utils.cint(
-		frappe.db.get_single_value("System Settings", "enable_scheduler")
-	)
+	scheduler_disabled = not frappe.get_system_settings("enable_scheduler")
 	if scheduler_disabled:
 		if verbose:
 			cprint(f"{frappe.local.site}: SystemSettings.enable_scheduler is UNSET")

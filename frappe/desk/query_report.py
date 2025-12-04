@@ -14,8 +14,9 @@ from frappe.desk.reportview import clean_params, parse_json
 from frappe.model.utils import render_include
 from frappe.modules import get_module_path, scrub
 from frappe.monitor import add_data_to_monitor
-from frappe.permissions import get_role_permissions, has_permission
+from frappe.permissions import get_role_permissions, get_roles, has_permission
 from frappe.utils import cint, cstr, flt, format_duration, get_html_format, sbool
+from frappe.utils.caching import request_cache
 
 
 def get_report_doc(report_name):
@@ -198,10 +199,11 @@ def run(
 	is_tree=False,
 	parent_field=None,
 	are_default_filters=True,
+	js_filters=None,
 ):
 	if not user:
 		user = frappe.session.user
-	validate_filters_permissions(report_name, filters, user)
+	validate_filters_permissions(report_name, filters, user, js_filters)
 	report = get_report_doc(report_name)
 	if not frappe.has_permission(report.ref_doctype, "report"):
 		frappe.msgprint(
@@ -312,7 +314,7 @@ def get_prepared_report_result(report, filters, dn="", user=None):
 @frappe.whitelist()
 def export_query():
 	"""export from query reports"""
-	from frappe.desk.utils import get_csv_bytes, pop_csv_params, provide_binary_file
+	from frappe.desk.utils import pop_csv_params
 
 	form_params = frappe._dict(frappe.local.form_dict)
 	csv_params = pop_csv_params(form_params)
@@ -324,11 +326,48 @@ def export_query():
 		raise_exception=True,
 	)
 
+	export_in_background = int(form_params.export_in_background or 0)
+	if export_in_background:
+		user = frappe.session.user
+		user_email = frappe.get_cached_value("User", user, "email")
+		frappe.enqueue(
+			"frappe.desk.query_report.run_export_query_job",
+			user_email=user_email,
+			form_params=form_params,
+			csv_params=csv_params,
+			queue="long",
+			now=frappe.flags.in_test,
+		)
+		frappe.msgprint(
+			_(
+				"Your report is being generated in the background. You will receive an email on {0} with a download link once it is ready."
+			).format(user_email)
+		)
+		return
+
+	return _export_query(form_params, csv_params)
+
+
+def run_export_query_job(user_email: str, form_params, csv_params):
+	from frappe.desk.utils import send_report_email
+
+	report_name, file_extension, content = _export_query(form_params, csv_params, populate_response=False)
+	send_report_email(
+		user_email, report_name, file_extension, content, attached_to_name=form_params.report_name
+	)
+
+
+def _export_query(form_params, csv_params, populate_response=True):
+	from frappe.desk.utils import get_csv_bytes, provide_binary_file
+	from frappe.utils.xlsxutils import handle_html, make_xlsx
+
+	report_name = form_params.report_name
 	file_format_type = form_params.file_format_type
 	custom_columns = frappe.parse_json(form_params.custom_columns or "[]")
 	include_indentation = form_params.include_indentation
 	include_filters = form_params.include_filters
 	visible_idx = form_params.visible_idx
+	include_hidden_columns = form_params.include_hidden_columns
 
 	if isinstance(visible_idx, str):
 		visible_idx = json.loads(visible_idx)
@@ -346,15 +385,20 @@ def export_query():
 
 	format_fields(data)
 	xlsx_data, column_widths = build_xlsx_data(
-		data, visible_idx, include_indentation, include_filters=include_filters
+		data,
+		visible_idx,
+		include_indentation,
+		include_filters=include_filters,
+		include_hidden_columns=include_hidden_columns,
 	)
 
 	if file_format_type == "CSV":
-		content = get_csv_bytes(xlsx_data, csv_params)
+		content = get_csv_bytes(
+			[[handle_html(frappe.as_unicode(v)) if isinstance(v, str) else v for v in r] for r in xlsx_data],
+			csv_params,
+		)
 		file_extension = "csv"
 	elif file_format_type == "Excel":
-		from frappe.utils.xlsxutils import make_xlsx
-
 		file_extension = "xlsx"
 		content = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths).getvalue()
 
@@ -369,7 +413,10 @@ def export_query():
 			if valid_report_name(report_name, suffix):
 				report_name += suffix
 
-	provide_binary_file(report_name, file_extension, content)
+	if not populate_response:
+		return report_name, file_extension, content
+
+	provide_binary_file(_(report_name), file_extension, content)
 
 
 def valid_report_name(report_name, suffix):
@@ -392,7 +439,14 @@ def format_fields(data: frappe._dict) -> None:
 					row[index] = round(row[index], col.get("precision"))
 
 
-def build_xlsx_data(data, visible_idx, include_indentation, include_filters=False, ignore_visible_idx=False):
+def build_xlsx_data(
+	data,
+	visible_idx,
+	include_indentation,
+	include_filters=False,
+	ignore_visible_idx=False,
+	include_hidden_columns=False,
+):
 	EXCEL_TYPES = (
 		str,
 		bool,
@@ -415,6 +469,9 @@ def build_xlsx_data(data, visible_idx, include_indentation, include_filters=Fals
 	result = []
 	column_widths = []
 
+	include_hidden_columns = cint(include_hidden_columns)
+	include_indentation = cint(include_indentation)
+
 	if cint(include_filters):
 		filter_data = []
 		filters = data.filters
@@ -432,7 +489,7 @@ def build_xlsx_data(data, visible_idx, include_indentation, include_filters=Fals
 
 	column_data = []
 	for column in data.columns:
-		if column.get("hidden"):
+		if column.get("hidden") and not include_hidden_columns:
 			continue
 		column_data.append(_(column.get("label")))
 		column_width = cint(column.get("width", 0))
@@ -444,25 +501,29 @@ def build_xlsx_data(data, visible_idx, include_indentation, include_filters=Fals
 	# build table from result
 	for row_idx, row in enumerate(data.result):
 		# only pick up rows that are visible in the report
-		if ignore_visible_idx or row_idx in visible_idx:
-			row_data = []
-			if isinstance(row, dict):
-				for col_idx, column in enumerate(data.columns):
-					if column.get("hidden"):
-						continue
-					label = column.get("label")
-					fieldname = column.get("fieldname")
-					cell_value = row.get(fieldname, row.get(label, ""))
-					if not isinstance(cell_value, EXCEL_TYPES):
-						cell_value = cstr(cell_value)
+		if not ignore_visible_idx and row_idx not in visible_idx:
+			continue
 
-					if cint(include_indentation) and "indent" in row and col_idx == 0:
-						cell_value = ("    " * cint(row["indent"])) + cstr(cell_value)
-					row_data.append(cell_value)
-			elif row:
-				row_data = row
+		row_data = []
+		row_is_dict = isinstance(row, dict)
 
-			result.append(row_data)
+		for col_idx, column in enumerate(data.columns):
+			if column.get("hidden") and not include_hidden_columns:
+				continue
+
+			label = column.get("label")
+			fieldname = column.get("fieldname")
+			cell_value = row.get(fieldname, row.get(label, "")) if row_is_dict else row[col_idx]
+
+			if not isinstance(cell_value, EXCEL_TYPES):
+				cell_value = cstr(cell_value)
+
+			if row_is_dict and include_indentation and "indent" in row and col_idx == 0:
+				cell_value = ("    " * cint(row["indent"])) + cstr(cell_value)
+
+			row_data.append(cell_value)
+
+		result.append(row_data)
 
 	return result, column_widths
 
@@ -620,8 +681,19 @@ def get_filtered_data(ref_doctype, columns, data, user):
 	shared = frappe.share.get_shared(ref_doctype, user)
 	columns_dict = get_columns_dict(columns)
 
-	role_permissions = get_role_permissions(frappe.get_meta(ref_doctype), user)
+	ref_doctype_meta = frappe.get_meta(ref_doctype)
+
+	role_permissions = get_role_permissions(ref_doctype_meta, user)
 	if_owner = role_permissions.get("if_owner", {}).get("report")
+
+	if ref_doctype_meta.get_masked_fields():
+		from frappe.model.db_query import mask_field_value
+
+		# Apply masking to the fields
+		for field in ref_doctype_meta.get_masked_fields():
+			for row in data:
+				val = row.get(field.fieldname)
+				row[field.fieldname] = mask_field_value(field, val)
 
 	if match_filters_per_doctype:
 		for row in data:
@@ -706,6 +778,9 @@ def has_match(
 						match = False
 						break
 
+					if match:
+						match = has_unrestricted_read_access(doctype=ref_doctype, user=frappe.session.user)
+
 				# each doctype could have multiple conflicting user permission doctypes, hence using OR
 				# so that even if one of the sets allows a match, it is true
 				matched_for_doctype = matched_for_doctype or match
@@ -720,6 +795,32 @@ def has_match(
 			break
 
 	return resultant_match
+
+
+@request_cache
+def has_unrestricted_read_access(doctype, user):
+	roles = get_roles(user)
+
+	permission_filters = {
+		"parent": doctype,
+		"role": ["in", roles],
+		"permlevel": 0,
+		"read": 1,
+		"if_owner": 0,
+	}
+
+	standard_perm_exists = frappe.db.exists(
+		"DocPerm",
+		permission_filters,
+	)
+
+	custom_perm_exists = frappe.db.exists(
+		"Custom DocPerm",
+		permission_filters,
+	)
+
+	has_perm = bool(custom_perm_exists or standard_perm_exists)
+	return has_perm
 
 
 def get_linked_doctypes(columns, data):
@@ -811,25 +912,34 @@ def get_user_match_filters(doctypes, user):
 	return match_filters
 
 
-def validate_filters_permissions(report_name, filters=None, user=None):
+def validate_filters_permissions(report_name, filters=None, user=None, js_filters=None):
 	if not filters:
 		return
+
+	if js_filters is None:
+		js_filters = []
+
+	if isinstance(js_filters, str):
+		js_filters = json.loads(js_filters)
 
 	if isinstance(filters, str):
 		filters = json.loads(filters)
 
 	report = frappe.get_doc("Report", report_name)
-	for field in report.filters:
-		if field.fieldname in filters and field.fieldtype == "Link":
-			linked_doctype = field.options
+
+	for field in report.filters + js_filters:
+		if hasattr(field, "as_dict"):
+			field = field.as_dict()
+		if field.get("fieldname") in filters and field.get("fieldtype") == "Link":
+			linked_doctype = field.get("options")
 			if not has_permission(
-				doctype=linked_doctype, ptype="read", doc=filters[field.fieldname], user=user
+				doctype=linked_doctype, ptype="read", doc=filters[field.get("fieldname")], user=user
 			) and not has_permission(
-				doctype=linked_doctype, ptype="select", doc=filters[field.fieldname], user=user
+				doctype=linked_doctype, ptype="select", doc=filters[field.get("fieldname")], user=user
 			):
 				frappe.throw(
 					_("You do not have permission to access {0}: {1}.").format(
-						linked_doctype, filters[field.fieldname]
+						linked_doctype, filters[field.get("fieldname")]
 					)
 				)
 

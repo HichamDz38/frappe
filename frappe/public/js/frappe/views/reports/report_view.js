@@ -20,6 +20,8 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 		this.page_title = __("Report:") + " " + this.page_title;
 		this.view = "Report";
 
+		this.link_title_doctype_fields = [];
+
 		const route = frappe.get_route();
 		if (route.length === 4) {
 			this.report_name = route[3];
@@ -59,11 +61,15 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 	}
 
 	setup_events() {
+		const me = this;
 		if (this.list_view_settings?.disable_auto_refresh) {
 			return;
 		}
 		frappe.realtime.doctype_subscribe(this.doctype);
 		frappe.realtime.on("list_update", (data) => this.on_update(data));
+		this.page.actions_btn_group.on("show.bs.dropdown", () => {
+			me.toggle_workflow_actions();
+		});
 	}
 
 	setup_page() {
@@ -102,9 +108,9 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 		const message = __(
 			"For comparison, use >5, <10 or =324. For ranges, use 5:10 (for values between 5 & 10)."
 		);
-		this.$paging_area
-			.find(".level-left")
-			.after(`<span class="comparison-message text-extra-muted">${message}</span>`);
+		this.$paging_area.before(
+			`<span class="comparison-message text-extra-muted">${message}</span>`
+		);
 	}
 
 	setup_sort_selector() {
@@ -150,6 +156,30 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 		if (!this.group_by) {
 			this.init_chart();
 		}
+
+		this.set_link_title_field_value();
+	}
+
+	set_link_title_field_value() {
+		Object.keys(this.link_title_doctype_fields).forEach(async (key) => {
+			let link_title = await this.get_link_title_field_value(
+				this.link_title_doctype_fields[key],
+				key
+			);
+
+			if (link_title !== undefined) {
+				document.querySelectorAll(`a[data-name="${key}"]`).forEach((el) => {
+					el.innerHTML = link_title;
+				});
+			}
+		});
+	}
+
+	async get_link_title_field_value(doctype, value) {
+		return (
+			frappe.utils.get_link_title(doctype, value) ||
+			(await frappe.utils.fetch_link_title(doctype, value))
+		);
 	}
 
 	set_dirty_state_for_custom_report() {
@@ -1173,6 +1203,14 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 				if (Array.isArray(row)) {
 					doc = row.reduce((acc, curr) => {
 						if (!curr.column.docfield) return acc;
+
+						if (
+							curr.column.docfield.fieldtype == "Link" &&
+							frappe.boot.link_title_doctypes.includes(curr.column.docfield.options)
+						) {
+							this.link_title_doctype_fields[curr.content] =
+								curr.column.docfield.options;
+						}
 						acc[curr.column.docfield.fieldname] = curr.content;
 						return acc;
 					}, {});
@@ -1547,7 +1585,10 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 						fields: this.get_dialog_fields(),
 						primary_action: (values) => {
 							// doctype fields
-							let fields = values[this.doctype].map((f) => [f, this.doctype]);
+							let fields = (values[this.doctype] || []).map((f) => [
+								f,
+								this.doctype,
+							]);
 							delete values[this.doctype];
 
 							// child table fields
@@ -1571,6 +1612,18 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 							d.hide();
 						},
 					});
+
+					const $bulk = $(`
+						<div class="mb-3">
+							<button class="btn btn-default btn-xs" data-action="select_all">${__("Select All")}</button>
+							<button class="btn btn-default btn-xs" data-action="unselect_all">${__("Unselect All")}</button>
+						</div>
+					`);
+					const toggleAll = (checked) =>
+						d.$wrapper.find(":checkbox").prop("checked", checked).trigger("change");
+					$bulk.on("click", "[data-action=select_all]", () => toggleAll(true));
+					$bulk.on("click", "[data-action=unselect_all]", () => toggleAll(false));
+					d.$body.prepend($bulk);
 
 					d.$body.prepend(`
 						<div class="columns-search">
@@ -1652,8 +1705,15 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 								delete args.start;
 								delete args.page_length;
 							}
-
-							open_url_post(frappe.request.url, args);
+							args.export_in_background = data.export_in_background;
+							if (data.export_in_background) {
+								frappe.call({
+									method: args.cmd,
+									args,
+								});
+							} else {
+								open_url_post(frappe.request.url, args);
+							}
 
 							d.hide();
 						}

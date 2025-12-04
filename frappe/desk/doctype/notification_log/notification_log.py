@@ -24,9 +24,10 @@ class NotificationLog(Document):
 		document_name: DF.Data | None
 		document_type: DF.Link | None
 		email_content: DF.TextEditor | None
+		email_header: DF.Data | None
 		for_user: DF.Link | None
 		from_user: DF.Link | None
-		link: DF.Data | None
+		link: DF.SmallText | None
 		read: DF.Check
 		subject: DF.Text | None
 		type: DF.Literal["", "Mention", "Assignment", "Share", "Alert"]
@@ -93,8 +94,8 @@ def enqueue_create_notification(users: list[str] | str, doc: dict):
 		"frappe.desk.doctype.notification_log.notification_log.make_notification_logs",
 		doc=doc,
 		users=users,
-		now=frappe.flags.in_test,
-		enqueue_after_commit=not frappe.flags.in_test,
+		now=frappe.in_test,
+		enqueue_after_commit=not frappe.in_test,
 	)
 
 
@@ -140,7 +141,7 @@ def send_notification_email(doc: NotificationLog):
 		template="new_notification",
 		args=args,
 		header=[header, "orange"],
-		now=frappe.flags.in_test,
+		now=frappe.in_test,
 	)
 
 
@@ -152,13 +153,21 @@ def get_email_header(doc, language: str | None = None):
 		"Assignment": _("Assignment Update on {0}", lang=language).format(docname),
 		"Share": _("New Document Shared {0}", lang=language).format(docname),
 	}
+	if not doc.email_header:
+		doc.email_header = header_map[doc.type or "Default"]
+	return doc.email_header
 
-	return header_map[doc.type or "Default"]
+
+def format_email_header(header_map, language, docname):
+	messages = []
+	for v in list(header_map.values()):
+		messages.append(_(v[0], lang=language).format(docname))
+	return dict(zip(header_map.keys(), messages, strict=True))
 
 
 @frappe.whitelist()
 @http_cache(max_age=60, stale_while_revalidate=60 * 60)
-def get_notification_logs(limit=20):
+def get_notification_logs(limit: int = 20):
 	notification_logs = frappe.db.get_list(
 		"Notification Log", fields=["*"], limit=limit, order_by="creation desc"
 	)

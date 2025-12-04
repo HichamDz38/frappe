@@ -27,7 +27,10 @@
 @import "global_search";
 @import "desktop";
 @import "../common/awesomeplete";
+@import "main";
 @import "sidebar";
+@import "list_sidebar";
+@import "form_sidebar";
 @import "filters";
 @import "list";
 @import "report";
@@ -49,3 +52,5 @@
 @import "../common/quill";
 @import "plyr";
 @import "version";
+@import "menu";
+@import "sidebar_header";

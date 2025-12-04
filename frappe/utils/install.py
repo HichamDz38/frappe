@@ -45,7 +45,6 @@ def after_install():
 		# only set home_page if the value doesn't exist in the db
 		if not frappe.db.get_default("desktop:home_page"):
 			frappe.db.set_default("desktop:home_page", "setup-wizard")
-			frappe.db.set_single_value("System Settings", "setup_complete", 0)
 
 	# clear test log
 	from frappe.tests.utils.generators import _clear_test_log
@@ -90,7 +89,6 @@ def install_basic_docs():
 			"thread_notify": 0,
 			"send_me_a_copy": 0,
 		},
-		{"doctype": "Role", "role_name": "Translator"},
 		{
 			"doctype": "Workflow State",
 			"workflow_state_name": "Pending",
@@ -136,7 +134,7 @@ def before_tests():
 	frappe.clear_cache()
 
 	# complete setup if missing
-	if not cint(frappe.db.get_single_value("System Settings", "setup_complete")):
+	if not frappe.is_setup_complete():
 		complete_setup_wizard()
 
 	frappe.db.set_single_value("Website Settings", "disable_signup", 0)
@@ -178,3 +176,48 @@ def add_standard_navbar_items():
 		navbar_settings.append("help_dropdown", item)
 
 	navbar_settings.save()
+
+
+def auto_generate_icons_and_sidebar(app_name=None):
+	"""Auto Create desktop icons and workspace sidebars."""
+	from frappe.desk.doctype.desktop_icon.desktop_icon import create_desktop_icons
+	from frappe.desk.doctype.workspace_sidebar.workspace_sidebar import (
+		create_workspace_sidebar_for_workspaces,
+	)
+
+	try:
+		print("Creating Desktop Icons")
+		create_desktop_icons()
+		print("Creating Workspace Sidebars")
+		create_workspace_sidebar_for_workspaces()
+		# Save the generated icons
+		frappe.db.commit()  # nosemgrep
+		# Save the genreated sidebar links
+		frappe.db.commit()  # nosemgrep
+	except Exception as e:
+		print(f"Error creating icons {e}")
+
+
+def delete_desktop_icon_and_sidebar(app_name, dry_run=False):
+	frappe.get_hooks(app_name=app_name)
+	app_title = frappe.get_hooks(app_name=app_name)["app_title"][0]
+	icons_to_be_deleted = frappe.get_all(
+		"Desktop Icon",
+		pluck="name",
+		or_filters=[
+			["Desktop Icon", "name", "=", app_title],
+			["Desktop Icon", "parent_icon", "=", app_title],
+		],
+	)
+	print("Deleting Desktop Icons")
+	for icon in icons_to_be_deleted:
+		frappe.delete_doc_if_exists("Desktop Icon", icon)
+	# Delete icons
+	sidebar_to_be_deleted = frappe.get_all("Workspace Sidebar", pluck="name", filters={"app": app_name})
+	print("Deleting Workspace Sidebars")
+	for icon in sidebar_to_be_deleted:
+		frappe.delete_doc_if_exists("Workspace Sidebar", icon)
+
+	if dry_run:
+		# Delete icons and sidebars
+		frappe.db.commit()  # nosemgrep

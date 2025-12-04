@@ -61,6 +61,7 @@
   "form_sidebar",
   "timeline",
   "dashboard",
+  "show_absolute_datetime_in_timeline",
   "change_password",
   "new_password",
   "logout_all_sessions",
@@ -110,7 +111,9 @@
   "column_break_65",
   "api_secret",
   "onboarding_status",
-  "connections_tab"
+  "connections_tab",
+  "sessions_tab",
+  "active_sessions"
  ],
  "fields": [
   {
@@ -600,6 +603,7 @@
    "unique": 1
   },
   {
+   "description": "<a href=\"https://docs.frappe.io/framework/user/en/api/rest#1-token-based-authentication\" target=\"_blank\">\n  Click here to learn about token-based authentication\n</a>",
    "fieldname": "generate_keys",
    "fieldtype": "Button",
    "label": "Generate Keys",
@@ -827,6 +831,25 @@
    "fieldname": "dashboard",
    "fieldtype": "Check",
    "label": "Dashboard"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_absolute_datetime_in_timeline",
+   "fieldtype": "Check",
+   "label": "Show Absolute Datetime in Timeline"
+  },
+  {
+   "fieldname": "sessions_tab",
+   "fieldtype": "Tab Break",
+   "label": "Sessions"
+  },
+  {
+   "depends_on": "eval:doc.name == frappe.session.user",
+   "fieldname": "active_sessions",
+   "fieldtype": "Table",
+   "is_virtual": 1,
+   "label": "Active Sessions",
+   "options": "User Session Display"
   }
  ],
  "icon": "fa fa-user",
@@ -836,11 +859,6 @@
   {
    "group": "Profile",
    "link_doctype": "Contact",
-   "link_fieldname": "user"
-  },
-  {
-   "group": "Profile",
-   "link_doctype": "Blogger",
    "link_fieldname": "user"
   },
   {
@@ -885,7 +903,7 @@
   }
  ],
  "make_attachments_public": 1,
- "modified": "2025-03-17 11:29:39.254304",
+ "modified": "2025-11-07 17:18:37.858564",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",

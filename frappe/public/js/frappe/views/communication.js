@@ -55,9 +55,7 @@ frappe.views.CommunicationComposer = class {
 				reqd: 0,
 				fieldname: "recipients",
 				default: this.get_default_recipients("recipients"),
-				onchange: function () {
-					me.sanitize_emails(this);
-				},
+				ignore_validation: true,
 			},
 			{
 				fieldtype: "Button",
@@ -77,18 +75,14 @@ frappe.views.CommunicationComposer = class {
 				fieldtype: "MultiSelect",
 				fieldname: "cc",
 				default: this.get_default_recipients("cc"),
-				onchange: function () {
-					me.sanitize_emails(this);
-				},
+				ignore_validation: true,
 			},
 			{
 				label: __("BCC", null, "Email Recipients"),
 				fieldtype: "MultiSelect",
 				fieldname: "bcc",
 				default: this.get_default_recipients("bcc"),
-				onchange: function () {
-					me.sanitize_emails(this);
-				},
+				ignore_validation: true,
 			},
 			{
 				label: __("Schedule Send At"),
@@ -341,8 +335,11 @@ frappe.views.CommunicationComposer = class {
 			if (this.last_email.sender == this.sender) {
 				this.recipients = this.last_email.recipients;
 			}
-			this.cc = this.last_email.cc;
-			this.bcc = this.last_email.bcc;
+
+			if (this.reply_all) {
+				this.cc = this.last_email.cc;
+				this.bcc = this.last_email.bcc;
+			}
 		}
 
 		if (!this.forward && !this.recipients) {
@@ -767,8 +764,8 @@ frappe.views.CommunicationComposer = class {
 		const me = this;
 		this.dialog.hide();
 
-		if (!form_values.recipients) {
-			frappe.msgprint(__("Enter Email Recipient(s)"));
+		if (!form_values.recipients && !form_values.cc && !form_values.bcc) {
+			frappe.msgprint(__("Enter Email Recipient(s) in the To, CC, or BCC fields"));
 			return;
 		}
 
@@ -979,17 +976,5 @@ frappe.views.CommunicationComposer = class {
 
 		const text = frappe.utils.html2text(html);
 		return text.replace(/\n{3,}/g, "\n\n");
-	}
-
-	sanitize_emails(control) {
-		let emails = control.get_value();
-		if (!emails) return;
-		let sanitized = emails
-			.split(",")
-			.map((email) => frappe.utils.xss_sanitise(email.trim()))
-			.join(",");
-		if (sanitized != emails) {
-			control.set_value(sanitized);
-		}
 	}
 };
