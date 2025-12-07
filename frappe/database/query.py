@@ -1,5 +1,6 @@
 import datetime
 import re
+import warnings
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
@@ -227,6 +228,7 @@ class Engine:
 		if self.apply_permissions:
 			self.check_read_permission()
 
+		is_select = False
 		if update:
 			self.query = qb.update(self.table, immutable=False)
 		elif into:
@@ -236,6 +238,7 @@ class Engine:
 		else:
 			self.query = qb.from_(self.table, immutable=False)
 			self.apply_fields(fields)
+			is_select = True
 
 		self.apply_filters(filters)
 		self.apply_or_filters(or_filters)
@@ -260,7 +263,19 @@ class Engine:
 			self.apply_group_by(group_by)
 
 		if order_by:
-			self.apply_order_by(order_by)
+			if not (
+				self.is_postgres and is_select and (distinct or group_by)
+			):  # ignore in Postgres since order by fields need to appear in select distinct
+				self.apply_order_by(order_by)
+			else:
+				warnings.warn(
+					(
+						"ORDER BY fields have been ignored because PostgreSQL requires them to "
+						"appear in the SELECT list when using DISTINCT or GROUP BY."
+					),
+					UserWarning,
+					stacklevel=2,
+				)
 
 		if self.apply_permissions:
 			self.add_permission_conditions()
@@ -512,7 +527,12 @@ class Engine:
 			)
 			return operator_fn(_field, nodes or ("",))
 
-		operator_fn = OPERATOR_MAP[_operator.casefold()]
+		if (
+			self.is_postgres and _operator.casefold() == "like"
+		):  # use `ILIKE` to support case insensitive search in postgres
+			operator_fn = OPERATOR_MAP["ilike"]
+		else:
+			operator_fn = OPERATOR_MAP[_operator.casefold()]
 		if _value is None and isinstance(_field, Field):
 			if operator_fn == builtin_operator.ne:
 				filter_field_name = (
@@ -1425,7 +1445,7 @@ class Engine:
 		if fieldtype == "Time":
 			return "'00:00:00'"
 
-		if fieldtype in ("Float", "Int", "Currency", "Percent"):
+		if fieldtype in ("Float", "Int", "Currency", "Percent", "Check"):
 			return "0"
 
 		try:

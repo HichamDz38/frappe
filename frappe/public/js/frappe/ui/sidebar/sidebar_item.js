@@ -4,7 +4,10 @@ frappe.ui.sidebar_item.TypeLink = class SidebarItem {
 		this.item = opts.item;
 		this.container = opts.container;
 		this.nested_items = opts.item.nested_items || [];
-		this.workspace_title = $(".body-sidebar").attr("data-title").toLowerCase();
+		this.workspace_title =
+			($(".body-sidebar").attr("data-title") &&
+				$(".body-sidebar").attr("data-title").toLowerCase()) ||
+			frappe.app.sidebar.sidebar_title;
 		this.prepare(opts);
 		this.make();
 	}

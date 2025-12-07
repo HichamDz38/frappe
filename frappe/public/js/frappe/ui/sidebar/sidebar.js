@@ -26,6 +26,7 @@ frappe.ui.Sidebar = class Sidebar {
 
 	prepare() {
 		try {
+			this.add_standard_items();
 			this.sidebar_data = frappe.boot.workspace_sidebar_item[this.workspace_title];
 			this.workspace_sidebar_items = this.sidebar_data.items;
 			if (this.edit_mode) {
@@ -213,7 +214,6 @@ frappe.ui.Sidebar = class Sidebar {
 	}
 	create_sidebar(items) {
 		this.empty();
-		this.add_standard_items(items);
 		if (items && items.length > 0) {
 			items.forEach((w) => {
 				if (!w.display_depends_on || frappe.utils.eval(w.display_depends_on)) {
@@ -403,9 +403,11 @@ frappe.ui.Sidebar = class Sidebar {
 				if (sidebars.length == 0) {
 					let module_name = router.meta?.module;
 					if (module_name) {
-						frappe.app.sidebar.setup(
-							this.sidebar_module_map[module_name][0] || module_name
-						);
+						let sidebar_title =
+							(this.sidebar_module_map[module_name] &&
+								this.sidebar_module_map[module_name][0]) ||
+							module_name;
+						frappe.app.sidebar.setup(sidebar_title);
 					}
 				} else {
 					if (this.sidebar_title && sidebars.includes(this.workspace_title)) {
