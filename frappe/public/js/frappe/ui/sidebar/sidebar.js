@@ -136,6 +136,8 @@ frappe.ui.Sidebar = class Sidebar {
 		this.wrapper = $(
 			frappe.render_template("sidebar", {
 				expanded: this.sidebar_expanded,
+				avatar: frappe.avatar(frappe.session.user, "avatar-medium"),
+				navbar_settings: frappe.boot.navbar_settings,
 			})
 		).prependTo("body");
 		this.$sidebar = this.wrapper.find(".sidebar-items");
@@ -238,7 +240,7 @@ frappe.ui.Sidebar = class Sidebar {
 		this.standard_items = [];
 		if (!frappe.is_mobile()) {
 			this.standard_items.push({
-				label: "Search",
+				label: __("Search"),
 				icon: "search",
 				type: "Button",
 				id: "navbar-modal-search",
@@ -249,7 +251,7 @@ frappe.ui.Sidebar = class Sidebar {
 			});
 		}
 		this.standard_items.push({
-			label: "Notification",
+			label: __("Notification"),
 			icon: "bell",
 			type: "Button",
 			class: "sidebar-notification hidden",
@@ -318,24 +320,26 @@ frappe.ui.Sidebar = class Sidebar {
 		if (this.sidebar_expanded) {
 			this.wrapper.addClass("expanded");
 			// this.sidebar_expanded = false
-			direction = "left";
+			direction = "right";
 			$('[data-toggle="tooltip"]').tooltip("dispose");
+			this.wrapper.find(".avatar-name-email").show();
 		} else {
 			this.wrapper.removeClass("expanded");
 			// this.sidebar_expanded = true
-			direction = "right";
+			direction = "left";
 			$('[data-toggle="tooltip"]').tooltip({
 				boundary: "window",
 				container: "body",
 				trigger: "hover",
 			});
+			this.wrapper.find(".avatar-name-email").hide();
 		}
 
 		localStorage.setItem("sidebar-expanded", this.sidebar_expanded);
 		this.wrapper
 			.find(".body-sidebar .collapse-sidebar-link")
 			.find("use")
-			.attr("href", `#icon-arrow-${direction}-to-line`);
+			.attr("href", `#icon-panel-${direction}-open`);
 		this.sidebar_header.toggle_width(this.sidebar_expanded);
 		$(document).trigger("sidebar-expand", {
 			sidebar_expand: this.sidebar_expanded,
