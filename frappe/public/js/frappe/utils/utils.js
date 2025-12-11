@@ -1606,8 +1606,19 @@ Object.assign(frappe.utils, {
 		 *	max_no_of_decimals - max number of decimals of the shortened number
 		 */
 
-		// return number if total digits is lesser than min_length
-		const len = String(number).match(/\d/g).length;
+		// return empty for null, undefined, or empty string
+		if (number == null || number === "") {
+			return "";
+		}
+
+		// extract digits from the number
+		const digits = String(number).match(/\d/g);
+		if (!digits) {
+			return "";
+		}
+
+		// return number if total digits are less than min_length
+		const len = digits.length;
 		if (len < min_length) {
 			return number.toString();
 		}
