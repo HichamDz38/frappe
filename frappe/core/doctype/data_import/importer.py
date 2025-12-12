@@ -507,7 +507,7 @@ class ImportFile:
 		mandatory_fields = []
 
 		for df in meta.fields:
-			if df.reqd and df.fieldtype not in no_value_fields:
+			if df.reqd and df.fieldtype not in no_value_fields and not df.default:
 				mandatory_fields.append(df.label)
 
 		return mandatory_fields
@@ -647,7 +647,8 @@ class ImportFile:
 		elif extension == "xls":
 			data = read_xls_file_from_attached_file(content)
 
-		self.validate_columns_of_import_file(data)
+		if self.import_type == INSERT:
+			self.validate_columns_of_import_file(data)
 		return data
 
 

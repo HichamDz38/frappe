@@ -161,11 +161,11 @@ frappe.ui.Sidebar = class Sidebar {
 		let match = false;
 		const that = this;
 		$(".item-anchor").each(function () {
-			let href = $(this).attr("href")?.split("?")[0];
+			let href = decodeURIComponent($(this).attr("href")?.split("?")[0]);
 			const path = decodeURIComponent(window.location.pathname);
 
 			// Match only if path equals href or starts with it followed by "/" or end of string
-			const isActive = new RegExp(`^${href}(?:/|$)`).test(path);
+			const isActive = href === path;
 			if (href && isActive) {
 				match = true;
 				if (that.active_item) that.active_item.removeClass("active-sidebar");
@@ -203,7 +203,6 @@ frappe.ui.Sidebar = class Sidebar {
 	}
 	make_sidebar() {
 		this.empty();
-		this.wrapper.find(".collapse-sidebar-link").removeClass("hidden");
 		this.create_sidebar(this.workspace_sidebar_items);
 
 		// Scroll sidebar to selected page if it is not in viewport.
@@ -445,7 +444,7 @@ frappe.ui.Sidebar = class Sidebar {
 		if (route.length == 2) {
 			workspace_title = this.get_correct_workspace_sidebars(route[1]);
 		} else {
-			workspace_title = this.get_correct_workspace_sidebars(route);
+			workspace_title = this.get_correct_workspace_sidebars(route[0]);
 		}
 		let module_name = workspace_title[0];
 		if (module_name) {
@@ -483,6 +482,7 @@ frappe.ui.Sidebar = class Sidebar {
 				me.show_new_dialog();
 			});
 		} else {
+			this.wrapper.removeAttr("data-mode");
 			$(this.active_item).addClass("active-sidebar");
 			$(".collapse-sidebar-link").removeClass("hidden");
 			this.wrapper.find(".edit-mode").addClass("hidden");
@@ -814,7 +814,7 @@ frappe.ui.Sidebar = class Sidebar {
 		const me = this;
 		this.save_sidebar_button = this.wrapper.find(".save-sidebar");
 		this.discard_button = this.wrapper.find(".discard-button");
-		this.save_sidebar_button.on("click", async function (event) {
+		this.save_sidebar_button.off("click").on("click", async function (event) {
 			frappe.show_alert({
 				message: __("Saving Sidebar"),
 				indicator: "success",

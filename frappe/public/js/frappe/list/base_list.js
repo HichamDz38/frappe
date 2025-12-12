@@ -176,9 +176,9 @@ frappe.views.BaseList = class BaseList {
 	}
 
 	setup_page_head() {
+		this.set_breadcrumbs();
 		this.set_title();
 		this.set_menu_items();
-		this.set_breadcrumbs();
 	}
 
 	set_title() {
@@ -861,7 +861,7 @@ class FilterArea {
 			fields.push({
 				fieldtype: "Data",
 				label: "ID",
-				condition: "=",
+				condition: "like",
 				fieldname: "name",
 				onchange: () => this.debounced_refresh_list_view(),
 			});
@@ -889,13 +889,17 @@ class FilterArea {
 
 		const doctype_fields = this.list_view.meta.fields;
 		const title_field = this.list_view.meta.title_field;
+		const user_setting_fields =
+			frappe.get_user_settings(this.list_view.doctype)?.group_by_fields || [];
 
 		fields = fields.concat(
 			doctype_fields
 				.filter(
 					(df) =>
 						(df.fieldname === title_field ||
-							(df.in_standard_filter && frappe.model.is_value_type(df.fieldtype))) &&
+							((df.in_standard_filter ||
+								user_setting_fields.includes(df.fieldname)) &&
+								frappe.model.is_value_type(df.fieldtype))) &&
 						frappe.perm.has_perm(this.list_view.doctype, df.permlevel)
 				)
 				.map((df) => {
@@ -916,7 +920,7 @@ class FilterArea {
 						].includes(fieldtype)
 					) {
 						fieldtype = "Data";
-						condition = "=";
+						condition = "like";
 					}
 					if (df.fieldtype == "Select" && df.options) {
 						options = df.options.split("\n");
@@ -981,21 +985,21 @@ class FilterArea {
 			const $inputGroup = $input.parent();
 
 			const $dropdown = $(`
-            <div class="input-group-btn">
-                <button type="button"
-                    class="btn btn-default  match-type-dropdown-btn"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false">
-                    ${getSymbol(df.match_type || "=")}
+			<div class="input-group-btn">
+				<button type="button"
+					class="btn btn-default  match-type-dropdown-btn"
+					data-toggle="dropdown"
+					aria-haspopup="true"
+					aria-expanded="false">
+					${getSymbol(df.match_type || "≈")}
 
-                </button>
-                <ul class="dropdown-menu match-type-dropdown-menu dropdown-menu-right">
-                    <li class="dropdown-item" data-match-type="=">${__("Equals")}</li>
-                    <li class="dropdown-item" data-match-type="like">${__("Like")}</li>
-                </ul>
-            </div>
-        `);
+				</button>
+				<ul class="dropdown-menu match-type-dropdown-menu dropdown-menu-right">
+					<li class="dropdown-item" data-match-type="=">${__("Equals")}</li>
+					<li class="dropdown-item" data-match-type="like">${__("Like")}</li>
+				</ul>
+			</div>
+		`);
 
 			$inputGroup.append($dropdown);
 
@@ -1005,7 +1009,7 @@ class FilterArea {
 				$dropdown.find("button").dropdown("toggle");
 
 				const new_type = $(e.currentTarget).data("match-type");
-				const current_type = field.df.match_type || "=";
+				const current_type = field.df.match_type || "≈";
 
 				if (new_type === current_type) return;
 

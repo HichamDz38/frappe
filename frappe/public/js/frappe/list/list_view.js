@@ -1990,6 +1990,14 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			});
 		}
 
+		items.push({
+			label: __("Edit Filters", null, "Edit filters of List View"),
+			action: () => {
+				this.make_group_by_fields_modal();
+			},
+			standard: true,
+		});
+
 		if (frappe.user.has_role("System Manager")) {
 			if (this.get_view_settings) {
 				items.push(this.get_view_settings());
@@ -1997,6 +2005,65 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 		}
 
 		return items;
+	}
+
+	make_group_by_fields_modal() {
+		let d = new frappe.ui.Dialog({
+			title: __("Select Filters"),
+			fields: this.get_group_by_dropdown_fields(),
+		});
+
+		d.set_primary_action(__("Save"), ({ group_by_fields }) => {
+			frappe.model.user_settings.save(
+				this.doctype,
+				"group_by_fields",
+				group_by_fields || null
+			);
+			this.group_by_fields = group_by_fields
+				? ["assigned_to", "owner", ...group_by_fields]
+				: ["assigned_to", "owner"];
+			d.hide();
+
+			frappe.msgprint(__("Saving Changes..."));
+			setTimeout(() => {
+				location.reload();
+			}, 1500);
+		});
+
+		d.$body.prepend(`
+			<div class="filters-search">
+				<input type="text"
+					placeholder="${__("Search")}"
+					data-element="search" class="form-control input-xs">
+			</div>
+		`);
+
+		frappe.utils.setup_search(d.$body, ".unit-checkbox", ".label-area");
+		d.show();
+	}
+
+	get_group_by_dropdown_fields() {
+		let group_by_fields = [];
+		let default_fields = ["assigned_to", "owner"];
+		default_fields = default_fields.concat(
+			frappe.get_user_settings(this.doctype)?.group_by_fields || []
+		);
+		let fields = this.meta.fields.filter((f) =>
+			["Select", "Link", "Data", "Int", "Check"].includes(f.fieldtype)
+		);
+
+		group_by_fields.push({
+			label: __(this.doctype),
+			fieldname: "group_by_fields",
+			fieldtype: "MultiCheck",
+			columns: 2,
+			options: fields.map((df) => ({
+				label: __(df.label, null, df.parent),
+				value: df.fieldname,
+				checked: default_fields.includes(df.fieldname),
+			})),
+		});
+		return group_by_fields;
 	}
 
 	get_view_settings() {
