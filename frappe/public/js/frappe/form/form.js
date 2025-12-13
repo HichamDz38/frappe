@@ -1237,9 +1237,9 @@ frappe.ui.form.Form = class FrappeForm {
 				this.dashboard.clear_headline();
 				this.dashboard.set_headline_alert(
 					__("This form has been modified after you have loaded it") +
-						'<button class="btn btn-xs btn-primary pull-right" onclick="cur_frm.reload_doc()">' +
-						__("Refresh") +
-						"</button>",
+					'<button class="btn btn-xs btn-primary pull-right" onclick="cur_frm.reload_doc()">' +
+					__("Refresh") +
+					"</button>",
 					"alert-warning"
 				);
 			} else {
@@ -1274,7 +1274,7 @@ frappe.ui.form.Form = class FrappeForm {
 	add_web_link(path, label) {
 		label = __(label) || __("See on Website");
 		this.web_link = this.sidebar
-			.add_user_action(__(label), function () {})
+			.add_user_action(__(label), function () { })
 			.attr("href", path || this.doc.route)
 			.attr("target", "_blank");
 	}
@@ -1508,7 +1508,13 @@ frappe.ui.form.Form = class FrappeForm {
 		if (group && group.indexOf("fa fa-") !== -1) group = null;
 
 		let btn = this.page.add_inner_button(label, fn, group);
+		if (btn) {
+			let menu_item_label = group ? `${group} > ${label}` : label;
+			let menu_item = this.page.add_menu_item(menu_item_label, fn, false);
+			menu_item.parent().addClass("hidden-xl");
 
+			this.custom_buttons[label] = btn;
+		}
 		return btn;
 	}
 
@@ -2268,9 +2274,15 @@ frappe.ui.form.Form = class FrappeForm {
 						secondary = `
 						</div>
 						<div class="col-md-6">
+<<<<<<< HEAD
 							<a href='/desk/submission-queue?ref_doctype=${encodeURIComponent(
 								this.doctype
 							)}&ref_docname=${encodeURIComponent(this.docname)}'>${__(
+=======
+							<a href='/app/submission-queue?ref_doctype=${encodeURIComponent(
+							this.doctype
+						)}&ref_docname=${encodeURIComponent(this.docname)}'>${__(
+>>>>>>> 7f5935d405 (fix: restore custom_buttons tracking in add_custom_button  Fixes #34920)
 							"All Submissions"
 						)}</a>
 						`;
