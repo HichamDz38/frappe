@@ -124,18 +124,20 @@ function get_desktop_icon_by_idx(idx, parent_icon) {
 
 function save_desktop(icons) {
 	// saving in localStorage;
-	localStorage.setItem(`${frappe.session.user}:desktop`, JSON.stringify(icons));
-	frappe.toast("Desktop Saved");
-	frappe.pages["desktop"].desktop_page.update();
+	frappe.model.user_settings.save(
+		"Desktop Icon",
+		"desktop_layout",
+		JSON.stringify(icons),
+		(r) => {
+			frappe.toast("Desktop Saved");
+			frappe.pages["desktop"].desktop_page.sync_layout();
+		}
+	);
 }
 
 function reset_to_default() {
-	localStorage.setItem(`${frappe.session.user}:desktop`, null);
+	frappe.model.user_settings.save("Desktop Icon", "desktop_layout", "");
 }
-
-frappe.pages["desktop"].on_page_show = function () {
-	frappe.pages["desktop"].desktop_page.setup();
-};
 
 function toggle_icons(icons) {
 	icons.forEach((i) => {
@@ -147,15 +149,10 @@ class DesktopPage {
 	constructor(page) {
 		this.page = page;
 		this.edit_mode = false;
-		this.prepare();
-		this.make(page);
-		this.setup_events();
-		this.desktop_pane = new DesktopPane();
+		this.sync_layout();
 	}
 	update() {
-		this.prepare();
-		this.make();
-		this.setup();
+		this.sync_layout();
 	}
 
 	prepare() {
