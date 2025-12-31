@@ -3,9 +3,9 @@
         <div class="icon-container">
             <img class="app-icon" src="{{ frappe.utils.get_desktop_icon(icon.label, frappe.boot.desktop_icon_style) }}" alt="{{ icon.label }}" />
         </div>
-    {% else if (icon.logo_url) { %}
+    {% else if (icon.logo_url || icon.icon_image) { %}
         <div class="icon-container">
-            <img class="app-icon" src="{{ icon.logo_url }}" alt="{{ icon.label }}" />
+            <img class="app-icon" src="{{ icon.logo_url || icon.icon_image }}" alt="{{ icon.label }}" />
         </div>
     {% } else if (icon.icon_type == "Folder") { %}
         <div class="icon-container folder-icon">

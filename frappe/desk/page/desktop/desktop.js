@@ -43,6 +43,9 @@ function get_route(desktop_icon) {
 	let item = {};
 	if (desktop_icon.link_type == "External" && desktop_icon.link) {
 		route = window.location.origin + desktop_icon.link;
+		if (desktop_icon.link.startsWith("http") || desktop_icon.link.startsWith("https")) {
+			route = desktop_icon.link;
+		}
 	} else {
 		let sidebar = frappe.boot.workspace_sidebar_item[desktop_icon.label.toLowerCase()];
 		if (desktop_icon.link_type == "Workspace Sidebar" && sidebar) {

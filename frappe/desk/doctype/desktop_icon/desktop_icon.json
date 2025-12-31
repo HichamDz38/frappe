@@ -139,6 +139,12 @@
    "fieldname": "restrict_removal",
    "fieldtype": "Check",
    "label": "Restrict Removal"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "icon_image",
+   "fieldtype": "Attach",
+   "label": "Icon Image"
   }
  ],
  "links": [],

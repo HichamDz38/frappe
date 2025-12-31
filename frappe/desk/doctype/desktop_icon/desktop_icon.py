@@ -156,6 +156,7 @@ def get_desktop_icons(user=None, bootinfo=None):
 			"hidden",
 			"name",
 			"restrict_removal",
+			"icon_image",
 		]
 
 		standard_icons = frappe.get_all("Desktop Icon", fields=fields, filters={"standard": 1})
