@@ -45,6 +45,7 @@ frappe.ui.menu = class ContextMenu {
 	}
 	make() {
 		this.template.empty();
+		this.menu_items_to_show = [];
 		this.menu_items.forEach((f) => {
 			f.condition =
 				f.condition ||
@@ -53,13 +54,19 @@ frappe.ui.menu = class ContextMenu {
 				};
 			if (f.condition()) {
 				this.add_menu_item(f);
+				this.menu_items_to_show.push(f);
 			}
 		});
 
 		// if (!$.contains(document.body, this.template[0])) {
 		// 	$(document.body).append(this.template);
 		// }
-		$(document.body).append(this.template);
+
+		// only append if there are items to show
+		if (this.menu_items_to_show.length > 0) {
+			$(document.body).append(this.template);
+		}
+
 		this.set_styles();
 	}
 	set_styles() {
