@@ -780,8 +780,7 @@ class DesktopIcon {
 	}
 
 	render_folder_thumbnail() {
-		let condition = this.icon_type == "App" && this.child_icons.length > 0;
-		if (this.icon_type == "Folder" || condition) {
+		if (this.icon_type == "Folder") {
 			if (!this.folder_wrapper) this.folder_wrapper = this.icon.find(".icon-container");
 			this.folder_wrapper.html("");
 			this.folder_grid = new DesktopIconGrid({
