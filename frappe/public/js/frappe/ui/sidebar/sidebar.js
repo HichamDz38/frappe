@@ -155,41 +155,33 @@ frappe.ui.Sidebar = class Sidebar {
 	set_active_workspace_item() {
 		if (this.is_route_in_sidebar()) {
 			this.active_item.addClass("active-sidebar");
-			this.expand_parent_section_if_needed();
+			this.expand_parent_section();
 		}
 	}
 
-	expand_parent_section_if_needed() {
+	expand_parent_section() {
 		if (!this.active_item) return;
+		let active_section;
+		$(".section-item").each((index, element) => {
+			if (element.contains(this.active_item.get(0))) {
+				active_section = element.dataset.id;
+			}
+		});
 
-		// Check if the active item is inside a nested container (child of a Section Break)
-		// active_item is .standard-sidebar-item, we need to check its container
-		const $item_container = this.active_item.closest(".sidebar-item-container");
-		if ($item_container.length === 0) return;
-
-		const $nested_container = $item_container.parent(".nested-container");
-		if ($nested_container.length === 0) return;
-
-		// Find the parent Section Break container
-		const $section_break_container = $nested_container.closest(".section-item");
-		if ($section_break_container.length === 0) return;
-
-		// Find the Section Break item instance that contains this nested item
-		const section_label = $section_break_container.attr("item-name");
-		if (!section_label) return;
-
-		// Find the SectionBreakSidebarItem instance
-		for (let item of this.items) {
-			if (
-				item.item &&
-				item.item.type === "Section Break" &&
-				item.item.label === section_label
-			) {
-				// Expand the section break if it's collapsed
-				if (item.collapsed) {
-					item.open();
+		if (active_section) {
+			let section = this.get_item(active_section);
+			if (section) {
+				if (section.collapsed) {
+					section.open();
 				}
-				break;
+			}
+		}
+	}
+
+	get_item(name) {
+		for (let item of this.items) {
+			if (item.item.label === name) {
+				return item;
 			}
 		}
 	}
