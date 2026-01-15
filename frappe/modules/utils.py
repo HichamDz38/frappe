@@ -345,7 +345,6 @@ def get_app_publisher(module: str) -> str:
 
 
 def make_boilerplate(template: str, doc: "Document" | "frappe._dict", opts: dict | "frappe._dict" = None):
-	# print(template, "template_file_path \n\n\n")
 	target_path = get_doc_path(doc.module, doc.doctype, doc.name)
 	template_name = template.replace("controller", scrub(doc.name))
 	if template_name.endswith("._py"):
@@ -354,8 +353,6 @@ def make_boilerplate(template: str, doc: "Document" | "frappe._dict", opts: dict
 	template_file_path = os.path.join(
 		get_module_path("core"), "doctype", scrub(doc.doctype), "boilerplate", template
 	)
-
-	
 
 	if os.path.exists(target_file_path):
 		print(f"{target_file_path} already exists, skipping...")
@@ -403,7 +400,7 @@ def make_boilerplate(template: str, doc: "Document" | "frappe._dict", opts: dict
 			"""
 
 		controller_body = indent(dedent(controller_body), "\t")
-	# print(source, "source \n\n\n")
+
 	with open(target_file_path, "w") as target, open(template_file_path) as source:
 		template = source.read()
 		controller_file_content = cstr(template).format(
@@ -417,7 +414,6 @@ def make_boilerplate(template: str, doc: "Document" | "frappe._dict", opts: dict
 			custom_controller=controller_body,
 		)
 		print("template_file_path \n\n\n", controller_file_content)
-		# print(controller_file_content)
 		target.write(frappe.as_unicode(controller_file_content))
 
 
