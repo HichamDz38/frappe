@@ -4,12 +4,8 @@ frappe.ui.Notifications = class Notifications {
 	constructor(opts) {
 		this.tabs = {};
 		this.notification_settings = frappe.boot.notification_settings;
-<<<<<<< HEAD
 		this.full_height = opts?.full_height || true;
-=======
 		this.full_height = opts?.full_height || false;
-
->>>>>>> ec94433e6a (fix: notification bell shouldn't flicker)
 		this.wrapper = opts?.wrapper || $(".standard-items-sections");
 		this.make();
 	}
