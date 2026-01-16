@@ -116,7 +116,6 @@ def filter_dynamic_link_doctypes(
 
 	txt = txt or ""
 	filters = filters or {}
-	filters.pop("name", None)  # ignore unsupported "name" filter - passed by validate_link_and_fetch
 
 	_doctypes_from_df = frappe.get_all(
 		"DocField",
