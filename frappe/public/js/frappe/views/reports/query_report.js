@@ -1856,6 +1856,10 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 			{
 				label: __("Print"),
 				action: () => {
+					if (!this.data?.length) {
+						frappe.msgprint(__("This report is empty."));
+						return;
+					}
 					let dialog = frappe.ui.get_print_settings(
 						false,
 						(print_settings) => this.print_report(print_settings),
@@ -1871,6 +1875,10 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 			{
 				label: __("PDF"),
 				action: () => {
+					if (!this.data?.length) {
+						frappe.msgprint(__("This report is empty."));
+						return;
+					}
 					let dialog = frappe.ui.get_print_settings(
 						false,
 						(print_settings) => this.pdf_report(print_settings),
