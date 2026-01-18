@@ -253,7 +253,9 @@ def download_pdf(
 
 
 @frappe.whitelist()
-def report_to_pdf(html, orientation="Landscape"):
+def report_to_pdf(html, orientation="Landscape", doctype=None):
+	if doctype:
+		frappe.has_permission(doctype, "print", throw=True)
 	make_access_log(file_type="PDF", method="PDF", page=html)
 	frappe.local.response.filename = "report.pdf"
 	frappe.local.response.filecontent = get_pdf(html, {"orientation": orientation})
