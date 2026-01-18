@@ -139,19 +139,7 @@ frappe.ui.menu = class ContextMenu {
 								me.current_menu.show();
 							}
 						}
-
-						// debugger
-						// if(!current_menu.visible){
-						// 	current_menu.show(event)
-						// }
-						// me.nested_menus.forEach(menu => {
-						// 	if(current_menu == menu) return;
-						// 	menu.hide()
-						// })
 					}
-					// me.nested_menus.forEach((menu) => {
-					// 	menu.hide();
-					// });
 				});
 			} else if (item.items) {
 				$();

@@ -122,24 +122,7 @@ function get_desktop_icon_by_idx(idx, parent_icon) {
 
 function save_desktop(icons) {
 	// saving in localStorage;
-	frappe.model.user_settings
-		.save("Desktop Icon", "desktop_layout", JSON.stringify(icons))
-		.then((r) => {
-			if (frappe.new_icons.length) {
-				frappe.model.user_settings.get("Desktop Icon").then((user_settings) => {
-					frappe.model.user_settings
-						.save("Desktop Icon", "icons_to_create", JSON.stringify(frappe.new_icons))
-						.then((r) => {
-							frappe.pages["desktop"].desktop_page.sync_layout();
-							frappe.toast("Desktop Saved");
-							frappe.pages["desktop"].desktop_page.sync_layout();
-						});
-				});
-			} else {
-				frappe.toast("Desktop Saved");
-				frappe.pages["desktop"].desktop_page.sync_layout();
-			}
-		});
+	frappe.pages["desktop"].desktop_page.save_layout(icons, frappe.new_icons);
 }
 
 function reset_to_default() {
@@ -180,17 +163,18 @@ class DesktopPage {
 	constructor(page) {
 		this.page = page;
 		this.edit_mode = false;
-		this.sync_layout();
+		this.make(this.page);
+		this.setup();
 	}
 	update() {
-		this.sync_layout();
+		this.make(this.page);
+		this.setup();
 	}
 	prepare() {
 		this.apps_icons = [];
 		this.hidden_icons = [];
 		this.folders = [];
 		const icon_map = {};
-		frappe.desktop_icons = frappe.desktop_icons || frappe.boot.desktop_icons;
 		let icons = this.edit_mode ? frappe.new_desktop_icons : frappe.desktop_icons;
 		const all_icons = icons.filter((icon) => {
 			if (icon.hidden != 1) {
@@ -225,30 +209,40 @@ class DesktopPage {
 	sync_layout() {
 		const me = this;
 		let saved_layout = JSON.parse(localStorage.getItem(`${frappe.session.user}:desktop`));
-		frappe.model.user_settings.get("Desktop Icon").then((user_settings) => {
-			if (!user_settings.desktop_layout && saved_layout) {
-				frappe.model.user_settings.save(
-					"Desktop Icon",
-					"desktop_layout",
-					JSON.stringify(saved_layout)
-				);
-			} else if (user_settings.desktop_layout) {
-				frappe.desktop_icons = JSON.parse(user_settings.desktop_layout);
-			} else {
-				frappe.desktop_icons = frappe.boot.desktop_icons;
-			}
-			me.prepare();
-			me.make(me.page);
-			me.setup();
-		});
+		if (!this.data && saved_layout) {
+			this.save_layout(saved_layout);
+		} else if (Object.keys(this.data).length != 0) {
+			frappe.desktop_icons = this.data;
+		} else {
+			frappe.desktop_icons = frappe.boot.desktop_icons;
+		}
 	}
-	setup_events() {
+	save_layout(layout, new_icons) {
 		const me = this;
+		frappe.call({
+			method: "frappe.desk.doctype.desktop_layout.desktop_layout.save_layout",
+			args: {
+				user: frappe.session.user,
+				layout: JSON.stringify(layout),
+				new_icons: JSON.stringify(new_icons),
+			},
+			callback: function (r) {
+				me.data = r.message.layout;
+				me.make(me.page);
+				me.setup();
+				frappe.new_icons = [];
+			},
+		});
 	}
 	make() {
 		this.page.page_head.hide();
 		$(this.page.body).empty();
 		$(frappe.render_template("desktop")).appendTo(this.page.body);
+		if (!this.data) {
+			this.data = JSON.parse($("#desktop-layout").text());
+		}
+		this.sync_layout();
+		this.prepare();
 		this.wrapper = this.page.body.find(".desktop-container");
 		this.icon_grid = new DesktopIconGrid({
 			wrapper: this.wrapper,
@@ -270,7 +264,6 @@ class DesktopPage {
 		this.setup_navbar();
 		this.setup_awesomebar();
 		this.handle_route_change();
-		this.setup_events();
 		this.setup_edit_button();
 	}
 	setup_edit_button() {
@@ -498,33 +491,6 @@ class DesktopPage {
 			}
 		});
 	}
-
-	// setup_icon_search() {
-	// 	let all_icons = $(".icon-title");
-	// 	let icons_to_show = [];
-	// 	$(".desktop-container .icons").append(
-	// 		"<div class='no-apps-message hidden'> No apps found </div>"
-	// 	);
-	// 	$(".desktop-search-wrapper > #navbar-search").on("input", function (e) {
-	// 		let search_query = $(e.target).val().toLowerCase();
-	// 		console.log(search_query);
-	// 		icons_to_show = [];
-	// 		all_icons.each(function (index, element) {
-	// 			$(element).parent().parent().hide();
-	// 			let label = $(element).text().toLowerCase();
-	// 			if (label.includes(search_query)) {
-	// 				icons_to_show.push(element);
-	// 			}
-	// 		});
-
-	// 		if (icons_to_show.length == 0) {
-	// 			$(".desktop-container .icons").find(".no-apps-message").removeClass("hidden");
-	// 		} else {
-	// 			$(".desktop-container .icons").find(".no-apps-message").addClass("hidden");
-	// 		}
-	// 		toggle_icons(icons_to_show);
-	// 	});
-	// }
 }
 
 class DesktopIconGrid {
