@@ -155,6 +155,34 @@ frappe.ui.Sidebar = class Sidebar {
 	set_active_workspace_item() {
 		if (this.is_route_in_sidebar()) {
 			this.active_item.addClass("active-sidebar");
+			this.expand_parent_section();
+		}
+	}
+
+	expand_parent_section() {
+		if (!this.active_item) return;
+		let active_section;
+		$(".section-item").each((index, element) => {
+			if (element.contains(this.active_item.get(0))) {
+				active_section = element.dataset.id;
+			}
+		});
+
+		if (active_section) {
+			let section = this.get_item(active_section);
+			if (section) {
+				if (section.collapsed) {
+					section.open();
+				}
+			}
+		}
+	}
+
+	get_item(name) {
+		for (let item of this.items) {
+			if (item.item.label === name) {
+				return item;
+			}
 		}
 	}
 
@@ -304,7 +332,7 @@ frappe.ui.Sidebar = class Sidebar {
 	}
 	setup_notifications() {
 		if (frappe.boot.desk_settings.notifications && frappe.session.user !== "Guest") {
-			this.notifications = new frappe.ui.Notifications();
+			this.notifications = new frappe.ui.Notifications({ full_height: true });
 		}
 	}
 	add_item(container, item) {

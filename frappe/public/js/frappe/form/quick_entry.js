@@ -263,9 +263,12 @@ frappe.ui.form.QuickEntryForm = class QuickEntryForm extends frappe.ui.Dialog {
 		// delete the old doc
 		frappe.model.clear_doc(this.doc.doctype, this.doc.name);
 		this.doc = r.message;
+
 		if (this.script_manager.has_handler("after_save")) {
-			return this.script_manager.trigger("after_save");
-		} else if (frappe._from_link) {
+			this.script_manager.trigger("after_save");
+		}
+
+		if (frappe._from_link) {
 			frappe.ui.form.update_calling_link(this.doc);
 		} else if (this.after_insert) {
 			this.after_insert(this.doc);
