@@ -47,7 +47,7 @@ class DesktopIcon(Document):
 	def on_trash(self):
 		clear_desktop_icons_cache()
 		if frappe.conf.developer_mode and self.standard and self.app:
-			self.delete_desktop_icon_file()
+			delete_desktop_icon_file(self.app, self.label)
 
 	def check_for_restrict_removal(self):
 		if self.restrict_removal:
@@ -59,6 +59,10 @@ class DesktopIcon(Document):
 		)
 		if allow_export:
 			self.export_desktop_icon()
+
+	def after_rename(self, old, new, merge):
+		delete_desktop_icon_file(self.app, old)
+		self.export_desktop_icon()
 
 	def export_desktop_icon(self):
 		folder_path = create_directory_on_app_path("desktop_icon", self.app)
@@ -123,6 +127,13 @@ class DesktopIcon(Document):
 
 	def after_insert(self):
 		clear_desktop_icons_cache()
+
+
+def delete_desktop_icon_file(app, label):
+	folder_path = create_directory_on_app_path("desktop_icon", app)
+	file_path = os.path.join(folder_path, f"{frappe.scrub(label)}.json")
+	if os.path.exists(file_path):
+		os.remove(file_path)
 
 
 def get_workspace_names(workspaces):
