@@ -54,26 +54,23 @@ class DesktopIcon(Document):
 			frappe.throw(_("Cannot delete Desktop Icon '{0}' as it is restricted").format(self.label))
 
 	def on_update(self):
-		allow_export = (
-			self.standard and self.app and not frappe.flags.in_import and frappe.conf.developer_mode
-		)
-		if allow_export:
-			self.export_desktop_icon()
+		self.export_desktop_icon()
 
 	def after_rename(self, old, new, merge):
 		delete_desktop_icon_file(self.app, old)
 		self.export_desktop_icon()
 
 	def export_desktop_icon(self):
-		folder_path = create_directory_on_app_path("desktop_icon", self.app)
-		file_path = os.path.join(folder_path, f"{frappe.scrub(self.label)}.json")
-		doc_export = self.as_dict(no_nulls=True, no_private_properties=True)
-		strip_default_fields(self, doc_export)
-		# if self.parent_icon:
-		# 	print(self.parent_icon)
-		# 	doc_export["parent_icon"] = frappe.db.get_value("Desktop Icon", self.parent_icon, "label")
-		with open(file_path, "w+") as icon_file_doc:
-			icon_file_doc.write(frappe.as_json(doc_export) + "\n")
+		allow_export = (
+			self.standard and self.app and not frappe.flags.in_import and frappe.conf.developer_mode
+		)
+		if allow_export:
+			folder_path = create_directory_on_app_path("desktop_icon", self.app)
+			file_path = os.path.join(folder_path, f"{frappe.scrub(self.label)}.json")
+			doc_export = self.as_dict(no_nulls=True, no_private_properties=True)
+			strip_default_fields(self, doc_export)
+			with open(file_path, "w+") as icon_file_doc:
+				icon_file_doc.write(frappe.as_json(doc_export) + "\n")
 
 	def delete_desktop_icon_file(self):
 		folder_path = create_directory_on_app_path("desktop_icon", self.app)
