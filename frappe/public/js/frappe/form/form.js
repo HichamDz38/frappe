@@ -2270,22 +2270,11 @@ frappe.ui.form.Form = class FrappeForm {
 						secondary = `
 						</div>
 						<div class="col-md-6">
-<<<<<<< HEAD
 							<a href='/desk/submission-queue?ref_doctype=${encodeURIComponent(
 								this.doctype
 							)}&ref_docname=${encodeURIComponent(this.docname)}'>${__(
-=======
-							<a href='/app/submission-queue?ref_doctype=${encodeURIComponent(
-<<<<<<< HEAD
-							this.doctype
-						)}&ref_docname=${encodeURIComponent(this.docname)}'>${__(
->>>>>>> 7f5935d405 (fix: restore custom_buttons tracking in add_custom_button  Fixes #34920)
-=======
-								this.doctype
-							)}&ref_docname=${encodeURIComponent(this.docname)}'>${__(
->>>>>>> e8ed57df18 (style: apply prettier formatting)
-							"All Submissions"
-						)}</a>
+								"All Submissions"
+							)}</a>
 						`;
 					}
 
