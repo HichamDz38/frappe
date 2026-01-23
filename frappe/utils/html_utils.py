@@ -17,13 +17,16 @@ EMOJI_PATTERN = re.compile(
 	flags=re.UNICODE,
 )
 
+# tags for which content needs to be removed from output
+REMOVE_CONTENT_TAGS = {"script", "style"}
+
 
 def clean_html(html):
 	if not isinstance(html, str):
 		return html
 
 	return nh3.clean(
-		clean_script_and_style(html),
+		html,
 		tags={
 			"div",
 			"p",
@@ -42,6 +45,7 @@ def clean_html(html):
 			"td",
 			"tr",
 		},
+		clean_content_tags=REMOVE_CONTENT_TAGS,
 		strip_comments=True,
 	)
 
@@ -85,7 +89,7 @@ def clean_email_html(html):
 	}
 
 	return nh3.clean(
-		clean_script_and_style(html),
+		html,
 		tags={
 			"div",
 			"p",
@@ -117,6 +121,7 @@ def clean_email_html(html):
 			"img",
 		},
 		attributes={"*": {"border", "colspan", "rowspan", "src", "href", "style", "id"}},
+		clean_content_tags=REMOVE_CONTENT_TAGS,
 		filter_style_properties=allowed_css_properties,
 		strip_comments=True,
 		url_schemes=nh3.ALLOWED_URL_SCHEMES.union({"cid", "data"}),
@@ -124,7 +129,11 @@ def clean_email_html(html):
 
 
 def clean_script_and_style(html):
-	# remove script and style
+	"""
+	Remove script and style tags.
+	DEPRECATED: prefer nh3.clean's clean_content_tags parameter.
+	"""
+
 	from bs4 import BeautifulSoup
 
 	soup = BeautifulSoup(html, "html5lib")
