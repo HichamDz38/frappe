@@ -469,7 +469,7 @@ frappe.ui.form.Toolbar = class Toolbar {
 			return;
 		}
 		this.page.add_menu_item(
-			__("Open Sidebar"),
+			__("Toggle Sidebar"),
 			() => {
 				this.setup_sidebar_toggle(this.frm.sidebar.sidebar.parent());
 			},
