@@ -204,7 +204,7 @@ frappe.ui.form.Toolbar = class Toolbar {
 	setup_editable_title(element) {
 		let me = this;
 
-		if (me.is_title_editable()) {
+		if (me.is_title_editable() || me.can_rename()) {
 			let edit_icon = this.page.add_action_icon(
 				"square-pen",
 				() => {
