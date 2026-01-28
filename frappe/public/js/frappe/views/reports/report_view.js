@@ -80,7 +80,7 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 	setup_result_area() {
 		super.setup_result_area();
 		this.setup_charts_area();
-		this.$datatable_wrapper = $('<div class="datatable-wrapper"></div>');
+		this.$datatable_wrapper = $('<div class="datatable-wrapper">');
 		this.$result.append(this.$datatable_wrapper);
 		this.settings.onload && this.settings.onload(this);
 	}
