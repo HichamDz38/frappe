@@ -549,7 +549,6 @@ frappe.ui.Sidebar = class Sidebar {
 		let sidebars = [];
 		Object.entries(this.all_sidebar_items).forEach(([name, sidebar]) => {
 			const { items, label } = sidebar;
-			if (label.includes("My Workspaces")) return;
 			items.forEach((item) => {
 				if (item.link_to === link_to) {
 					sidebars.push(label || name);
