@@ -167,7 +167,9 @@ def search_widget(
 		}
 		search_fields = ["name"]
 		if meta.title_field:
-			search_fields.append(meta.title_field)
+			is_virtual_field = getattr(meta.get_field(meta.title_field), "is_virtual", False)
+			if not is_virtual_field:
+				search_fields.append(meta.title_field)
 
 		if meta.search_fields:
 			search_fields.extend(meta.get_search_fields())
