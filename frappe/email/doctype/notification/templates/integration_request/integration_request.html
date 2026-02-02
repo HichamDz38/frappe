@@ -12,7 +12,6 @@
 	<tr>
 		<td>
 			<h1 class="email-header-title">
-				<span class="indicator red"></span>
 				Integration Request
 			</h1>
 		</td>
@@ -22,7 +21,7 @@
 <table class="table table-bordered" style="width: 100%;">
 	<tr>
 		<td class="text-bold" style="background: #f8f8f8; width: 120px">Site</td>
-		<td>{{ frappe.utils.get_url() }}</td>
+		<td><a href="{{ frappe.utils.get_url() }}">{{ frappe.utils.get_url() }}</a></td>
 	</tr>
 	<tr>
 		<td class="text-bold" style="background: #f8f8f8;">Request ID</td>
@@ -35,11 +34,7 @@
 	</tr>
 	<tr>
 		<td class="text-bold" style="background: #f8f8f8;">Status</td>
-		<td>
-			<span class="indicator-pill red">
-				{{ doc.status }}
-			</span>
-		</td>
+		<td>{{ doc.status }}</td>
 	</tr>
 	{% if doc.request_description %}
 	<tr>
@@ -54,7 +49,7 @@
 	{% if doc.url %}
 	<tr>
 		<td class="text-bold" style="background: #f8f8f8;">Endpoint URL</td>
-		<td class="text-small" style="word-break: break-all;">{{ doc.url }}</td>
+		<td class="text-small" style="word-break: break-all;"><a href="{{ doc.url }}">{{ doc.url}}</a></td>
 	</tr>
 	{% endif %}
 	{% if doc.reference_doctype and doc.reference_docname %}

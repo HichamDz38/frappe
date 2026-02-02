@@ -9,7 +9,6 @@
     <tr>
         <td>
             <h1 class="email-header-title">
-                <span class="indicator red"></span>
                 Error Log
             </h1>
         </td>
@@ -31,7 +30,7 @@
     </tr>
     <tr>
         <td class="text-bold" style="background: #f8f8f8;">Logged At</td>
-        <td>{{ doc.creation }}</td>
+        <td>{{ frappe.utils.format_datetime(doc.creation) }}</td>
     </tr>
     {% if doc.reference_doctype and doc.reference_name %}
     <tr>
