@@ -156,6 +156,174 @@ def get_lazy_doc(
 	raise ImportError(doctype)
 
 
+def get_docs(
+	doctype: str,
+	filters: dict | None = None,
+	*,
+	chunk_size: int = 1000,
+	limit: int | None = None,
+	limit_start: int = 0,
+	order_by: str = "creation asc",
+	as_generator: bool = False,
+	for_update: bool = False,
+) -> list["Document"] | Generator[list["Document"]]:
+	"""Fetch fully instantiated Document objects from the database.
+
+	Returns a list of Documents by default. Pass ``as_generator=True`` to get
+	a chunked generator that yields a list of Documents per chunk to reduce
+	peak memory usage.
+	"""
+	if is_virtual_doctype(doctype):
+		frappe.throw(_("Virtual DocType {0} cannot be fetched in bulk.").format(doctype))
+
+	meta = frappe.get_meta(doctype)
+
+	if meta.issingle:
+		frappe.throw(_("Single DocType {0} cannot be fetched in bulk.").format(doctype))
+
+	if limit_start and limit is None:
+		frappe.throw(_("limit cannot be None when limit_start is used"))
+
+	child_tables = [
+		(df.fieldname, df.options) for df in meta.get_table_fields() if not is_virtual_doctype(df.options)
+	]
+	controller = get_controller(doctype)
+	lock_rows = for_update and frappe.db.db_type != "sqlite"
+
+	if as_generator:
+		return _get_docs_generator(
+			doctype,
+			controller,
+			child_tables,
+			filters=filters,
+			chunk_size=chunk_size,
+			limit=limit,
+			limit_start=limit_start,
+			order_by=order_by,
+			lock_rows=lock_rows,
+			for_update=for_update,
+		)
+
+	# Eagerly fetch all docs
+	all_data = _fetch_rows(
+		doctype,
+		filters=filters,
+		order_by=order_by,
+		limit=limit,
+		offset=limit_start,
+		lock_rows=lock_rows,
+		child_tables=child_tables,
+	)
+
+	return _build_document_objects(controller, all_data, for_update)
+
+
+def _get_docs_generator(
+	doctype,
+	controller,
+	child_tables,
+	*,
+	filters,
+	chunk_size,
+	limit,
+	limit_start,
+	order_by,
+	lock_rows,
+	for_update,
+) -> Generator[list["Document"]]:
+	fetched_count = 0
+	current_offset = limit_start
+
+	while True:
+		current_chunk_size = chunk_size
+		if limit is not None:
+			remaining = limit - fetched_count
+			if remaining <= 0:
+				break
+			current_chunk_size = min(chunk_size, remaining)
+
+		chunk_data = _fetch_rows(
+			doctype,
+			filters=filters,
+			order_by=order_by,
+			limit=current_chunk_size,
+			offset=current_offset,
+			lock_rows=lock_rows,
+			child_tables=child_tables,
+		)
+
+		if not chunk_data:
+			break
+
+		built_docs = _build_document_objects(controller, chunk_data, for_update)
+		yield built_docs
+
+		fetched_count += len(chunk_data)
+		current_offset += len(chunk_data)
+
+
+def _fetch_rows(doctype, *, filters, order_by, limit, offset, lock_rows, child_tables):
+	kwargs = {}
+	if limit is not None:
+		kwargs["limit"] = limit
+	if offset:
+		kwargs["offset"] = offset
+
+	data = frappe.qb.get_query(
+		table=doctype,
+		filters=filters or {},
+		fields=["*"],
+		order_by=order_by,
+		for_update=lock_rows,
+		**kwargs,
+	).run(as_dict=True)
+
+	if not data:
+		return []
+
+	for row in data:
+		row["doctype"] = doctype
+
+	fetched_docs_by_name = {row.name: row for row in data}
+	parent_names = list(fetched_docs_by_name.keys())
+
+	for fieldname, child_doctype in child_tables:
+		child_table_data = frappe.qb.get_query(
+			table=child_doctype,
+			filters={"parent": ("in", parent_names), "parenttype": doctype, "parentfield": fieldname},
+			fields=["*"],
+			order_by="idx asc",
+			for_update=lock_rows,
+		).run(as_dict=True)
+
+		for child in child_table_data:
+			child["doctype"] = child_doctype
+
+		for parent_doc in fetched_docs_by_name.values():
+			parent_doc[fieldname] = []
+
+		for child in child_table_data:
+			if child.parent in fetched_docs_by_name:
+				fetched_docs_by_name[child.parent][fieldname].append(child)
+
+	return list(fetched_docs_by_name.values())
+
+
+def _build_document_objects(controller, data: list, for_update: bool):
+	if not data:
+		return []
+
+	built_docs = []
+	for row in data:
+		doc = controller(row)
+		if for_update:
+			doc.flags.for_update = True
+		doc.mask_fields()
+		built_docs.append(doc)
+
+	return built_docs
+
+
 def get_doc_permission_check(doc: "Document", check_permission: str | bool | None = None) -> "Document":
 	"""
 	Checks permissions for the given document, if specified.
