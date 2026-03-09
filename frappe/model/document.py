@@ -169,9 +169,17 @@ def get_docs(
 ) -> list["Document"] | Generator[list["Document"]]:
 	"""Fetch fully instantiated Document objects from the database.
 
-	Returns a list of Documents by default. Pass ``as_generator=True`` to get
-	a chunked generator that yields a list of Documents per chunk to reduce
-	peak memory usage.
+	Returns a list of Documents by default. Pass `as_generator=True` to get
+	a chunked generator that yields a list of Documents per chunk to reduce memory usage.
+
+	:param doctype: DocType of the records to fetch.
+	:param filters: Dict or list of filters to apply.
+	:param chunk_size: Number of records to yield per chunk if using `as_generator`. Default 1000.
+	:param limit: Maximum total number of records to fetch.
+	:param limit_start: Start results at record #. Default 0.
+	:param order_by: Order By string, e.g. `creation desc`.
+	:param as_generator: If True, returns a generator yielding lists of Documents.
+	:param for_update: If True, locks the fetched rows for update.
 	"""
 	if is_virtual_doctype(doctype):
 		frappe.throw(_("Virtual DocType {0} cannot be fetched in bulk.").format(doctype))
