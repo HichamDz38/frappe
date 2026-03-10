@@ -617,18 +617,16 @@ class User(Document):
 		frappe.db.delete("List Filter", {"for_user": self.name})
 
 		# Remove user from Note's Seen By table
-		seen_notes = frappe.get_all("Note", filters=[["Note Seen By", "user", "=", self.name]], pluck="name")
-		for note_id in seen_notes:
-			note = frappe.get_doc("Note", note_id)
+		seen_notes = frappe.get_docs("Note", filters=[["Note Seen By", "user", "=", self.name]])
+		for note in seen_notes:
 			for row in note.seen_by:
 				if row.user == self.name:
 					note.remove(row)
 			note.save(ignore_permissions=True)
 
 		# Unlink user from all of its invitation docs
-		invites = frappe.db.get_all("User Invitation", filters={"email": self.name}, pluck="name")
-		for invite in invites:
-			invite_doc = frappe.get_doc("User Invitation", invite)
+		invites = frappe.get_docs("User Invitation", filters={"email": self.name})
+		for invite_doc in invites:
 			invite_doc.user = None
 			invite_doc.save(ignore_permissions=True)
 
