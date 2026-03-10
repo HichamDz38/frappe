@@ -166,6 +166,7 @@ def get_docs(
 	order_by: str = "creation asc",
 	as_generator: bool = False,
 	for_update: bool = False,
+	distinct: bool = False,
 ) -> list["Document"] | Generator[list["Document"]]:
 	"""Fetch fully instantiated Document objects from the database.
 
@@ -180,6 +181,7 @@ def get_docs(
 	:param order_by: Order By string, e.g. `creation desc`.
 	:param as_generator: If True, returns a generator yielding lists of Documents.
 	:param for_update: If True, locks the fetched rows for update.
+	:param distinct: If True, return distinct rows.
 	"""
 	if is_virtual_doctype(doctype):
 		frappe.throw(_("Virtual DocType {0} cannot be fetched in bulk.").format(doctype))
@@ -210,6 +212,7 @@ def get_docs(
 			order_by=order_by,
 			lock_rows=lock_rows,
 			for_update=for_update,
+			distinct=distinct,
 		)
 
 	# Eagerly fetch all docs
@@ -221,6 +224,7 @@ def get_docs(
 		offset=limit_start,
 		lock_rows=lock_rows,
 		child_tables=child_tables,
+		distinct=distinct,
 	)
 
 	return _build_document_objects(controller, all_data, for_update)
@@ -238,6 +242,7 @@ def _get_docs_generator(
 	order_by,
 	lock_rows,
 	for_update,
+	distinct,
 ) -> Generator[list["Document"]]:
 	fetched_count = 0
 	current_offset = limit_start
@@ -258,6 +263,7 @@ def _get_docs_generator(
 			offset=current_offset,
 			lock_rows=lock_rows,
 			child_tables=child_tables,
+			distinct=distinct,
 		)
 
 		if not chunk_data:
@@ -270,7 +276,7 @@ def _get_docs_generator(
 		current_offset += len(chunk_data)
 
 
-def _fetch_rows(doctype, *, filters, order_by, limit, offset, lock_rows, child_tables):
+def _fetch_rows(doctype, *, filters, order_by, limit, offset, lock_rows, child_tables, distinct=False):
 	kwargs = {}
 	if limit is not None:
 		kwargs["limit"] = limit
@@ -283,6 +289,7 @@ def _fetch_rows(doctype, *, filters, order_by, limit, offset, lock_rows, child_t
 		fields=["*"],
 		order_by=order_by,
 		for_update=lock_rows,
+		distinct=distinct,
 		**kwargs,
 	).run(as_dict=True)
 
