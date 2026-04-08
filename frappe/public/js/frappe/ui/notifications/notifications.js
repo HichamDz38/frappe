@@ -383,8 +383,21 @@ class NotificationsView extends BaseNotificationsView {
 	}
 
 	toggle_notification_icon(seen) {
-		this.notifications_icon.find(".notifications-seen").toggle(seen);
-		this.notifications_icon.find(".notifications-unseen").toggle(!seen);
+		let sidebar_bell = $(".sidebar-notification");
+		let desktop_bell = $(".desktop-notification-icon");
+		if (seen) {
+			sidebar_bell.find(".notification-badge").remove();
+			desktop_bell.find(".notification-badge").remove();
+		} else {
+			if (sidebar_bell.find(".notification-badge").length === 0) {
+				sidebar_bell
+					.find(".sidebar-item-icon")
+					.append('<span class="notification-badge"></span>');
+			}
+			if (desktop_bell.find(".notification-badge").length === 0) {
+				desktop_bell.append('<span class="notification-badge"></span>');
+			}
+		}
 	}
 
 	toggle_seen(flag) {
@@ -407,10 +420,10 @@ class NotificationsView extends BaseNotificationsView {
 			this.toggle_notification_icon(true);
 		});
 
-		this.parent.on("show.bs.dropdown", () => {
-			this.toggle_seen(true);
-			if (this.notifications_icon.find(".notifications-unseen").is(":visible")) {
+		$(document).on("click", ".sidebar-notification, .desktop-notification-icon", () => {
+			if ($(".notification-badge").length > 0) {
 				this.toggle_notification_icon(true);
+				this.toggle_seen(true);
 				frappe.call(
 					"frappe.desk.doctype.notification_log.notification_log.trigger_indicator_hide"
 				);
