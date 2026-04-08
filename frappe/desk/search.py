@@ -393,7 +393,7 @@ def get_names_for_mentions(search_term: str):
 			continue
 
 		mention_data["link"] = frappe.utils.get_url_to_form(
-			"User Group" if mention_data.get("is_group") else "User Profile", mention_data["id"]
+			"User Group" if mention_data.get("is_group") else "User", mention_data["id"]
 		)
 
 		filtered_mentions.append(mention_data)

@@ -10,7 +10,7 @@ frappe.ui.SidebarHeader = class SidebarHeader {
 			{
 				name: "desktop",
 				label: __("Desktop"),
-				icon: "layout-grid",
+				icon: "home",
 				onClick: function (el) {
 					frappe.set_route("/desk");
 				},
@@ -60,6 +60,9 @@ frappe.ui.SidebarHeader = class SidebarHeader {
 					label: "Session Defaults",
 					action: "frappe.ui.toolbar.setup_session_defaults()",
 					is_standard: 1,
+					condition: function () {
+						return frappe.boot.session_defaults.length != 0;
+					},
 					icon: "sliders-horizontal",
 				},
 				{
