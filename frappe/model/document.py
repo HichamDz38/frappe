@@ -198,7 +198,7 @@ def get_docs(
 		(df.fieldname, df.options) for df in meta.get_table_fields() if not is_virtual_doctype(df.options)
 	]
 	controller = get_controller(doctype)
-	lock_rows = for_update and frappe.db.db_type != "sqlite"
+	for_update = for_update and frappe.db.db_type != "sqlite"
 
 	if as_iterator:
 		return _get_docs_generator(
@@ -210,7 +210,6 @@ def get_docs(
 			limit=limit,
 			limit_start=limit_start,
 			order_by=order_by,
-			lock_rows=lock_rows,
 			for_update=for_update,
 			distinct=distinct,
 		)
@@ -222,7 +221,7 @@ def get_docs(
 		order_by=order_by,
 		limit=limit,
 		offset=limit_start,
-		lock_rows=lock_rows,
+		for_update=for_update,
 		child_tables=child_tables,
 		distinct=distinct,
 	)
@@ -240,7 +239,6 @@ def _get_docs_generator(
 	limit,
 	limit_start,
 	order_by,
-	lock_rows,
 	for_update,
 	distinct,
 ) -> Generator["Document"]:
@@ -261,7 +259,7 @@ def _get_docs_generator(
 			order_by=order_by,
 			limit=current_chunk_size,
 			offset=current_offset,
-			lock_rows=lock_rows,
+			for_update=for_update,
 			child_tables=child_tables,
 			distinct=distinct,
 		)
@@ -276,7 +274,7 @@ def _get_docs_generator(
 		current_offset += len(chunk_data)
 
 
-def _fetch_rows(doctype, *, filters, order_by, limit, offset, lock_rows, child_tables, distinct=False):
+def _fetch_rows(doctype, *, filters, order_by, limit, offset, for_update, child_tables, distinct=False):
 	kwargs = {}
 	if limit is not None:
 		kwargs["limit"] = limit
@@ -288,7 +286,7 @@ def _fetch_rows(doctype, *, filters, order_by, limit, offset, lock_rows, child_t
 		filters=filters or {},
 		fields=["*"],
 		order_by=order_by,
-		for_update=lock_rows,
+		for_update=for_update,
 		distinct=distinct,
 		**kwargs,
 	).run(as_dict=True)
@@ -308,7 +306,7 @@ def _fetch_rows(doctype, *, filters, order_by, limit, offset, lock_rows, child_t
 			filters={"parent": ("in", parent_names), "parenttype": doctype, "parentfield": fieldname},
 			fields=["*"],
 			order_by="idx asc",
-			for_update=lock_rows,
+			for_update=for_update,
 		).run(as_dict=True)
 
 		for child in child_table_data:
