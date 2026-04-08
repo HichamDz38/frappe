@@ -179,7 +179,7 @@ def get_docs(
 	:param limit: Maximum total number of records to fetch.
 	:param limit_start: Start results at record #. Default 0.
 	:param order_by: Order By string, e.g. `creation desc`.
-	:param as_iterator: If True, returns a generator yielding lists of Documents.
+	:param as_iterator: If True, returns a iterator yielding Documents.
 	:param for_update: If True, locks the fetched rows for update.
 	:param distinct: If True, return distinct rows.
 	"""
@@ -331,7 +331,6 @@ def _build_document_objects(controller, data: list, for_update: bool):
 		doc = controller(row)
 		if for_update:
 			doc.flags.for_update = True
-		doc.mask_fields()
 		built_docs.append(doc)
 
 	return built_docs
