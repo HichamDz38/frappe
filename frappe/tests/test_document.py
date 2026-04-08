@@ -824,12 +824,9 @@ class TestGetDocs(IntegrationTestCase):
 		cls.child_dt = "Test Get Docs Child"
 		cls.parent_dt = "Test Get Docs Parent"
 
-		if not frappe.db.exists("DocType", cls.child_dt):
-			new_doctype(name=cls.child_dt, istable=1).insert()
-
-		if not frappe.db.exists("DocType", cls.parent_dt):
+		cls.child_dt = new_doctype(istable=1).insert().name
+		cls.parent_dt = (
 			new_doctype(
-				name=cls.parent_dt,
 				fields=[
 					{"fieldtype": "Data", "fieldname": "title", "label": "Title"},
 					{
@@ -839,20 +836,21 @@ class TestGetDocs(IntegrationTestCase):
 						"label": "Child Table",
 					},
 				],
+			)
+			.insert()
+			.name
+		)
+		for i in range(5):
+			frappe.get_doc(
+				{
+					"doctype": cls.parent_dt,
+					"title": f"Record {i}",
+					"child_table": [
+						{"some_fieldname": f"child_{i}_0"},
+						{"some_fieldname": f"child_{i}_1"},
+					],
+				}
 			).insert()
-
-		if not frappe.db.count(cls.parent_dt):
-			for i in range(5):
-				frappe.get_doc(
-					{
-						"doctype": cls.parent_dt,
-						"title": f"Record {i}",
-						"child_table": [
-							{"some_fieldname": f"child_{i}_0"},
-							{"some_fieldname": f"child_{i}_1"},
-						],
-					}
-				).insert()
 
 	@classmethod
 	def tearDownClass(cls):
