@@ -182,6 +182,10 @@ def get_docs(
 	:param as_iterator: If True, returns a iterator yielding Documents.
 	:param for_update: If True, locks the fetched rows for update.
 	:param distinct: If True, return distinct rows.
+
+
+	Note: Chunk size controls memory usage vs # of queries tradeoff. Using chunk size larger than
+	10,000 is not advisable.
 	"""
 	if is_virtual_doctype(doctype):
 		frappe.throw(_("Virtual DocType {0} cannot be fetched in bulk.").format(doctype))
@@ -210,12 +214,13 @@ def get_docs(
 		child_tables,
 		filters=filters,
 		chunk_size=chunk_size,
-		limit=limit,
 		limit_start=limit_start,
 		order_by=order_by,
 		for_update=for_update,
 		distinct=distinct,
 	)
+
+	iterator = itertools.islice(iterator, limit)
 
 	if as_iterator:
 		return iterator
@@ -229,41 +234,28 @@ def _get_docs_generator(
 	*,
 	filters,
 	chunk_size,
-	limit,
 	limit_start,
 	order_by,
 	for_update,
 	distinct,
 ) -> Generator["Document"]:
-	fetched_count = 0
-	current_offset = limit_start
+	offset = limit_start
 
 	while True:
-		current_chunk_size = chunk_size
-		if limit is not None:
-			remaining = limit - fetched_count
-			if remaining <= 0:
-				break
-			current_chunk_size = min(chunk_size, remaining)
-
 		chunk_data = _fetch_rows(
 			doctype,
 			filters=filters,
 			order_by=order_by,
-			limit=current_chunk_size,
-			offset=current_offset,
+			limit=chunk_size,
+			offset=offset,
 			for_update=for_update,
 			child_tables=child_tables,
 			distinct=distinct,
 		)
-
 		if not chunk_data:
 			break
-
 		yield from _build_document_objects(controller, chunk_data, for_update)
-
-		fetched_count += len(chunk_data)
-		current_offset += len(chunk_data)
+		offset += chunk_size
 
 
 def _fetch_rows(doctype, *, filters, order_by, limit, offset, for_update, child_tables, distinct=False):
