@@ -130,19 +130,6 @@ frappe.ui.Notifications = class Notifications {
 		frappe.call("frappe.desk.doctype.notification_log.notification_log.mark_all_as_read");
 	}
 
-	mark_notifications_as_seen() {
-		if ($(".notification-badge").length === 0) return;
-		$(".notification-badge").remove();
-		this.notification_settings.seen = 1;
-		frappe.call(
-			"frappe.desk.doctype.notification_settings.notification_settings.set_seen_value",
-			{ value: 1, user: frappe.session.user }
-		);
-		frappe.call(
-			"frappe.desk.doctype.notification_log.notification_log.trigger_indicator_hide"
-		);
-	}
-
 	setup_dropdown_events() {
 		const dropdown = this.dropdown;
 		const full_height = this.full_height;
@@ -155,16 +142,6 @@ frappe.ui.Notifications = class Notifications {
 		this.dropdown.on("click", (e) => {
 			$(e.currentTarget).data("closable", true);
 		});
-
-		this.dropdown.on("show.bs.dropdown", () => {
-			this.mark_notifications_as_seen();
-		});
-
-		if (this.full_height) {
-			this.wrapper.find(".sidebar-notification").on("click", () => {
-				this.mark_notifications_as_seen();
-			});
-		}
 
 		$(document).on("click", function (e) {
 			const isInsideNotificationBtn =
@@ -244,6 +221,13 @@ class NotificationsView extends BaseNotificationsView {
 		this.notifications_icon
 			.attr("title", __("Notifications"))
 			.tooltip({ delay: { show: 600, hide: 100 }, trigger: "hover" });
+
+		this.bell_icon = this.parent.find(".desktop-notification-icon use");
+		if (!this.bell_icon.length) {
+			this.bell_icon = this.parent
+				.closest(".body-sidebar")
+				?.find(".sidebar-notification use");
+		}
 
 		this.setup_notification_listeners();
 
@@ -403,21 +387,17 @@ class NotificationsView extends BaseNotificationsView {
 	}
 
 	toggle_notification_icon(seen) {
-		let sidebar_bell = $(".sidebar-notification");
-		let desktop_bell = $(".desktop-notification-icon");
-		if (seen) {
-			sidebar_bell.find(".notification-badge").remove();
-			desktop_bell.find(".notification-badge").remove();
-		} else {
-			if (sidebar_bell.find(".notification-badge").length === 0) {
-				sidebar_bell
-					.find(".sidebar-item-icon")
-					.append('<span class="notification-badge"></span>');
+		this.bell_icon?.attr("href", seen ? "#icon-bell" : "#icon-bell-dot");
+	}
+
+	toggle_seen(flag) {
+		frappe.call(
+			"frappe.desk.doctype.notification_settings.notification_settings.set_seen_value",
+			{
+				value: cint(flag),
+				user: frappe.session.user,
 			}
-			if (desktop_bell.find(".notification-badge").length === 0) {
-				desktop_bell.append('<span class="notification-badge"></span>');
-			}
-		}
+		);
 	}
 
 	setup_notification_listeners() {
@@ -447,6 +427,14 @@ class NotificationsView extends BaseNotificationsView {
 					this.render_notifications_dropdown();
 					this.notifications_fetched = true;
 				});
+			}
+
+			this.toggle_seen(true);
+			if (this.bell_icon?.attr("href") === "#icon-bell-dot") {
+				this.toggle_notification_icon(true);
+				frappe.call(
+					"frappe.desk.doctype.notification_log.notification_log.trigger_indicator_hide"
+				);
 			}
 		});
 	}
