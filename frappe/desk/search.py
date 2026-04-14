@@ -168,7 +168,9 @@ def search_widget(
 		}
 		search_fields = ["name"]
 		if meta.title_field:
-			search_fields.append(meta.title_field)
+			is_virtual_field = getattr(meta.get_field(meta.title_field), "is_virtual", False)
+			if not is_virtual_field:
+				search_fields.append(meta.title_field)
 
 		if meta.search_fields:
 			search_fields.extend(meta.get_search_fields())
@@ -348,7 +350,12 @@ def build_for_autosuggest(res: list[tuple], doctype: str) -> list[LinkSearchResu
 		for item in res:
 			item = list(item)
 			if len(item) == 1:
-				item = [item[0], item[0]]
+				title_field = meta.title_field
+				docfield = meta.get_field(title_field)
+				if docfield and docfield.is_virtual:
+					doc = frappe.get_doc(meta.name, item[0])
+					title_value = doc.get_virtual_field_value(docfield)
+				item = [item[0], title_value or item[0]]
 			label = _(item[1]) if meta.translated_doctype else item[1]
 			item[1] = item[0]
 
