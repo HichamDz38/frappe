@@ -1941,7 +1941,9 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 						(print_settings) => this.print_report(print_settings),
 						this.report_doc.letter_head,
 						this.get_visible_columns(),
-						true
+						true,
+						null,
+						this.report_doc.default_print_format
 					);
 					this.add_portrait_warning(dialog);
 				},

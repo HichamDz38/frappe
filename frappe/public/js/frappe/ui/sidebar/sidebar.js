@@ -195,7 +195,7 @@ frappe.ui.Sidebar = class Sidebar {
 		}
 
 		this.remove_onboarding_wrapper();
-		if (module_name) {
+		if (module_name && !frappe.is_mobile()) {
 			if (
 				this?.onboarding_widget[module_name] &&
 				this.onboarding_widget[module_name].hide_panel
@@ -484,7 +484,11 @@ frappe.ui.Sidebar = class Sidebar {
 			type: "Button",
 			class: "sidebar-notification hidden",
 			onClick: () => {
-				this.wrapper.find(".dropdown-notifications").toggleClass("hidden");
+				const $dropdown = this.wrapper.find(".dropdown-notifications");
+				$dropdown.toggleClass("hidden");
+				if (!$dropdown.hasClass("hidden")) {
+					$dropdown.trigger("show.bs.dropdown");
+				}
 				if (frappe.is_mobile()) {
 					this.wrapper.removeClass("expanded");
 				}
@@ -657,7 +661,7 @@ frappe.ui.Sidebar = class Sidebar {
 			if (module) {
 				sidebars = this.filter_sidebars_from_app(
 					sidebars,
-					frappe.boot.module_app[module.toLowerCase()]
+					frappe.boot.module_app[module.toLowerCase().replace(/[ -]/g, "_")]
 				);
 			}
 			if (sidebars.length == 1) {

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
-"POT-Creation-Date: 2026-03-22 09:43+0000\n"
-"PO-Revision-Date: 2026-03-25 11:08\n"
+"POT-Creation-Date: 2026-04-05 09:44+0000\n"
+"PO-Revision-Date: 2026-04-05 14:45\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "&lt;head&gt; HTML"
 msgstr "&lt;head&gt; HTML"
 
-#: frappe/database/query.py:2403
+#: frappe/database/query.py:2399
 msgid "'*' is only allowed in {0} SQL function(s)"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr "1 ngày"
 msgid "1 Google Calendar Event synced."
 msgstr ""
 
-#: frappe/public/js/frappe/views/reports/query_report.js:988
+#: frappe/public/js/frappe/views/reports/query_report.js:995
 msgid "1 Report"
 msgstr "1 Báo cáo"
 
@@ -257,10 +257,6 @@ msgstr "5 bản ghi"
 #: frappe/tests/test_utils.py:907
 msgid "5 days ago"
 msgstr "5 ngày trước"
-
-#: frappe/desk/doctype/bulk_update/bulk_update.py:38
-msgid "; not allowed in condition"
-msgstr "; không được phép có trong điều kiện"
 
 #. Option for the 'Condition' (Select) field in DocType 'Document Naming Rule
 #. Condition'
@@ -620,7 +616,7 @@ msgstr ""
 msgid "A download link with your data will be sent to the email address associated with your account."
 msgstr ""
 
-#: frappe/custom/doctype/custom_field/custom_field.py:177
+#: frappe/custom/doctype/custom_field/custom_field.py:178
 msgid "A field with the name {0} already exists in {1}"
 msgstr "Một trường có tên {0} đã tồn tại trong {1}"
 
@@ -924,6 +920,7 @@ msgstr "Không thể tìm nạp số lượng chính xác, nhấp vào đây đ�
 #. Label of the action (Link) field in DocType 'Workflow Transition'
 #: frappe/core/doctype/amended_document_naming_settings/amended_document_naming_settings.json
 #: frappe/core/doctype/navbar_item/navbar_item.json
+#: frappe/core/doctype/role/role.js:44
 #: frappe/core/page/permission_manager/permission_manager.js:710
 #: frappe/desk/doctype/onboarding_step/onboarding_step.json
 #: frappe/email/doctype/email_flag_queue/email_flag_queue.json
@@ -1126,8 +1123,8 @@ msgid "Add Child"
 msgstr "Thêm Trẻ"
 
 #: frappe/public/js/frappe/views/kanban/kanban_board.html:4
-#: frappe/public/js/frappe/views/reports/query_report.js:1977
-#: frappe/public/js/frappe/views/reports/query_report.js:1980
+#: frappe/public/js/frappe/views/reports/query_report.js:1982
+#: frappe/public/js/frappe/views/reports/query_report.js:1985
 #: frappe/public/js/frappe/views/reports/report_view.js:347
 #: frappe/public/js/frappe/views/reports/report_view.js:372
 #: frappe/public/js/print_format_builder/Field.vue:112
@@ -1226,7 +1223,7 @@ msgstr "Thêm Người Đăng Ký"
 msgid "Add Tags"
 msgstr "Thêm Thẻ"
 
-#: frappe/public/js/frappe/list/list_view.js:2260
+#: frappe/public/js/frappe/list/list_view.js:2266
 msgctxt "Button in list view actions menu"
 msgid "Add Tags"
 msgstr "Thêm Thẻ"
@@ -1552,8 +1549,8 @@ msgstr "Nâng cao"
 msgid "Advanced Control"
 msgstr "Kiểm soát nâng cao"
 
-#: frappe/public/js/frappe/form/controls/link.js:504
-#: frappe/public/js/frappe/form/controls/link.js:506
+#: frappe/public/js/frappe/form/controls/link.js:513
+#: frappe/public/js/frappe/form/controls/link.js:515
 msgid "Advanced Search"
 msgstr "Tìm Kiếm Nâng Cao"
 
@@ -1634,7 +1631,7 @@ msgstr "Cần có trường Hàm tổng hợp để tạo biểu đồ bảng đ
 msgid "Alert"
 msgstr "Cảnh báo"
 
-#: frappe/database/query.py:2451
+#: frappe/database/query.py:2448
 msgid "Alias must be a string"
 msgstr ""
 
@@ -1967,17 +1964,13 @@ msgstr "Cho phép ngắt trang bên trong bảng"
 msgid "Allow print"
 msgstr "Cho phép in"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:432
-msgid "Allow recording my first session to improve user experience"
-msgstr "Cho phép ghi lại phiên đầu tiên của tôi để cải thiện trải nghiệm người dùng"
-
 #. Description of the 'Allow incomplete forms' (Check) field in DocType 'Web
 #. Form'
 #: frappe/website/doctype/web_form/web_form.json
 msgid "Allow saving if mandatory fields are not filled"
 msgstr "Cho phép lưu nếu các trường bắt buộc không được điền"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:425
+#: frappe/desk/page/setup_wizard/setup_wizard.js:437
 msgid "Allow sending usage data for improving applications"
 msgstr "Cho phép gửi dữ liệu sử dụng để cải thiện các ứng dụng"
 
@@ -2133,11 +2126,11 @@ msgstr "Đã Đăng Ký"
 msgid "Already in the following Users ToDo list:{0}"
 msgstr "Đã có trong danh sách việc cần làm của Người dùng sau: {0}"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:953
+#: frappe/public/js/frappe/views/reports/report_view.js:976
 msgid "Also adding the dependent currency field {0}"
 msgstr "Đồng thời thêm trường tiền tệ phụ thuộc {0}"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:966
+#: frappe/public/js/frappe/views/reports/report_view.js:989
 msgid "Also adding the status dependency field {0}"
 msgstr "Cũng thêm trường phụ thuộc trạng thái {0}"
 
@@ -2233,7 +2226,7 @@ msgstr "Đã cập nhật các quy tắc đặt tên bản sửa đổi."
 msgid "An email to verify your request has been sent to your email address. Please verify your request to complete the process."
 msgstr ""
 
-#: frappe/public/js/frappe/ui/toolbar/toolbar.js:327
+#: frappe/public/js/frappe/ui/toolbar/toolbar.js:328
 msgid "An error occurred while setting Session Defaults"
 msgstr "Đã xảy ra lỗi khi đặt Mặc định phiên"
 
@@ -2425,7 +2418,7 @@ msgstr ""
 msgid "Apply"
 msgstr "Áp dụng"
 
-#: frappe/public/js/frappe/list/list_view.js:2245
+#: frappe/public/js/frappe/list/list_view.js:2251
 msgctxt "Button in list view actions menu"
 msgid "Apply Assignment Rule"
 msgstr "Áp dụng Quy tắc Chỉ định"
@@ -2477,7 +2470,7 @@ msgstr ""
 msgid "Apply to all Documents Types"
 msgstr "Áp dụng cho tất cả các Loại Tài liệu"
 
-#: frappe/model/workflow.py:343
+#: frappe/model/workflow.py:347
 msgid "Applying: {0}"
 msgstr "Nộp hồ sơ: {0}"
 
@@ -2512,7 +2505,7 @@ msgstr "Các Cột đã Lưu trữ"
 msgid "Are you sure you want to cancel the invitation?"
 msgstr "Bạn có chắc chắn muốn hủy lời mời không?"
 
-#: frappe/public/js/frappe/list/list_view.js:2224
+#: frappe/public/js/frappe/list/list_view.js:2230
 msgid "Are you sure you want to clear the assignments?"
 msgstr "Bạn có chắc chắn muốn xóa bài tập không?"
 
@@ -2548,19 +2541,15 @@ msgstr "Bạn có chắc chắn muốn xóa bản ghi này không?"
 msgid "Are you sure you want to discard the changes?"
 msgstr "Bạn có chắc chắn muốn hủy các thay đổi không?"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1004
+#: frappe/public/js/frappe/views/reports/query_report.js:1011
 msgid "Are you sure you want to generate a new report?"
 msgstr "Bạn có chắc chắn muốn tạo một báo cáo mới không?"
-
-#: frappe/public/js/frappe/desk.js:380
-msgid "Are you sure you want to log out?"
-msgstr ""
 
 #: frappe/public/js/frappe/form/toolbar.js:130
 msgid "Are you sure you want to merge {0} with {1}?"
 msgstr "Bạn có chắc chắn muốn hợp nhất {0} với {1}?"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:118
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:119
 msgid "Are you sure you want to proceed?"
 msgstr "Bạn có chắc chắn muốn tiếp tục?"
 
@@ -2638,7 +2627,7 @@ msgstr "Gán điều kiện"
 msgid "Assign To"
 msgstr "Giao cho"
 
-#: frappe/public/js/frappe/list/list_view.js:2206
+#: frappe/public/js/frappe/list/list_view.js:2212
 msgctxt "Button in list view actions menu"
 msgid "Assign To"
 msgstr "Giao cho"
@@ -3349,7 +3338,7 @@ msgstr "Quay lại Bàn làm việc"
 msgid "Back to Home"
 msgstr "Về trang chủ"
 
-#: frappe/www/login.html:196 frappe/www/login.html:222
+#: frappe/www/login.html:195 frappe/www/login.html:221
 msgid "Back to Login"
 msgstr "Quay lại Đăng nhập"
 
@@ -3816,19 +3805,19 @@ msgstr "Xuất PDF hàng loạt"
 msgid "Bulk Update"
 msgstr "Cập nhật hàng loạt"
 
-#: frappe/model/workflow.py:331
+#: frappe/model/workflow.py:335
 msgid "Bulk approval only support up to 500 documents."
 msgstr "Phê duyệt hàng loạt chỉ hỗ trợ tối đa 500 tài liệu."
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:67
+#: frappe/desk/doctype/bulk_update/bulk_update.py:68
 msgid "Bulk operation is enqueued in background."
 msgstr "Hoạt động hàng loạt được xếp hàng đợi trong nền."
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:79
+#: frappe/desk/doctype/bulk_update/bulk_update.py:80
 msgid "Bulk operations only support up to 500 documents."
 msgstr "Hoạt động hàng loạt chỉ hỗ trợ tối đa 500 tài liệu."
 
-#: frappe/model/workflow.py:320
+#: frappe/model/workflow.py:324
 msgid "Bulk {0} is enqueued in background."
 msgstr "Hàng loạt {0} được đưa vào hàng đợi trong nền."
 
@@ -4032,7 +4021,7 @@ msgid "Camera"
 msgstr "Máy ảnh"
 
 #. Label of the campaign (Data) field in DocType 'Web Page View'
-#: frappe/public/js/frappe/utils/utils.js:2054
+#: frappe/public/js/frappe/utils/utils.js:2048
 #: frappe/website/doctype/web_page_view/web_page_view.json
 #: frappe/website/report/website_analytics/website_analytics.js:39
 msgid "Campaign"
@@ -4044,7 +4033,7 @@ msgstr "Chiến dịch"
 msgid "Campaign Description (Optional)"
 msgstr "Mô tả chiến dịch (Tùy chọn)"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:412
+#: frappe/custom/doctype/custom_field/custom_field.py:413
 msgid "Can not rename as column {0} is already present on DocType."
 msgstr ""
 
@@ -4081,7 +4070,7 @@ msgstr "Không thể đổi tên {0} thành {1} vì {0} không tồn tại."
 msgid "Cancel"
 msgstr "Hủy"
 
-#: frappe/public/js/frappe/list/list_view.js:2315
+#: frappe/public/js/frappe/list/list_view.js:2321
 msgctxt "Button in list view actions menu"
 msgid "Cancel"
 msgstr "Hủy"
@@ -4107,7 +4096,7 @@ msgstr "Hủy nhập"
 msgid "Cancel Prepared Report"
 msgstr "Hủy Báo cáo đã chuẩn bị"
 
-#: frappe/public/js/frappe/list/list_view.js:2320
+#: frappe/public/js/frappe/list/list_view.js:2326
 msgctxt "Title of confirmation dialog"
 msgid "Cancel {0} documents?"
 msgstr "Hủy {0} tài liệu?"
@@ -4120,10 +4109,10 @@ msgstr "Hủy {0} tài liệu?"
 #: frappe/core/doctype/comment/comment.json
 #: frappe/core/doctype/user_invitation/user_invitation.json
 #: frappe/desk/doctype/event/event.json frappe/desk/doctype/todo/todo.json
-#: frappe/desk/form/save.py:69
+#: frappe/desk/form/save.py:74
 #: frappe/integrations/doctype/integration_request/integration_request.json
 #: frappe/public/js/frappe/model/indicator.js:78
-#: frappe/public/js/frappe/ui/filters/filter.js:539
+#: frappe/public/js/frappe/ui/filters/filter.js:546
 msgid "Cancelled"
 msgstr "Đã hủy"
 
@@ -4140,7 +4129,7 @@ msgstr "Đang hủy"
 msgid "Cancelling documents"
 msgstr "Hủy tài liệu"
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:103
+#: frappe/desk/doctype/bulk_update/bulk_update.py:104
 msgid "Cancelling {0}"
 msgstr "Đang hủy {0}"
 
@@ -4204,7 +4193,7 @@ msgstr "Không thể thay đổi thành/từ tên tự động tăng tự độn
 msgid "Cannot create a {0} against a child document: {1}"
 msgstr "Không thể tạo {0} đối với tài liệu con: {1}"
 
-#: frappe/desk/doctype/workspace/workspace.py:310
+#: frappe/desk/doctype/workspace/workspace.py:306
 msgid "Cannot create private workspace of other users"
 msgstr "Không thể tạo không gian làm việc riêng tư của người dùng khác"
 
@@ -4328,7 +4317,7 @@ msgstr "Không thể khớp cột {0} với bất kỳ trường nào"
 msgid "Cannot move row"
 msgstr "Không thể di chuyển hàng"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:978
+#: frappe/public/js/frappe/views/reports/report_view.js:1001
 msgid "Cannot remove ID field"
 msgstr "Không thể xóa trường ID"
 
@@ -4353,11 +4342,11 @@ msgstr "Không thể gửi {0}."
 msgid "Cannot update {0}"
 msgstr "Không thể cập nhật {0}"
 
-#: frappe/model/db_query.py:1249
+#: frappe/model/db_query.py:1253
 msgid "Cannot use sub-query here."
 msgstr "Không thể sử dụng truy vấn phụ ở đây."
 
-#: frappe/model/db_query.py:1281
+#: frappe/model/db_query.py:1285
 msgid "Cannot use {0} in order/group by"
 msgstr "Không thể sử dụng {0} theo thứ tự/nhóm theo"
 
@@ -4534,7 +4523,7 @@ msgstr "Nguồn biểu đồ"
 
 #. Label of the chart_type (Select) field in DocType 'Dashboard Chart'
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.json
-#: frappe/public/js/frappe/views/reports/report_view.js:559
+#: frappe/public/js/frappe/views/reports/report_view.js:564
 msgid "Chart Type"
 msgstr "Loại biểu đồ"
 
@@ -4600,7 +4589,7 @@ msgstr "Chọn tùy chọn này nếu bạn muốn buộc người dùng chọn 
 msgid "Check to display the full numeric value (e.g., 1,234,567 instead of 1.2M)."
 msgstr "Chọn để hiển thị giá trị số đầy đủ (ví dụ: 1.234.567 thay vì 1,2M)."
 
-#: frappe/public/js/frappe/desk.js:235
+#: frappe/public/js/frappe/desk.js:237
 msgid "Checking one moment"
 msgstr "Kiểm tra một lúc"
 
@@ -4646,7 +4635,7 @@ msgstr ""
 msgid "Child Tables are shown as a Grid in other DocTypes"
 msgstr "Bảng con được hiển thị dưới dạng Lưới trong các Loại tài liệu khác"
 
-#: frappe/database/query.py:1189
+#: frappe/database/query.py:1185
 msgid "Child query fields for '{0}' must be a list or tuple."
 msgstr ""
 
@@ -4702,7 +4691,7 @@ msgstr "Xóa & Thêm mẫu"
 msgid "Clear All"
 msgstr "Xóa hết"
 
-#: frappe/public/js/frappe/list/list_view.js:2221
+#: frappe/public/js/frappe/list/list_view.js:2227
 msgctxt "Button in list view actions menu"
 msgid "Clear Assignment"
 msgstr "Xóa nhiệm vụ"
@@ -4811,8 +4800,8 @@ msgstr "Bấm để Đặt Bộ Lọc"
 msgid "Click to edit"
 msgstr ""
 
-#: frappe/public/js/frappe/list/list_view.js:743
-#: frappe/public/js/frappe/list/list_view.js:763
+#: frappe/public/js/frappe/list/list_view.js:744
+#: frappe/public/js/frappe/list/list_view.js:764
 msgid "Click to sort by {0}"
 msgstr "Bấm để sắp xếp theo {0}"
 
@@ -4931,7 +4920,7 @@ msgstr "Đóng"
 msgid "Close Condition"
 msgstr "Đóng điều kiện"
 
-#: frappe/public/js/form_builder/components/FieldProperties.vue:96
+#: frappe/public/js/form_builder/components/FieldProperties.vue:99
 msgid "Close properties"
 msgstr "Đóng thuộc tính"
 
@@ -4994,7 +4983,7 @@ msgctxt "Shrink code field."
 msgid "Collapse"
 msgstr "Thu gọn"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2273
+#: frappe/public/js/frappe/views/reports/query_report.js:2278
 #: frappe/public/js/frappe/views/treeview.js:124
 msgid "Collapse All"
 msgstr "Thu gọn tất cả"
@@ -5051,7 +5040,7 @@ msgstr "Có thể thu gọn tùy thuộc vào (JS)"
 #: frappe/desk/doctype/number_card/number_card.json
 #: frappe/desk/doctype/todo/todo.json
 #: frappe/desk/doctype/workspace_shortcut/workspace_shortcut.json
-#: frappe/public/js/frappe/views/reports/query_report.js:1285
+#: frappe/public/js/frappe/views/reports/query_report.js:1292
 #: frappe/public/js/frappe/widgets/widget_dialog.js:546
 #: frappe/public/js/frappe/widgets/widget_dialog.js:694
 #: frappe/website/doctype/color/color.json
@@ -5139,7 +5128,7 @@ msgstr "Cột"
 msgid "Columns / Fields"
 msgstr "Cột / Trường"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:433
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:434
 msgid "Columns based on"
 msgstr "Các cột dựa trên"
 
@@ -5309,7 +5298,7 @@ msgstr "Hoàn thành bởi"
 msgid "Complete Registration"
 msgstr "Hoàn thành đăng ký"
 
-#: frappe/public/js/frappe/ui/slides.js:374
+#: frappe/public/js/frappe/ui/slides.js:379
 msgctxt "Finish the setup wizard"
 msgid "Complete Setup"
 msgstr "Hoàn tất thiết lập"
@@ -5411,7 +5400,7 @@ msgstr "Cấu hình"
 msgid "Configuration"
 msgstr "Cấu hình"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:541
+#: frappe/public/js/frappe/views/reports/report_view.js:546
 msgid "Configure Chart"
 msgstr "Cấu hình biểu đồ"
 
@@ -5625,7 +5614,7 @@ msgstr "Chứa {0} bản sửa lỗi bảo mật"
 #. Label of the content (Data) field in DocType 'Web Page View'
 #: frappe/core/doctype/comment/comment.json frappe/desk/doctype/note/note.json
 #: frappe/desk/doctype/workspace/workspace.json
-#: frappe/public/js/frappe/utils/utils.js:2070
+#: frappe/public/js/frappe/utils/utils.js:2064
 #: frappe/website/doctype/help_article/help_article.json
 #: frappe/website/doctype/web_page/web_page.json
 #: frappe/website/doctype/web_page_view/web_page_view.json
@@ -5643,7 +5632,7 @@ msgstr "Nội dung băm"
 msgid "Content Type"
 msgstr "Loại nội dung"
 
-#: frappe/desk/doctype/workspace/workspace.py:100
+#: frappe/desk/doctype/workspace/workspace.py:88
 msgid "Content data shoud be a list"
 msgstr ""
 
@@ -5698,7 +5687,7 @@ msgstr ""
 msgid "Copied to clipboard."
 msgstr "Đã sao chép vào bảng nhớ tạm."
 
-#: frappe/public/js/frappe/list/list_view.js:2539
+#: frappe/public/js/frappe/list/list_view.js:2545
 msgid "Copied {0} {1} to clipboard"
 msgstr "Đã sao chép {0} {1} vào khay nhớ tạm"
 
@@ -5724,7 +5713,7 @@ msgstr ""
 
 #: frappe/public/js/frappe/form/controls/code.js:32
 #: frappe/public/js/frappe/form/toolbar.js:543
-#: frappe/public/js/frappe/list/list_view.js:2423
+#: frappe/public/js/frappe/list/list_view.js:2429
 msgid "Copy to Clipboard"
 msgstr "Sao chép vào Khay nhớ tạm"
 
@@ -5761,15 +5750,15 @@ msgstr "Không thể tìm thấy {0}"
 msgid "Could not map column {0} to field {1}"
 msgstr "Không thể ánh xạ cột {0} tới trường {1}"
 
-#: frappe/database/query.py:1092
+#: frappe/database/query.py:1088
 msgid "Could not parse field: {0}"
 msgstr "Không thể phân tích trường: {0}"
 
-#: frappe/utils/pdf_generator/chrome_pdf_generator.py:165
+#: frappe/utils/pdf_generator/chrome_pdf_generator.py:168
 msgid "Could not start Chromium. Check logs for details."
 msgstr ""
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:241
+#: frappe/desk/page/setup_wizard/setup_wizard.js:253
 msgid "Could not start up:"
 msgstr "Không thể khởi động:"
 
@@ -5860,7 +5849,7 @@ msgstr "Cr"
 #: frappe/public/js/frappe/list/list_filter.js:121
 #: frappe/public/js/frappe/views/file/file_view.js:112
 #: frappe/public/js/frappe/views/interaction.js:18
-#: frappe/public/js/frappe/views/reports/query_report.js:1317
+#: frappe/public/js/frappe/views/reports/query_report.js:1324
 #: frappe/public/js/frappe/views/workspace/workspace.js:495
 #: frappe/workflow/page/workflow_builder/workflow_builder.js:46
 msgid "Create"
@@ -5880,7 +5869,7 @@ msgid "Create Card"
 msgstr "Tạo Thẻ"
 
 #: frappe/public/js/frappe/views/reports/query_report.js:286
-#: frappe/public/js/frappe/views/reports/query_report.js:1244
+#: frappe/public/js/frappe/views/reports/query_report.js:1251
 msgid "Create Chart"
 msgstr "Tạo biểu đồ"
 
@@ -5951,15 +5940,15 @@ msgstr "Tạo một ..."
 msgid "Create a new record"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:480
-#: frappe/public/js/frappe/form/controls/link.js:482
+#: frappe/public/js/frappe/form/controls/link.js:489
+#: frappe/public/js/frappe/form/controls/link.js:491
 #: frappe/public/js/frappe/form/link_selector.js:147
 #: frappe/public/js/frappe/list/list_view.js:528
 #: frappe/public/js/frappe/web_form/web_form_list.js:230
 msgid "Create a new {0}"
 msgstr "Tạo {0}"
 
-#: frappe/www/login.html:162
+#: frappe/www/login.html:161
 msgid "Create a {0} Account"
 msgstr ""
 
@@ -6017,7 +6006,7 @@ msgstr "Đã tạo Trường tùy chỉnh {0} trong {1}"
 msgid "Created On"
 msgstr "Được tạo vào ngày"
 
-#: frappe/public/js/frappe/desk.js:519
+#: frappe/public/js/frappe/desk.js:520
 #: frappe/public/js/frappe/views/treeview.js:402
 msgid "Creating {0}"
 msgstr "Đang tạo {0}"
@@ -6079,7 +6068,7 @@ msgstr ""
 #: frappe/custom/doctype/customize_form_field/customize_form_field.json
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.json
 #: frappe/desk/doctype/number_card/number_card.json
-#: frappe/desk/page/setup_wizard/setup_wizard.js:418
+#: frappe/desk/page/setup_wizard/setup_wizard.js:430
 #: frappe/geo/doctype/currency/currency.json
 #: frappe/website/doctype/web_form_field/web_form_field.json
 msgid "Currency"
@@ -6214,15 +6203,15 @@ msgstr "Tài liệu tùy chỉnh"
 msgid "Custom Field"
 msgstr "Trường tùy chỉnh"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:222
+#: frappe/custom/doctype/custom_field/custom_field.py:223
 msgid "Custom Field {0} is created by the Administrator and can only be deleted through the Administrator account."
 msgstr ""
 
-#: frappe/custom/doctype/custom_field/custom_field.py:279
+#: frappe/custom/doctype/custom_field/custom_field.py:280
 msgid "Custom Fields can only be added to a standard DocType."
 msgstr ""
 
-#: frappe/custom/doctype/custom_field/custom_field.py:276
+#: frappe/custom/doctype/custom_field/custom_field.py:277
 msgid "Custom Fields cannot be added to core DocTypes."
 msgstr ""
 
@@ -6319,7 +6308,7 @@ msgstr ""
 msgid "Custom Translation"
 msgstr "Bản dịch tùy chỉnh"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:425
+#: frappe/custom/doctype/custom_field/custom_field.py:426
 msgid "Custom field renamed to {0} successfully."
 msgstr "Trường tùy chỉnh được đổi tên thành {0} thành công."
 
@@ -6369,7 +6358,7 @@ msgstr "Các tùy chỉnh cho <b>{0}</b> được xuất sang:<br>{1}"
 msgid "Customize"
 msgstr "Tùy chỉnh"
 
-#: frappe/public/js/frappe/list/list_view.js:1982
+#: frappe/public/js/frappe/list/list_view.js:1988
 msgctxt "Button in list view menu"
 msgid "Customize"
 msgstr "Tùy chỉnh"
@@ -6389,7 +6378,7 @@ msgstr "Tùy chỉnh Bảng điều khiển"
 #: frappe/core/doctype/doctype/doctype.js:61
 #: frappe/core/workspace/build/build.json
 #: frappe/custom/doctype/customize_form/customize_form.json
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:379
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:380
 #: frappe/workspace_sidebar/build.json
 msgid "Customize Form"
 msgstr "Tùy chỉnh biểu mẫu"
@@ -6403,7 +6392,7 @@ msgstr "Tùy chỉnh biểu mẫu - {0}"
 msgid "Customize Form Field"
 msgstr "Tùy chỉnh trường biểu mẫu"
 
-#: frappe/public/js/frappe/list/list_view.js:2008
+#: frappe/public/js/frappe/list/list_view.js:2014
 msgctxt "Customize qucik filters of List View"
 msgid "Customize Quick Filters"
 msgstr "Tùy chỉnh bộ lọc nhanh"
@@ -7058,7 +7047,7 @@ msgstr "Bị trì hoãn"
 #: frappe/public/js/frappe/form/grid.js:88
 #: frappe/public/js/frappe/form/grid_row_form.js:62
 #: frappe/public/js/frappe/form/toolbar.js:500
-#: frappe/public/js/frappe/views/reports/report_view.js:1811
+#: frappe/public/js/frappe/views/reports/report_view.js:1834
 #: frappe/public/js/frappe/views/treeview.js:338
 #: frappe/public/js/frappe/web_form/web_form_list.js:283
 #: frappe/templates/discussions/reply_card.html:35
@@ -7066,7 +7055,7 @@ msgstr "Bị trì hoãn"
 msgid "Delete"
 msgstr "Đã cập nhật giá trị mặc định"
 
-#: frappe/public/js/frappe/list/list_view.js:2283
+#: frappe/public/js/frappe/list/list_view.js:2289
 msgctxt "Button in list view actions menu"
 msgid "Delete"
 msgstr "Xóa"
@@ -7095,7 +7084,7 @@ msgstr "Xóa cột"
 msgid "Delete Data"
 msgstr "Xóa dữ liệu"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:116
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:117
 msgid "Delete Kanban Board"
 msgstr ""
 
@@ -7117,7 +7106,7 @@ msgstr "Xóa tất cả"
 msgid "Delete all {0} rows"
 msgstr "Xóa tất cả {0} hàng"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:971
+#: frappe/public/js/frappe/views/reports/query_report.js:978
 msgid "Delete and Generate New"
 msgstr "Xóa và tạo mới"
 
@@ -7163,12 +7152,12 @@ msgstr ""
 msgid "Delete this record to allow sending to this email address"
 msgstr ""
 
-#: frappe/public/js/frappe/list/list_view.js:2288
+#: frappe/public/js/frappe/list/list_view.js:2294
 msgctxt "Title of confirmation dialog"
 msgid "Delete {0} item permanently?"
 msgstr "Xóa mục {0} vĩnh viễn?"
 
-#: frappe/public/js/frappe/list/list_view.js:2294
+#: frappe/public/js/frappe/list/list_view.js:2300
 msgctxt "Title of confirmation dialog"
 msgid "Delete {0} items permanently?"
 msgstr "Xóa vĩnh viễn {0} mục?"
@@ -7631,7 +7620,7 @@ msgstr "Loại bỏ {0}"
 msgid "Discard?"
 msgstr "Hủy bỏ?"
 
-#: frappe/desk/form/save.py:80
+#: frappe/desk/form/save.py:85
 msgid "Discarded"
 msgstr "Bị loại bỏ"
 
@@ -7705,7 +7694,7 @@ msgstr ""
 msgid "Do not edit headers which are preset in the template"
 msgstr "Không chỉnh sửa các tiêu đề được đặt trước trong mẫu"
 
-#: frappe/public/js/frappe/router.js:630
+#: frappe/public/js/frappe/router.js:629
 msgid "Do not warn me again about {0}"
 msgstr "Đừng cảnh báo lại tôi về {0}"
 
@@ -8143,7 +8132,7 @@ msgstr "Tiêu đề tài liệu"
 #: frappe/desk/doctype/tag_link/tag_link.json
 #: frappe/email/doctype/notification/notification.json
 #: frappe/printing/doctype/print_format_field_template/print_format_field_template.json
-#: frappe/public/js/frappe/roles_editor.js:76
+#: frappe/public/js/frappe/roles_editor.js:101
 #: frappe/website/doctype/personal_data_deletion_step/personal_data_deletion_step.json
 #: frappe/workflow/doctype/workflow/workflow.json
 msgid "Document Type"
@@ -8190,7 +8179,7 @@ msgstr ""
 msgid "Document Unlocked"
 msgstr "Đã mở khóa tài liệu"
 
-#: frappe/database/query.py:577
+#: frappe/database/query.py:573
 msgid "Document cannot be used as a filter value"
 msgstr "Không thể sử dụng tài liệu làm giá trị bộ lọc"
 
@@ -8198,15 +8187,15 @@ msgstr "Không thể sử dụng tài liệu làm giá trị bộ lọc"
 msgid "Document follow is not enabled for this user."
 msgstr "Theo dõi tài liệu không được bật cho người dùng này."
 
-#: frappe/public/js/frappe/list/list_view.js:1345
+#: frappe/public/js/frappe/list/list_view.js:1351
 msgid "Document has been cancelled"
 msgstr "Tài liệu đã bị hủy"
 
-#: frappe/public/js/frappe/list/list_view.js:1344
+#: frappe/public/js/frappe/list/list_view.js:1350
 msgid "Document has been submitted"
 msgstr "Tài liệu đã được gửi"
 
-#: frappe/public/js/frappe/list/list_view.js:1343
+#: frappe/public/js/frappe/list/list_view.js:1349
 msgid "Document is in draft state"
 msgstr "Tài liệu đang ở trạng thái dự thảo"
 
@@ -8324,7 +8313,7 @@ msgstr ""
 msgid "Don't encode HTML tags like &lt;script&gt; or just characters like &lt; or &gt;, as they could be intentionally used in this field"
 msgstr "Không mã hóa các thẻ HTML như &lt;script&gt; hoặc chỉ các ký tự như &lt; hoặc &gt; vì chúng có thể được cố ý sử dụng trong trường này"
 
-#: frappe/www/login.html:139 frappe/www/login.html:155
+#: frappe/www/login.html:138 frappe/www/login.html:154
 #: frappe/www/update-password.html:70
 msgid "Don't have an account?"
 msgstr "Bạn chưa có tài khoản?"
@@ -8410,7 +8399,7 @@ msgid "Dr"
 msgstr "Tiến sĩ"
 
 #: frappe/public/js/frappe/model/indicator.js:73
-#: frappe/public/js/frappe/ui/filters/filter.js:537
+#: frappe/public/js/frappe/ui/filters/filter.js:544
 msgid "Draft"
 msgstr "Bản nháp"
 
@@ -8599,7 +8588,7 @@ msgstr "ESC"
 #: frappe/public/js/frappe/form/toolbar.js:214
 #: frappe/public/js/frappe/form/toolbar.js:785
 #: frappe/public/js/frappe/views/reports/query_report.js:913
-#: frappe/public/js/frappe/views/reports/query_report.js:1923
+#: frappe/public/js/frappe/views/reports/query_report.js:1928
 #: frappe/public/js/frappe/widgets/base_widget.js:64
 #: frappe/public/js/frappe/widgets/chart_widget.js:304
 #: frappe/public/js/frappe/widgets/number_card_widget.js:365
@@ -8610,7 +8599,7 @@ msgstr "ESC"
 msgid "Edit"
 msgstr "Chỉnh sửa"
 
-#: frappe/public/js/frappe/list/list_view.js:2369
+#: frappe/public/js/frappe/list/list_view.js:2375
 msgctxt "Button in list view actions menu"
 msgid "Edit"
 msgstr "Chỉnh sửa"
@@ -8649,7 +8638,7 @@ msgstr "Chỉnh sửa HTML tùy chỉnh"
 msgid "Edit DocType"
 msgstr ""
 
-#: frappe/public/js/frappe/list/list_view.js:2001
+#: frappe/public/js/frappe/list/list_view.js:2007
 msgctxt "Button in list view menu"
 msgid "Edit DocType"
 msgstr ""
@@ -8659,7 +8648,7 @@ msgstr ""
 msgid "Edit Existing"
 msgstr "Chỉnh sửa hiện có"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:399
+#: frappe/public/js/frappe/ui/filters/filter.js:401
 msgid "Edit Filter"
 msgstr ""
 
@@ -8769,7 +8758,7 @@ msgstr "Chỉnh sửa câu trả lời của bạn"
 msgid "Edit your workflow visually using the Workflow Builder."
 msgstr "Chỉnh sửa quy trình làm việc của bạn một cách trực quan bằng cách sử dụng Trình tạo quy trình làm việc."
 
-#: frappe/public/js/frappe/views/reports/report_view.js:732
+#: frappe/public/js/frappe/views/reports/report_view.js:755
 #: frappe/public/js/frappe/widgets/widget_dialog.js:52
 msgid "Edit {0}"
 msgstr ""
@@ -8850,8 +8839,8 @@ msgstr "Bộ chọn phần tử"
 #: frappe/website/doctype/personal_data_deletion_request/personal_data_deletion_request.json
 #: frappe/website/web_form/request_data/request_data.json
 #: frappe/website/web_form/request_to_delete_data/request_to_delete_data.json
-#: frappe/workspace_sidebar/email.json frappe/www/login.html:8
-#: frappe/www/login.py:104
+#: frappe/workspace_sidebar/email.json frappe/www/login.html:7
+#: frappe/www/login.py:101
 msgid "Email"
 msgstr ""
 
@@ -8900,11 +8889,11 @@ msgstr ""
 #. Label of the email_id (Data) field in DocType 'Google Contacts'
 #: frappe/contacts/doctype/address/address.json
 #: frappe/contacts/doctype/contact/contact.json
-#: frappe/desk/page/setup_wizard/setup_wizard.js:493
+#: frappe/desk/page/setup_wizard/setup_wizard.js:498
 #: frappe/email/doctype/email_account/email_account.json
 #: frappe/integrations/doctype/google_contacts/google_contacts.json
-#: frappe/www/complete_signup.html:11 frappe/www/login.html:184
-#: frappe/www/login.html:211
+#: frappe/www/complete_signup.html:11 frappe/www/login.html:183
+#: frappe/www/login.html:210
 msgid "Email Address"
 msgstr ""
 
@@ -9141,7 +9130,7 @@ msgstr ""
 msgid "Embed code copied"
 msgstr "Đã sao chép mã nhúng"
 
-#: frappe/database/query.py:2455
+#: frappe/database/query.py:2452
 msgid "Empty alias is not allowed"
 msgstr "Bí danh trống không được phép"
 
@@ -9149,7 +9138,7 @@ msgstr "Bí danh trống không được phép"
 msgid "Empty column"
 msgstr "Cột trống"
 
-#: frappe/database/query.py:2397
+#: frappe/database/query.py:2393
 msgid "Empty string arguments are not allowed"
 msgstr "Không được phép đối số chuỗi trống"
 
@@ -9517,6 +9506,10 @@ msgstr "Nhập danh sách Tùy chọn, mỗi tùy chọn trên một dòng mới
 msgid "Enter static url parameters here (Eg. sender=ERPNext, username=ERPNext, password=1234 etc.)"
 msgstr ""
 
+#: frappe/public/js/form_builder/components/FieldProperties.vue:66
+msgid "Enter the fieldname of the currency field or a cached value (e.g. Company:company:default_currency)."
+msgstr ""
+
 #. Description of the 'Message Parameter' (Data) field in DocType 'SMS
 #. Settings'
 #: frappe/core/doctype/sms_settings/sms_settings.json
@@ -9640,7 +9633,7 @@ msgstr "Lỗi định dạng in trên dòng {0}: {1}"
 msgid "Error in {0}.get_list: {1}"
 msgstr "Lỗi trong {0}.get_list: {1}"
 
-#: frappe/database/query.py:463
+#: frappe/database/query.py:459
 msgid "Error parsing nested filters: {0}. {1}"
 msgstr "Lỗi phân tích cú pháp các bộ lọc lồng nhau: {0}. {1}"
 
@@ -9829,7 +9822,7 @@ msgstr "Mã thực thi"
 msgid "Executing..."
 msgstr "Đang thực hiện..."
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2289
+#: frappe/public/js/frappe/views/reports/query_report.js:2294
 msgid "Execution Time: {0} sec"
 msgstr "Thời gian thực hiện: {0} giây"
 
@@ -9837,11 +9830,6 @@ msgstr "Thời gian thực hiện: {0} giây"
 #: frappe/printing/doctype/print_settings/print_settings.json
 msgid "Executive"
 msgstr "Điều hành"
-
-#. Label of the existing_role (Link) field in DocType 'Role Replication'
-#: frappe/core/doctype/role_replication/role_replication.json
-msgid "Existing Role"
-msgstr "Vai trò hiện tại"
 
 #: frappe/public/js/frappe/views/treeview.js:116
 #: frappe/public/js/frappe/views/treeview.js:128
@@ -9855,12 +9843,12 @@ msgctxt "Enlarge code field."
 msgid "Expand"
 msgstr "Mở rộng"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2271
+#: frappe/public/js/frappe/views/reports/query_report.js:2276
 #: frappe/public/js/frappe/views/treeview.js:134
 msgid "Expand All"
 msgstr "Mở rộng tất cả"
 
-#: frappe/database/query.py:743
+#: frappe/database/query.py:739
 msgid "Expected 'and' or 'or' operator, found: {0}"
 msgstr ""
 
@@ -9919,13 +9907,13 @@ msgstr "Thời gian hết hạn của Trang Hình Ảnh Mã QR"
 #: frappe/core/page/permission_manager/permission_manager_help.html:66
 #: frappe/public/js/frappe/data_import/data_exporter.js:92
 #: frappe/public/js/frappe/data_import/data_exporter.js:247
-#: frappe/public/js/frappe/views/reports/query_report.js:1965
-#: frappe/public/js/frappe/views/reports/report_view.js:1691
+#: frappe/public/js/frappe/views/reports/query_report.js:1970
+#: frappe/public/js/frappe/views/reports/report_view.js:1714
 #: frappe/public/js/frappe/widgets/chart_widget.js:320
 msgid "Export"
 msgstr "Xuất"
 
-#: frappe/public/js/frappe/list/list_view.js:2411
+#: frappe/public/js/frappe/list/list_view.js:2417
 msgctxt "Button in list view actions menu"
 msgid "Export"
 msgstr "Xuất"
@@ -9969,11 +9957,11 @@ msgstr "Báo cáo xuất: {0}"
 msgid "Export Type"
 msgstr "Loại Xuất"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1702
+#: frappe/public/js/frappe/views/reports/report_view.js:1725
 msgid "Export all matching rows?"
 msgstr "Xuất tất cả các hàng phù hợp?"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1712
+#: frappe/public/js/frappe/views/reports/report_view.js:1735
 msgid "Export all {0} rows?"
 msgstr "Xuất tất cả {0} hàng?"
 
@@ -10112,7 +10100,7 @@ msgstr "Số lần đăng nhập không thành công"
 msgid "Failed Logins (Last 30 days)"
 msgstr "Đăng nhập không thành công (30 ngày qua)"
 
-#: frappe/model/workflow.py:383
+#: frappe/model/workflow.py:387
 msgid "Failed Transactions"
 msgstr "Giao dịch không thành công"
 
@@ -10124,7 +10112,7 @@ msgstr "Không lấy được khóa: {}. Khóa có thể được giữ bởi m�
 msgid "Failed to change password."
 msgstr "Không thể thay đổi mật khẩu."
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:239
+#: frappe/desk/page/setup_wizard/setup_wizard.js:251
 #: frappe/desk/page/setup_wizard/setup_wizard.py:43
 msgid "Failed to complete setup"
 msgstr "Không thể hoàn tất thiết lập"
@@ -10187,7 +10175,7 @@ msgstr "Không lấy được phương thức {0} với {1}"
 msgid "Failed to import virtual doctype {}, is controller file present?"
 msgstr "Không thể nhập loại tài liệu ảo {}, có tệp điều khiển không?"
 
-#: frappe/utils/image.py:70
+#: frappe/utils/image.py:72
 msgid "Failed to optimize image: {0}"
 msgstr "Không thể tối ưu hóa hình ảnh: {0}"
 
@@ -10311,7 +10299,7 @@ msgstr "Đang tìm nạp các trường từ {0}..."
 #: frappe/public/js/frappe/list/bulk_operations.js:327
 #: frappe/public/js/frappe/list/list_view_permission_restrictions.html:3
 #: frappe/public/js/frappe/views/reports/query_report.js:237
-#: frappe/public/js/frappe/views/reports/query_report.js:2024
+#: frappe/public/js/frappe/views/reports/query_report.js:2029
 #: frappe/website/doctype/web_form_field/web_form_field.json
 #: frappe/website/doctype/web_form_list_column/web_form_list_column.json
 msgid "Field"
@@ -10437,7 +10425,7 @@ msgstr "Tên trường có tên {0} phải tồn tại để bật tính năng t
 msgid "Fieldname is limited to 64 characters ({0})"
 msgstr "Tên trường được giới hạn ở 64 ký tự ({0})"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:199
+#: frappe/custom/doctype/custom_field/custom_field.py:200
 msgid "Fieldname not set for Custom Field"
 msgstr "Tên trường chưa được đặt cho Trường tùy chỉnh"
 
@@ -10501,7 +10489,7 @@ msgstr "Các trường `file_name` hoặc `file_url` phải được đặt cho 
 msgid "Fields must be a list or tuple when as_list is enabled"
 msgstr ""
 
-#: frappe/database/query.py:1138
+#: frappe/database/query.py:1134
 msgid "Fields must be a string, list, tuple, pypika Field, or pypika Function"
 msgstr ""
 
@@ -10525,7 +10513,7 @@ msgstr "Các trường được phân tách bằng dấu phẩy (,) sẽ đượ
 msgid "Fieldtype"
 msgstr "Loại trường"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:195
+#: frappe/custom/doctype/custom_field/custom_field.py:196
 msgid "Fieldtype cannot be changed from {0} to {1}"
 msgstr "Loại trường không thể thay đổi từ {0} thành {1}"
 
@@ -10672,11 +10660,11 @@ msgstr "Tên bộ lọc"
 msgid "Filter Values"
 msgstr "Giá trị lọc"
 
-#: frappe/database/query.py:749
+#: frappe/database/query.py:745
 msgid "Filter condition missing after operator: {0}"
 msgstr "Tình trạng bộ lọc bị thiếu sau toán tử: {0}"
 
-#: frappe/database/query.py:836
+#: frappe/database/query.py:832
 msgid "Filter fields have invalid backtick notation: {0}"
 msgstr "Các trường bộ lọc có ký hiệu dấu ngược không hợp lệ: {0}"
 
@@ -10699,7 +10687,7 @@ msgstr "Bản ghi đã lọc"
 msgid "Filtered by \"{0}\""
 msgstr "Được lọc bởi \"{0}\""
 
-#: frappe/public/js/frappe/form/controls/link.js:734
+#: frappe/public/js/frappe/form/controls/link.js:743
 msgid "Filtered by: {0}."
 msgstr "Lọc theo: {0}."
 
@@ -10757,7 +10745,7 @@ msgstr "Bộ lọc JSON"
 msgid "Filters Section"
 msgstr "Phần Bộ lọc"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:224
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:225
 msgid "Filters saved"
 msgstr "Đã lưu bộ lọc"
 
@@ -10770,7 +10758,7 @@ msgstr ""
 msgid "Filters {0}"
 msgstr "Bộ lọc {0}"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1480
+#: frappe/public/js/frappe/views/reports/report_view.js:1503
 msgid "Filters:"
 msgstr "Bộ lọc:"
 
@@ -11106,7 +11094,7 @@ msgid "For comparison, use >5, <10 or =324.\n"
 "For ranges, use 5:10 (for values between 5 & 10)."
 msgstr ""
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2286
+#: frappe/public/js/frappe/views/reports/query_report.js:2291
 msgid "For comparison, use >5, <10 or =324. For ranges, use 5:10 (for values between 5 & 10)."
 msgstr "Để so sánh, hãy sử dụng >5, <10 hoặc =324. Đối với phạm vi, hãy sử dụng 5:10 (đối với các giá trị từ 5 đến 10)."
 
@@ -11180,7 +11168,7 @@ msgstr "Buộc người dùng đặt lại mật khẩu"
 msgid "Force Web Capture Mode for Uploads"
 msgstr ""
 
-#: frappe/www/login.html:37
+#: frappe/www/login.html:36
 msgid "Forgot Password?"
 msgstr "Quên mật khẩu?"
 
@@ -11292,8 +11280,8 @@ msgstr ""
 #. Option for the 'Social Login Provider' (Select) field in DocType 'Social
 #. Login Key'
 #: frappe/integrations/doctype/social_login_key/social_login_key.json
-#: frappe/www/login.html:64 frappe/www/login.html:162 frappe/www/login.py:53
-#: frappe/www/login.py:153
+#: frappe/www/login.html:63 frappe/www/login.html:161 frappe/www/login.py:50
+#: frappe/www/login.py:146
 msgid "Frappe"
 msgstr "sinh tố"
 
@@ -11399,7 +11387,7 @@ msgstr "Từ Ngày"
 msgid "From Date Field"
 msgstr "Từ trường ngày"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1985
+#: frappe/public/js/frappe/views/reports/query_report.js:1990
 msgid "From Document Type"
 msgstr "Từ Loại Tài liệu"
 
@@ -11434,7 +11422,7 @@ msgstr "Đầy đủ"
 #: frappe/contacts/doctype/contact/contact.json
 #: frappe/core/doctype/activity_log/activity_log.json
 #: frappe/core/doctype/user/user.json
-#: frappe/desk/page/setup_wizard/setup_wizard.js:487
+#: frappe/desk/page/setup_wizard/setup_wizard.js:492
 #: frappe/templates/signup.html:4
 #: frappe/website/doctype/about_us_team_member/about_us_team_member.json
 msgid "Full Name"
@@ -11466,7 +11454,7 @@ msgstr "Chức năng dựa trên"
 msgid "Function {0} is not whitelisted."
 msgstr "Chức năng {0} không có trong danh sách trắng."
 
-#: frappe/database/query.py:2301
+#: frappe/database/query.py:2297
 msgid "Function {0} requires arguments but none were provided"
 msgstr "Hàm {0} yêu cầu đối số nhưng không có đối số nào được cung cấp"
 
@@ -11546,7 +11534,7 @@ msgid "Generate Separate Documents For Each Assignee"
 msgstr "Tạo Tài Liệu Riêng Cho Mỗi Người Được Giao"
 
 #: frappe/public/js/frappe/ui/sidebar/sidebar.js:515
-#: frappe/public/js/frappe/utils/utils.js:2115
+#: frappe/public/js/frappe/utils/utils.js:2109
 msgid "Generate Tracking URL"
 msgstr "Tạo URL theo dõi"
 
@@ -11962,7 +11950,7 @@ msgstr "Nhóm theo loại"
 msgid "Group By field is required to create a dashboard chart"
 msgstr ""
 
-#: frappe/database/query.py:1357
+#: frappe/database/query.py:1353
 msgid "Group By must be a string"
 msgstr ""
 
@@ -12025,7 +12013,7 @@ msgstr "HH:mm:ss"
 #: frappe/email/doctype/notification/notification.json
 #: frappe/printing/doctype/letter_head/letter_head.json
 #: frappe/printing/doctype/print_format/print_format.json
-#: frappe/printing/doctype/print_format/print_format.py:101
+#: frappe/printing/doctype/print_format/print_format.py:100
 #: frappe/public/js/print_format_builder/Field.vue:86
 #: frappe/website/doctype/web_form_field/web_form_field.json
 #: frappe/website/doctype/web_page/web_page.js:96
@@ -12179,7 +12167,7 @@ msgstr "Tập lệnh Đầu trang/Chân trang có thể được sử dụng đ�
 msgid "Headers"
 msgstr "Tiêu đề"
 
-#: frappe/email/email_body.py:343
+#: frappe/email/email_body.py:354
 msgid "Headers must be a dictionary"
 msgstr ""
 
@@ -12278,7 +12266,7 @@ msgstr "Helvetica"
 msgid "Helvetica Neue"
 msgstr ""
 
-#: frappe/public/js/frappe/utils/utils.js:2112
+#: frappe/public/js/frappe/utils/utils.js:2106
 msgid "Here's your tracking URL"
 msgstr ""
 
@@ -12314,7 +12302,7 @@ msgstr "Ẩn"
 msgid "Hidden Fields"
 msgstr "Trường ẩn"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1772
+#: frappe/public/js/frappe/views/reports/query_report.js:1777
 msgid "Hidden columns include: <br> {0}"
 msgstr "Các cột ẩn bao gồm: <br> {0}"
 
@@ -12489,7 +12477,7 @@ msgstr ""
 #: frappe/website/doctype/website_settings/website_settings.json
 #: frappe/website/web_template/primary_navbar/primary_navbar.html:9
 #: frappe/workspace_sidebar/users.json frappe/workspace_sidebar/website.json
-#: frappe/www/contact.py:25 frappe/www/login.html:170 frappe/www/me.html:76
+#: frappe/www/contact.py:25 frappe/www/login.html:169 frappe/www/me.html:76
 #: frappe/www/message.html:29
 msgid "Home"
 msgstr "Trang chủ"
@@ -12579,14 +12567,14 @@ msgstr "Tôi đoán bạn chưa có quyền truy cập vào bất kỳ không gi
 #: frappe/public/js/frappe/list/list_settings.js:340
 #: frappe/public/js/frappe/list/list_view.js:408
 #: frappe/public/js/frappe/list/list_view.js:472
-#: frappe/public/js/frappe/list/list_view.js:2461
+#: frappe/public/js/frappe/list/list_view.js:2467
 #: frappe/public/js/frappe/model/meta.js:208
 #: frappe/public/js/frappe/model/model.js:122
 msgid "ID"
 msgstr "Mã số"
 
 #: frappe/desk/reportview.py:530
-#: frappe/public/js/frappe/views/reports/report_view.js:1035
+#: frappe/public/js/frappe/views/reports/report_view.js:1058
 msgctxt "Label of name column in report"
 msgid "ID"
 msgstr "Mã số"
@@ -12724,7 +12712,7 @@ msgstr "Nếu trạng thái quy trình công việc đã kiểm tra sẽ không 
 
 #: frappe/core/doctype/doctype/doctype.py:1846
 #: frappe/core/report/user_doctype_permissions/user_doctype_permissions.py:45
-#: frappe/public/js/frappe/roles_editor.js:78
+#: frappe/public/js/frappe/roles_editor.js:103
 msgid "If Owner"
 msgstr "Nếu chủ sở hữu"
 
@@ -12968,12 +12956,12 @@ msgstr "Bỏ qua các tệp đính kèm có kích thước lớn hơn"
 msgid "Ignored Apps"
 msgstr "Ứng dụng bị bỏ qua"
 
-#: frappe/model/workflow.py:223
+#: frappe/model/workflow.py:227
 msgid "Illegal Document Status for {0}"
 msgstr "Tình trạng Tài liệu Bất hợp pháp cho {0}"
 
 #: frappe/model/db_query.py:545 frappe/model/db_query.py:548
-#: frappe/model/db_query.py:1235
+#: frappe/model/db_query.py:1239
 msgid "Illegal SQL Query"
 msgstr "Truy vấn SQL bất hợp pháp"
 
@@ -13097,7 +13085,7 @@ msgstr "Tiềm ẩn"
 msgid "Import"
 msgstr "Nhập dữ liệu"
 
-#: frappe/public/js/frappe/list/list_view.js:1946
+#: frappe/public/js/frappe/list/list_view.js:1952
 msgctxt "Button in list view menu"
 msgid "Import"
 msgstr "Nhập khẩu"
@@ -13320,15 +13308,15 @@ msgid "Include Web View Link in Email"
 msgstr ""
 
 #: frappe/public/js/frappe/form/print_utils.js:60
-#: frappe/public/js/frappe/views/reports/query_report.js:1746
+#: frappe/public/js/frappe/views/reports/query_report.js:1751
 msgid "Include filters"
 msgstr "Bao gồm các bộ lọc"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1768
+#: frappe/public/js/frappe/views/reports/query_report.js:1773
 msgid "Include hidden columns"
 msgstr "Bao gồm các cột ẩn"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1738
+#: frappe/public/js/frappe/views/reports/query_report.js:1743
 msgid "Include indentation"
 msgstr "Bao gồm thụt lề"
 
@@ -13420,7 +13408,7 @@ msgstr "Thụt lề"
 #: frappe/custom/doctype/custom_field/custom_field.json frappe/model/meta.py:55
 #: frappe/public/js/frappe/model/meta.js:211
 #: frappe/public/js/frappe/model/model.js:124
-#: frappe/public/js/frappe/views/reports/report_view.js:1056
+#: frappe/public/js/frappe/views/reports/report_view.js:1079
 msgid "Index"
 msgstr "Chỉ mục"
 
@@ -13487,11 +13475,6 @@ msgstr "Số lần đồng bộ hóa ban đầu"
 msgid "InnoDB"
 msgstr "InnoDB"
 
-#. Description of the 'New Role' (Data) field in DocType 'Role Replication'
-#: frappe/core/doctype/role_replication/role_replication.json
-msgid "Input existing role name if you would like to extend it with access of another role."
-msgstr "Nhập tên vai trò hiện có nếu bạn muốn mở rộng nó với quyền truy cập vào vai trò khác."
-
 #: frappe/core/doctype/data_import/data_import_list.js:35
 msgid "Insert"
 msgstr "Chèn"
@@ -13502,15 +13485,15 @@ msgstr "Chèn ở trên"
 
 #. Label of the insert_after (Select) field in DocType 'Custom Field'
 #: frappe/custom/doctype/custom_field/custom_field.json
-#: frappe/public/js/frappe/views/reports/query_report.js:2030
+#: frappe/public/js/frappe/views/reports/query_report.js:2035
 msgid "Insert After"
 msgstr "Chèn Sau"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:253
+#: frappe/custom/doctype/custom_field/custom_field.py:254
 msgid "Insert After cannot be set as {0}"
 msgstr "Không thể đặt phần chèn sau thành {0}"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:246
+#: frappe/custom/doctype/custom_field/custom_field.py:247
 msgid "Insert After field '{0}' mentioned in Custom Field '{1}', with label '{2}', does not exist"
 msgstr "Chèn sau trường '{0}' được đề cập trong Trường tùy chỉnh '{1}', với nhãn '{2}', không tồn tại"
 
@@ -13576,7 +13559,7 @@ msgstr ""
 msgid "Insufficient Permission Level for {0}"
 msgstr "Cấp phép không đủ cho {0}"
 
-#: frappe/database/query.py:1416
+#: frappe/database/query.py:1412
 msgid "Insufficient Permission for {0}"
 msgstr "Không đủ quyền cho {0}"
 
@@ -13702,7 +13685,7 @@ msgstr "Không hợp lệ"
 #: frappe/public/js/form_builder/utils.js:218
 #: frappe/public/js/frappe/form/grid_row.js:840
 #: frappe/public/js/frappe/form/layout.js:806
-#: frappe/public/js/frappe/views/reports/report_view.js:767
+#: frappe/public/js/frappe/views/reports/report_view.js:790
 msgid "Invalid \"depends_on\" expression"
 msgstr "Biểu thức \"phụ thuộc\" không hợp lệ"
 
@@ -13763,8 +13746,8 @@ msgstr "Tên trường không hợp lệ"
 msgid "Invalid File URL"
 msgstr "URL tệp không hợp lệ"
 
-#: frappe/database/query.py:838 frappe/database/query.py:865
-#: frappe/database/query.py:875
+#: frappe/database/query.py:834 frappe/database/query.py:861
+#: frappe/database/query.py:871
 msgid "Invalid Filter"
 msgstr "Bộ lọc không hợp lệ"
 
@@ -13784,7 +13767,7 @@ msgstr "Trang chủ không hợp lệ"
 msgid "Invalid Link"
 msgstr "Liên kết không hợp lệ"
 
-#: frappe/www/login.py:128
+#: frappe/www/login.py:121
 msgid "Invalid Login Token"
 msgstr "Mã thông báo đăng nhập không hợp lệ"
 
@@ -13839,7 +13822,7 @@ msgid "Invalid Phone Number"
 msgstr "Số điện thoại không hợp lệ"
 
 #: frappe/auth.py:97 frappe/utils/oauth.py:214 frappe/utils/oauth.py:223
-#: frappe/www/login.py:128
+#: frappe/www/login.py:121
 msgid "Invalid Request"
 msgstr "Yêu cầu không hợp lệ"
 
@@ -13877,7 +13860,7 @@ msgstr ""
 msgid "Invalid aggregate function"
 msgstr "Hàm tổng hợp không hợp lệ"
 
-#: frappe/database/query.py:2461
+#: frappe/database/query.py:2458
 msgid "Invalid alias format: {0}. Alias must be a simple identifier."
 msgstr ""
 
@@ -13885,15 +13868,15 @@ msgstr ""
 msgid "Invalid app"
 msgstr "Ứng dụng không hợp lệ"
 
-#: frappe/database/query.py:2422 frappe/database/query.py:2437
+#: frappe/database/query.py:2418 frappe/database/query.py:2434
 msgid "Invalid argument format: {0}. Only quoted string literals or simple field names are allowed."
 msgstr "Định dạng đối số không hợp lệ: {0}. Chỉ cho phép các chuỗi ký tự được trích dẫn hoặc tên trường đơn giản."
 
-#: frappe/database/query.py:2386
+#: frappe/database/query.py:2382
 msgid "Invalid argument type: {0}. Only strings, numbers, dicts, and None are allowed."
 msgstr ""
 
-#: frappe/database/query.py:871
+#: frappe/database/query.py:867
 msgid "Invalid characters in fieldname: {0}. Only letters, numbers, and underscores are allowed."
 msgstr ""
 
@@ -13901,11 +13884,11 @@ msgstr ""
 msgid "Invalid column"
 msgstr "Cột không hợp lệ"
 
-#: frappe/database/query.py:772
+#: frappe/database/query.py:768
 msgid "Invalid condition type in nested filters: {0}"
 msgstr "Loại điều kiện không hợp lệ trong các bộ lọc lồng nhau: {0}"
 
-#: frappe/database/query.py:1401
+#: frappe/database/query.py:1397
 msgid "Invalid direction in Order By: {0}. Must be 'ASC' or 'DESC'."
 msgstr ""
 
@@ -13925,11 +13908,11 @@ msgstr "Biểu thức không hợp lệ trong Giá trị cập nhật quy trình
 msgid "Invalid expression set in filter {0} ({1})"
 msgstr "Bộ biểu thức không hợp lệ trong bộ lọc {0} ({1})"
 
-#: frappe/database/query.py:2189
+#: frappe/database/query.py:2185
 msgid "Invalid field format for SELECT: {0}. Field names must be simple, backticked, table-qualified, aliased, or '*'."
 msgstr "Định dạng trường không hợp lệ cho CHỌN: {0}. Tên trường phải đơn giản, có dấu ngược lại, đủ điều kiện trong bảng, có bí danh hoặc '*'."
 
-#: frappe/database/query.py:1342
+#: frappe/database/query.py:1338
 msgid "Invalid field format in {0}: {1}. Use 'field', 'link_field.field', or 'child_table.field'."
 msgstr ""
 
@@ -13937,7 +13920,7 @@ msgstr ""
 msgid "Invalid field name {0}"
 msgstr "Tên trường không hợp lệ {0}"
 
-#: frappe/database/query.py:1197
+#: frappe/database/query.py:1193
 msgid "Invalid field type: {0}"
 msgstr "Loại trường không hợp lệ: {0}"
 
@@ -13949,11 +13932,11 @@ msgstr "Tên trường không hợp lệ '{0}' trong tên tự động"
 msgid "Invalid file path: {0}"
 msgstr "Đường dẫn tệp không hợp lệ: {0}"
 
-#: frappe/database/query.py:755
+#: frappe/database/query.py:751
 msgid "Invalid filter condition: {0}. Expected a list or tuple."
 msgstr "Điều kiện bộ lọc không hợp lệ: {0}. Dự kiến ​​​​một danh sách hoặc bộ dữ liệu."
 
-#: frappe/database/query.py:861
+#: frappe/database/query.py:857
 msgid "Invalid filter field format: {0}. Use 'fieldname' or 'link_fieldname.target_fieldname'."
 msgstr "Định dạng trường bộ lọc không hợp lệ: {0}. Sử dụng 'tên trường' hoặc 'link_fieldname.target_fieldname'."
 
@@ -13961,7 +13944,7 @@ msgstr "Định dạng trường bộ lọc không hợp lệ: {0}. Sử dụng 
 msgid "Invalid filter: {0}"
 msgstr "Bộ lọc không hợp lệ: {0}"
 
-#: frappe/database/query.py:2306
+#: frappe/database/query.py:2302
 msgid "Invalid function argument type: {0}. Only strings, numbers, lists, and None are allowed."
 msgstr ""
 
@@ -13990,7 +13973,7 @@ msgstr "Chuỗi đặt tên không hợp lệ {}: thiếu dấu chấm (.)"
 msgid "Invalid naming series {}: dot (.) missing before the numeric placeholders. Kindly use a format like <b>ABCD.#####</b>."
 msgstr "Chuỗi đặt tên không hợp lệ {}: thiếu dấu chấm (.) trước phần giữ chỗ số. Vui lòng sử dụng định dạng như <b>ABCD.#####</b>."
 
-#: frappe/database/query.py:2378
+#: frappe/database/query.py:2374
 msgid "Invalid nested expression: dictionary must represent a function or operator"
 msgstr "Biểu thức lồng nhau không hợp lệ: từ điển phải đại diện cho một hàm hoặc toán tử"
 
@@ -14014,11 +13997,11 @@ msgstr "Nội dung yêu cầu không hợp lệ"
 msgid "Invalid role"
 msgstr "Vai trò không hợp lệ"
 
-#: frappe/database/query.py:812
+#: frappe/database/query.py:808
 msgid "Invalid simple filter format: {0}"
 msgstr "Định dạng bộ lọc đơn giản không hợp lệ: {0}"
 
-#: frappe/database/query.py:732
+#: frappe/database/query.py:728
 msgid "Invalid start for filter condition: {0}. Expected a list or tuple."
 msgstr "Bắt đầu không hợp lệ cho điều kiện bộ lọc: {0}. Dự kiến ​​​​một danh sách hoặc bộ dữ liệu."
 
@@ -14052,7 +14035,7 @@ msgstr ""
 msgid "Invalid {0} condition"
 msgstr "Điều kiện {0} không hợp lệ"
 
-#: frappe/database/query.py:2267
+#: frappe/database/query.py:2263
 msgid "Invalid {0} dictionary format"
 msgstr "Định dạng từ điển {0} không hợp lệ"
 
@@ -14449,7 +14432,7 @@ msgstr ""
 msgid "Javascript"
 msgstr "Javascript"
 
-#: frappe/www/login.html:74
+#: frappe/www/login.html:73
 msgid "Javascript is disabled on your browser"
 msgstr ""
 
@@ -14542,11 +14525,11 @@ msgstr ""
 
 #. Label of the kanban_board_name (Data) field in DocType 'Kanban Board'
 #: frappe/desk/doctype/kanban_board/kanban_board.json
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:424
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:425
 msgid "Kanban Board Name"
 msgstr "Tên bảng Kanban"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:301
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:302
 msgctxt "Button in kanban view menu"
 msgid "Kanban Settings"
 msgstr ""
@@ -14834,7 +14817,7 @@ msgstr "Trợ giúp Nhãn"
 msgid "Label and Type"
 msgstr "Nhãn và Loại"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:147
+#: frappe/custom/doctype/custom_field/custom_field.py:148
 msgid "Label is mandatory"
 msgstr "Nhãn là bắt buộc"
 
@@ -14882,23 +14865,23 @@ msgstr "Cuối cùng"
 msgid "Last 10 active users"
 msgstr "10 người dùng hoạt động gần đây nhất"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:627
+#: frappe/public/js/frappe/ui/filters/filter.js:634
 msgid "Last 14 Days"
 msgstr "14 ngày qua"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:631
+#: frappe/public/js/frappe/ui/filters/filter.js:638
 msgid "Last 30 Days"
 msgstr "30 ngày qua"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:651
+#: frappe/public/js/frappe/ui/filters/filter.js:658
 msgid "Last 6 Months"
 msgstr "6 Tháng Qua"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:623
+#: frappe/public/js/frappe/ui/filters/filter.js:630
 msgid "Last 7 Days"
 msgstr "7 ngày qua"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:635
+#: frappe/public/js/frappe/ui/filters/filter.js:642
 msgid "Last 90 Days"
 msgstr "90 ngày qua"
 
@@ -14951,7 +14934,7 @@ msgstr "Sửa đổi lần cuối vào"
 
 #. Option for the 'Timespan' (Select) field in DocType 'Dashboard Chart'
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.json
-#: frappe/public/js/frappe/ui/filters/filter.js:643
+#: frappe/public/js/frappe/ui/filters/filter.js:650
 msgid "Last Month"
 msgstr "Tháng trước"
 
@@ -14973,7 +14956,7 @@ msgstr "Ngày đặt lại mật khẩu cuối cùng"
 
 #. Option for the 'Timespan' (Select) field in DocType 'Dashboard Chart'
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.json
-#: frappe/public/js/frappe/ui/filters/filter.js:647
+#: frappe/public/js/frappe/ui/filters/filter.js:654
 msgid "Last Quarter"
 msgstr "Quý trước"
 
@@ -15025,13 +15008,13 @@ msgstr "Người dùng cuối cùng"
 
 #. Option for the 'Timespan' (Select) field in DocType 'Dashboard Chart'
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.json
-#: frappe/public/js/frappe/ui/filters/filter.js:639
+#: frappe/public/js/frappe/ui/filters/filter.js:646
 msgid "Last Week"
 msgstr "Tuần trước"
 
 #. Option for the 'Timespan' (Select) field in DocType 'Dashboard Chart'
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.json
-#: frappe/public/js/frappe/ui/filters/filter.js:655
+#: frappe/public/js/frappe/ui/filters/filter.js:662
 msgid "Last Year"
 msgstr "Năm ngoái"
 
@@ -15061,7 +15044,7 @@ msgstr "Tìm hiểu thêm"
 msgid "Leave blank to repeat always"
 msgstr "Để trống để lặp lại luôn"
 
-#: frappe/core/doctype/communication/mixins.py:207
+#: frappe/core/doctype/communication/mixins.py:223
 #: frappe/email/doctype/email_account/email_account.py:816
 msgid "Leave this conversation"
 msgstr "Rời khỏi cuộc trò chuyện này"
@@ -15153,7 +15136,7 @@ msgstr "Hãy bắt đầu"
 msgid "Let's avoid repeated words and characters"
 msgstr ""
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:482
+#: frappe/desk/page/setup_wizard/setup_wizard.js:487
 msgid "Let's set up your account"
 msgstr "Hãy thiết lập tài khoản của bạn"
 
@@ -15219,7 +15202,7 @@ msgstr "Tiêu đề thư trong HTML"
 #: frappe/core/doctype/docperm/docperm.json
 #: frappe/core/page/permission_manager/permission_manager.js:150
 #: frappe/core/page/permission_manager/permission_manager.js:226
-#: frappe/public/js/frappe/roles_editor.js:77
+#: frappe/public/js/frappe/roles_editor.js:102
 #: frappe/website/doctype/help_article/help_article.json
 msgid "Level"
 msgstr "Cấp độ"
@@ -15279,7 +15262,7 @@ msgstr "Đã thích"
 msgid "Liked By"
 msgstr "Được thích bởi"
 
-#: frappe/public/js/frappe/list/list_view.js:784
+#: frappe/public/js/frappe/list/list_view.js:785
 msgid "Liked by me"
 msgstr ""
 
@@ -15297,7 +15280,7 @@ msgstr "Thích"
 msgid "Limit"
 msgstr ""
 
-#: frappe/database/query.py:300
+#: frappe/database/query.py:296
 msgid "Limit must be a non-negative integer"
 msgstr ""
 
@@ -15539,7 +15522,7 @@ msgstr "Bộ lọc danh sách"
 msgid "List Settings"
 msgstr "Cài đặt danh sách"
 
-#: frappe/public/js/frappe/list/list_view.js:2099
+#: frappe/public/js/frappe/list/list_view.js:2105
 msgctxt "Button in list view menu"
 msgid "List Settings"
 msgstr "Cài đặt danh sách"
@@ -15610,7 +15593,7 @@ msgstr "Tải thêm"
 #: frappe/public/js/frappe/list/base_list.js:509
 #: frappe/public/js/frappe/list/list_view.js:386
 #: frappe/public/js/frappe/ui/listing.html:16
-#: frappe/public/js/frappe/views/reports/query_report.js:1145
+#: frappe/public/js/frappe/views/reports/query_report.js:1152
 msgid "Loading"
 msgstr "Đang tải"
 
@@ -15710,7 +15693,7 @@ msgstr "Đã đăng xuất"
 #: frappe/templates/includes/navbar/dropdown_login.html:15
 #: frappe/templates/includes/navbar/navbar_login.html:25
 #: frappe/website/page_renderers/not_permitted_page.py:24
-#: frappe/www/login.html:45
+#: frappe/www/login.html:44
 msgid "Login"
 msgstr "Đăng nhập"
 
@@ -15729,7 +15712,7 @@ msgstr "Đăng nhập sau"
 msgid "Login Before"
 msgstr "Đăng nhập trước"
 
-#: frappe/public/js/frappe/desk.js:256
+#: frappe/public/js/frappe/desk.js:258
 msgid "Login Failed please try again"
 msgstr "Đăng nhập không thành công vui lòng thử lại"
 
@@ -15749,7 +15732,7 @@ msgstr "Phương thức đăng nhập"
 msgid "Login Page"
 msgstr "Trang đăng nhập"
 
-#: frappe/www/login.py:156
+#: frappe/www/login.py:149
 msgid "Login To {0}"
 msgstr "Đăng nhập vào {0}"
 
@@ -15794,7 +15777,7 @@ msgstr "Đăng nhập để bắt đầu một cuộc thảo luận mới"
 msgid "Login to view"
 msgstr "Đăng nhập để xem"
 
-#: frappe/www/login.html:64
+#: frappe/www/login.html:63
 msgid "Login to {0}"
 msgstr "Đăng nhập vào {0}"
 
@@ -15802,15 +15785,15 @@ msgstr "Đăng nhập vào {0}"
 msgid "Login token required"
 msgstr "Cần có mã thông báo đăng nhập"
 
-#: frappe/www/login.html:126 frappe/www/login.html:205
+#: frappe/www/login.html:125 frappe/www/login.html:204
 msgid "Login with Email Link"
 msgstr ""
 
-#: frappe/www/login.html:116
+#: frappe/www/login.html:115
 msgid "Login with Frappe Cloud"
 msgstr ""
 
-#: frappe/www/login.html:49
+#: frappe/www/login.html:48
 msgid "Login with LDAP"
 msgstr "Đăng nhập bằng LDAP"
 
@@ -15830,7 +15813,7 @@ msgstr ""
 msgid "Login with username and password is not allowed."
 msgstr ""
 
-#: frappe/www/login.html:100
+#: frappe/www/login.html:99
 msgid "Login with {0}"
 msgstr "Đăng nhập bằng {0}"
 
@@ -16278,7 +16261,7 @@ msgstr "Ý nghĩa của các loại quyền khác nhau"
 #. Label of the medium (Data) field in DocType 'Web Page View'
 #: frappe/desk/doctype/todo/todo.json
 #: frappe/public/js/frappe/form/sidebar/assign_to.js:227
-#: frappe/public/js/frappe/utils/utils.js:2062
+#: frappe/public/js/frappe/utils/utils.js:2056
 #: frappe/website/doctype/web_page_view/web_page_view.json
 #: frappe/website/report/website_analytics/website_analytics.js:40
 msgid "Medium"
@@ -16613,7 +16596,7 @@ msgstr "Thiếu giá trị"
 msgid "Missing Values Required"
 msgstr "Thiếu giá trị bắt buộc"
 
-#: frappe/www/login.py:107
+#: frappe/www/login.py:104
 msgid "Mobile"
 msgstr "Điện thoại di động"
 
@@ -16966,7 +16949,7 @@ msgstr "Phải thuộc loại \"Đính kèm hình ảnh\""
 msgid "Must have report permission to access this report."
 msgstr "Phải có quyền báo cáo để truy cập báo cáo này."
 
-#: frappe/core/doctype/report/report.py:165
+#: frappe/core/doctype/report/report.py:172
 msgid "Must specify a Query to run"
 msgstr "Phải chỉ định một Truy vấn để chạy"
 
@@ -17138,12 +17121,12 @@ msgstr "Mẫu thanh điều hướng"
 msgid "Navbar Template Values"
 msgstr "Giá trị mẫu thanh điều hướng"
 
-#: frappe/public/js/frappe/list/list_view.js:1420
+#: frappe/public/js/frappe/list/list_view.js:1426
 msgctxt "Description of a list view shortcut"
 msgid "Navigate list down"
 msgstr "Điều hướng danh sách xuống"
 
-#: frappe/public/js/frappe/list/list_view.js:1427
+#: frappe/public/js/frappe/list/list_view.js:1433
 msgctxt "Description of a list view shortcut"
 msgid "Navigate list up"
 msgstr "Điều hướng danh sách lên"
@@ -17162,7 +17145,7 @@ msgstr "Cài đặt điều hướng"
 msgid "Need Help?"
 msgstr "Cần trợ giúp?"
 
-#: frappe/desk/doctype/workspace/workspace.py:364
+#: frappe/desk/doctype/workspace/workspace.py:360
 msgid "Need Workspace Manager role to edit private workspace of other users"
 msgstr "Cần vai trò Trình quản lý không gian làm việc để chỉnh sửa không gian làm việc riêng tư của người dùng khác"
 
@@ -17170,7 +17153,7 @@ msgstr "Cần vai trò Trình quản lý không gian làm việc để chỉnh s
 msgid "Negative Value"
 msgstr "Giá trị âm"
 
-#: frappe/database/query.py:724
+#: frappe/database/query.py:720
 msgid "Nested filters must be provided as a list or tuple."
 msgstr "Các bộ lọc lồng nhau phải được cung cấp dưới dạng danh sách hoặc bộ dữ liệu."
 
@@ -17257,7 +17240,7 @@ msgstr "Sự kiện mới"
 msgid "New Folder"
 msgstr "Thư Mục Mới"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:380
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:381
 msgid "New Kanban Board"
 msgstr ""
 
@@ -17306,14 +17289,13 @@ msgstr "Tên định dạng in mới"
 msgid "New Quick List"
 msgstr "Danh sách nhanh mới"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1437
+#: frappe/public/js/frappe/views/reports/report_view.js:1460
 msgid "New Report name"
 msgstr "Tên báo cáo mới"
 
-#. Label of the new_role (Data) field in DocType 'Role Replication'
-#: frappe/core/doctype/role_replication/role_replication.json
-msgid "New Role"
-msgstr "Vai Trò Mới"
+#: frappe/core/doctype/role/role.js:55
+msgid "New Role Name"
+msgstr ""
 
 #: frappe/public/js/frappe/widgets/widget_dialog.js:60
 msgid "New Shortcut"
@@ -17364,6 +17346,10 @@ msgstr "Mật khẩu mới không được giống mật khẩu cũ"
 
 #: frappe/core/doctype/user/user.py:934
 msgid "New password cannot be the same as your current password. Please choose a different password."
+msgstr ""
+
+#: frappe/core/doctype/role/role.js:78
+msgid "New role created successfully."
 msgstr ""
 
 #: frappe/utils/change_log.py:389
@@ -17440,24 +17426,24 @@ msgstr "Người quản lý bản tin"
 msgid "Next"
 msgstr "Tiếp theo"
 
-#: frappe/public/js/frappe/ui/slides.js:379
+#: frappe/public/js/frappe/ui/slides.js:384
 msgctxt "Go to next slide"
 msgid "Next"
 msgstr "Tiếp theo"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:683
+#: frappe/public/js/frappe/ui/filters/filter.js:690
 msgid "Next 14 Days"
 msgstr "14 Ngày Tiếp Theo"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:687
+#: frappe/public/js/frappe/ui/filters/filter.js:694
 msgid "Next 30 Days"
 msgstr "30 ngày tiếp theo"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:703
+#: frappe/public/js/frappe/ui/filters/filter.js:710
 msgid "Next 6 Months"
 msgstr "6 Tháng Tiếp Theo"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:679
+#: frappe/public/js/frappe/ui/filters/filter.js:686
 msgid "Next 7 Days"
 msgstr "7 ngày tiếp theo"
 
@@ -17490,11 +17476,11 @@ msgstr "Thực hiện tiếp theo"
 msgid "Next Form Tour"
 msgstr "Chuyến tham quan biểu mẫu tiếp theo"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:695
+#: frappe/public/js/frappe/ui/filters/filter.js:702
 msgid "Next Month"
 msgstr "Tháng tới"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:699
+#: frappe/public/js/frappe/ui/filters/filter.js:706
 msgid "Next Quarter"
 msgstr "Quý tiếp theo"
 
@@ -17524,11 +17510,11 @@ msgstr "Điều kiện bước tiếp theo"
 msgid "Next Sync Token"
 msgstr "Mã thông báo đồng bộ hóa tiếp theo"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:691
+#: frappe/public/js/frappe/ui/filters/filter.js:698
 msgid "Next Week"
 msgstr "Tuần tới"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:707
+#: frappe/public/js/frappe/ui/filters/filter.js:714
 msgid "Next Year"
 msgstr "Năm tới"
 
@@ -17557,7 +17543,7 @@ msgstr "Tiếp theo Nhấp vào"
 #: frappe/integrations/doctype/webhook/webhook.py:132
 #: frappe/printing/doctype/print_format/print_format.json
 #: frappe/public/js/form_builder/utils.js:338
-#: frappe/public/js/frappe/form/controls/link.js:579
+#: frappe/public/js/frappe/form/controls/link.js:588
 #: frappe/public/js/frappe/list/base_list.js:950
 #: frappe/public/js/frappe/list/list_sidebar_group_by.js:170
 #: frappe/public/js/frappe/views/reports/query_report.js:47
@@ -17565,7 +17551,7 @@ msgstr "Tiếp theo Nhấp vào"
 msgid "No"
 msgstr "Không"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:545
+#: frappe/public/js/frappe/ui/filters/filter.js:552
 msgctxt "Checkbox is not checked"
 msgid "No"
 msgstr "Không"
@@ -17713,7 +17699,7 @@ msgstr "Không tìm thấy kết quả"
 msgid "No Roles Specified"
 msgstr "Không có vai trò nào được chỉ định"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:380
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:381
 msgid "No Select Field Found"
 msgstr "Không tìm thấy trường chọn"
 
@@ -17785,7 +17771,7 @@ msgstr "Không có trường tiền tệ trong {0}"
 msgid "No data to export"
 msgstr "Không có dữ liệu để xuất"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1552
+#: frappe/public/js/frappe/views/reports/query_report.js:1559
 msgid "No data to perform this action"
 msgstr ""
 
@@ -17809,7 +17795,7 @@ msgstr ""
 msgid "No failed logs"
 msgstr "Không có nhật ký nào bị lỗi"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:410
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:411
 msgid "No fields found that can be used as a Kanban Column. Use the Customize Form to add a Custom Field of type \"Select\"."
 msgstr ""
 
@@ -17882,7 +17868,7 @@ msgctxt "{0} = verb, {1} = object"
 msgid "No permission to '{0}' {1}"
 msgstr "Không được phép '{0}' {1}"
 
-#: frappe/model/db_query.py:1052
+#: frappe/model/db_query.py:1056
 msgid "No permission to read {0}"
 msgstr "Không được phép đọc {0}"
 
@@ -17910,7 +17896,7 @@ msgstr "Sẽ không có bản ghi nào được xuất"
 msgid "No rows"
 msgstr "Không có hàng"
 
-#: frappe/public/js/frappe/list/list_view.js:2428
+#: frappe/public/js/frappe/list/list_view.js:2434
 msgid "No rows selected"
 msgstr "Không có hàng nào được chọn"
 
@@ -17926,7 +17912,7 @@ msgstr "Không tìm thấy mẫu tại đường dẫn: {0}"
 msgid "No user has the role <strong>{0}</strong>"
 msgstr "Không có người dùng nào có vai trò <strong>{0}</strong>"
 
-#: frappe/public/js/frappe/form/controls/multiselect_list.js:276
+#: frappe/public/js/frappe/form/controls/multiselect_list.js:277
 #: frappe/public/js/frappe/utils/utils.js:1024
 msgid "No values to show"
 msgstr "Không có giá trị nào để hiển thị"
@@ -18042,7 +18028,7 @@ msgstr "Không thể rỗng"
 #: frappe/public/js/frappe/web_form/webform_script.js:15
 #: frappe/website/doctype/web_form/web_form.py:786
 #: frappe/website/page_renderers/not_permitted_page.py:22
-#: frappe/www/login.py:193 frappe/www/qrcode.py:22 frappe/www/qrcode.py:25
+#: frappe/www/login.py:186 frappe/www/qrcode.py:22 frappe/www/qrcode.py:25
 #: frappe/www/qrcode.py:37
 msgid "Not Permitted"
 msgstr "Không được phép"
@@ -18059,7 +18045,7 @@ msgstr "Chưa được xuất bản"
 #: frappe/public/js/frappe/form/toolbar.js:316
 #: frappe/public/js/frappe/form/toolbar.js:853
 #: frappe/public/js/frappe/model/indicator.js:28
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:205
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:206
 #: frappe/public/js/frappe/views/reports/report_view.js:195
 #: frappe/public/js/print_format_builder/print_format_builder.bundle.js:39
 #: frappe/website/doctype/web_form/templates/web_form.html:94
@@ -18082,7 +18068,7 @@ msgstr "Chưa được gửi"
 msgid "Not Set"
 msgstr "Chưa được đặt"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:607
+#: frappe/public/js/frappe/ui/filters/filter.js:614
 msgctxt "Field value is not set"
 msgid "Not Set"
 msgstr "Không đặt"
@@ -18230,7 +18216,7 @@ msgstr "Không có gì để cập nhật"
 #. Name of a DocType
 #. Label of a Workspace Sidebar Item
 #: frappe/automation/doctype/auto_repeat/auto_repeat.json
-#: frappe/core/doctype/communication/mixins.py:142
+#: frappe/core/doctype/communication/mixins.py:158
 #: frappe/desk/doctype/event_notifications/event_notifications.json
 #: frappe/email/doctype/notification/notification.json
 #: frappe/public/js/frappe/ui/sidebar/sidebar.js:481
@@ -18570,7 +18556,7 @@ msgstr "Bù đắp X"
 msgid "Offset Y"
 msgstr "Bù đắp Y"
 
-#: frappe/database/query.py:305
+#: frappe/database/query.py:301
 msgid "Offset must be a non-negative integer"
 msgstr ""
 
@@ -18578,7 +18564,7 @@ msgstr ""
 msgid "Old Password"
 msgstr "Mật khẩu cũ"
 
-#: frappe/custom/doctype/custom_field/custom_field.py:414
+#: frappe/custom/doctype/custom_field/custom_field.py:415
 msgid "Old and new fieldnames are same."
 msgstr ""
 
@@ -18895,6 +18881,12 @@ msgstr "Mở một mô-đun hoặc công cụ"
 msgid "Open console"
 msgstr "Mở bảng điều khiển"
 
+#. Label of the open_in_new_tab (Check) field in DocType 'Workspace Sidebar
+#. Item'
+#: frappe/desk/doctype/workspace_sidebar_item/workspace_sidebar_item.json
+msgid "Open in New Tab"
+msgstr ""
+
 #: frappe/public/js/print_format_builder/Preview.vue:17
 msgid "Open in a new tab"
 msgstr ""
@@ -18903,7 +18895,7 @@ msgstr ""
 msgid "Open in new tab"
 msgstr ""
 
-#: frappe/public/js/frappe/list/list_view.js:1473
+#: frappe/public/js/frappe/list/list_view.js:1479
 msgctxt "Description of a list view shortcut"
 msgid "Open list item"
 msgstr "Mở mục danh sách"
@@ -18959,7 +18951,7 @@ msgstr "Hoạt động"
 msgid "Operator must be one of {0}"
 msgstr ""
 
-#: frappe/database/query.py:2334
+#: frappe/database/query.py:2330
 msgid "Operator {0} requires exactly 2 arguments (left and right operands)"
 msgstr ""
 
@@ -19060,7 +19052,7 @@ msgstr "Cam"
 msgid "Order"
 msgstr "Đặt hàng"
 
-#: frappe/database/query.py:1373
+#: frappe/database/query.py:1369
 msgid "Order By must be a string"
 msgstr ""
 
@@ -19162,7 +19154,7 @@ msgstr "VÁ"
 #: frappe/email/doctype/auto_email_report/auto_email_report.json
 #: frappe/printing/page/print/print.js:91
 #: frappe/public/js/frappe/form/templates/print_layout.html:44
-#: frappe/public/js/frappe/views/reports/query_report.js:1947
+#: frappe/public/js/frappe/views/reports/query_report.js:1952
 msgid "PDF"
 msgstr "PDF"
 
@@ -19388,7 +19380,7 @@ msgstr "Không tìm thấy trang"
 msgid "Page to show on the website\n"
 msgstr ""
 
-#: frappe/public/html/print_template.html:25
+#: frappe/public/html/print_template.html:38
 #: frappe/public/js/frappe/views/reports/print_tree.html:89
 #: frappe/public/js/frappe/web_form/web_form.js:284
 #: frappe/templates/print_formats/standard.html:34
@@ -19530,10 +19522,10 @@ msgstr "Bị động"
 #: frappe/core/doctype/user/user.js:241
 #: frappe/custom/doctype/custom_field/custom_field.json
 #: frappe/custom/doctype/customize_form_field/customize_form_field.json
-#: frappe/desk/page/setup_wizard/setup_wizard.js:501
+#: frappe/desk/page/setup_wizard/setup_wizard.js:506
 #: frappe/email/doctype/email_account/email_account.json
 #: frappe/website/doctype/web_form_field/web_form_field.json
-#: frappe/www/login.html:22
+#: frappe/www/login.html:21
 msgid "Password"
 msgstr "Mật khẩu"
 
@@ -19571,7 +19563,7 @@ msgstr "Cần có mật khẩu hoặc chọn Đang chờ mật khẩu"
 msgid "Password is valid. 👍"
 msgstr "Mật khẩu hợp lệ. 👍"
 
-#: frappe/public/js/frappe/desk.js:212
+#: frappe/public/js/frappe/desk.js:214
 msgid "Password missing in Email Account"
 msgstr ""
 
@@ -19766,7 +19758,8 @@ msgstr "Xóa vĩnh viễn {0}?"
 msgid "Permission"
 msgstr "Quyền"
 
-#: frappe/core/doctype/user_type/user_type.py:84 frappe/database/query.py:1010
+#: frappe/core/doctype/user_type/user_type.py:84 frappe/database/query.py:1006
+#: frappe/desk/doctype/workspace/workspace.py:108
 msgid "Permission Error"
 msgstr "Lỗi cấp phép"
 
@@ -19937,8 +19930,8 @@ msgid "Phone Number {0} set in field {1} is not valid."
 msgstr "Số điện thoại {0} được đặt trong trường {1} không hợp lệ."
 
 #: frappe/public/js/frappe/form/print_utils.js:69
-#: frappe/public/js/frappe/views/reports/report_view.js:1628
-#: frappe/public/js/frappe/views/reports/report_view.js:1631
+#: frappe/public/js/frappe/views/reports/report_view.js:1651
+#: frappe/public/js/frappe/views/reports/report_view.js:1654
 msgid "Pick Columns"
 msgstr "Chọn cột"
 
@@ -20012,7 +20005,7 @@ msgstr "Vui lòng thêm chủ đề vào email của bạn"
 msgid "Please add a valid comment."
 msgstr "Vui lòng thêm một nhận xét hợp lệ."
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1553
+#: frappe/public/js/frappe/views/reports/query_report.js:1560
 msgid "Please adjust filters to include some data"
 msgstr ""
 
@@ -20118,7 +20111,7 @@ msgid "Please enable pop-ups"
 msgstr "Vui lòng bật cửa sổ bật lên"
 
 #: frappe/public/js/frappe/microtemplate.js:162
-#: frappe/public/js/frappe/microtemplate.js:177
+#: frappe/public/js/frappe/microtemplate.js:192
 msgid "Please enable pop-ups in your browser"
 msgstr "Vui lòng bật cửa sổ bật lên trong trình duyệt của bạn"
 
@@ -20174,7 +20167,7 @@ msgstr ""
 msgid "Please enter the password"
 msgstr "Vui lòng nhập mật khẩu"
 
-#: frappe/public/js/frappe/desk.js:217
+#: frappe/public/js/frappe/desk.js:219
 msgctxt "Email Account"
 msgid "Please enter the password for: <b>{0}</b>"
 msgstr "Vui lòng nhập mật khẩu cho: <b>{0}</b>"
@@ -20228,7 +20221,7 @@ msgstr "Vui lòng lưu tài liệu trước khi xóa bài tập"
 msgid "Please save the form before previewing the message"
 msgstr "Vui lòng lưu lại biểu mẫu trước khi xem trước tin nhắn"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1780
+#: frappe/public/js/frappe/views/reports/report_view.js:1803
 msgid "Please save the report first"
 msgstr "Hãy lưu báo cáo trước"
 
@@ -20248,7 +20241,7 @@ msgstr "Vui lòng chọn Loại thực thể trước"
 msgid "Please select Minimum Password Score"
 msgstr "Vui lòng chọn Điểm mật khẩu tối thiểu"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1238
+#: frappe/public/js/frappe/views/reports/query_report.js:1245
 msgid "Please select X and Y fields"
 msgstr ""
 
@@ -20288,7 +20281,7 @@ msgstr "Vui lòng chọn bộ lọc ngày hợp lệ"
 msgid "Please select applicable Doctypes"
 msgstr "Vui lòng chọn Loại tài liệu phù hợp"
 
-#: frappe/model/db_query.py:1276
+#: frappe/model/db_query.py:1280
 msgid "Please select atleast 1 column from {0} to sort/group"
 msgstr "Vui lòng chọn ít nhất 1 cột từ {0} để sắp xếp/nhóm"
 
@@ -20318,7 +20311,7 @@ msgstr ""
 msgid "Please set a printer mapping for this print format in the Printer Settings"
 msgstr "Vui lòng đặt ánh xạ máy in cho định dạng in này trong Cài đặt máy in"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1460
+#: frappe/public/js/frappe/views/reports/query_report.js:1467
 msgid "Please set filters"
 msgstr "Vui lòng đặt bộ lọc"
 
@@ -20639,7 +20632,7 @@ msgstr "Xem trước:"
 msgid "Previous"
 msgstr "Trước"
 
-#: frappe/public/js/frappe/ui/slides.js:367
+#: frappe/public/js/frappe/ui/slides.js:372
 msgctxt "Go to previous slide"
 msgid "Previous"
 msgstr "Trước"
@@ -20707,13 +20700,13 @@ msgstr "Không thể thay đổi khóa chính của loại tài liệu {0} vì c
 #: frappe/public/js/frappe/form/success_action.js:81
 #: frappe/public/js/frappe/form/templates/print_layout.html:46
 #: frappe/public/js/frappe/list/bulk_operations.js:95
-#: frappe/public/js/frappe/views/reports/query_report.js:1929
-#: frappe/public/js/frappe/views/reports/report_view.js:1590
+#: frappe/public/js/frappe/views/reports/query_report.js:1934
+#: frappe/public/js/frappe/views/reports/report_view.js:1613
 #: frappe/public/js/frappe/views/treeview.js:501 frappe/www/printview.html:18
 msgid "Print"
 msgstr "In"
 
-#: frappe/public/js/frappe/list/list_view.js:2275
+#: frappe/public/js/frappe/list/list_view.js:2281
 msgctxt "Button in list view actions menu"
 msgid "Print"
 msgstr "In"
@@ -20781,7 +20774,7 @@ msgstr "Trợ giúp về định dạng in"
 msgid "Print Format Type"
 msgstr "Loại định dạng in"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1672
+#: frappe/public/js/frappe/views/reports/query_report.js:1679
 msgid "Print Format not found"
 msgstr "Không tìm thấy định dạng in"
 
@@ -20961,7 +20954,7 @@ msgstr ""
 msgid "Proceed"
 msgstr "Tiếp tục"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:965
+#: frappe/public/js/frappe/views/reports/query_report.js:972
 msgid "Proceed Anyway"
 msgstr "Vẫn tiếp tục"
 
@@ -20996,7 +20989,7 @@ msgstr "Hồ sơ được cập nhật thành công."
 msgid "Progress"
 msgstr "Tiến độ"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:444
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:445
 msgid "Project"
 msgstr "Dự án"
 
@@ -21337,12 +21330,12 @@ msgstr "Xếp hàng tại"
 msgid "Queued By"
 msgstr "Xếp hàng theo"
 
-#: frappe/core/doctype/submission_queue/submission_queue.py:186
-msgid "Queued for Submission. You can track the progress over {0}."
-msgstr "Xếp hàng chờ nộp bài. Bạn có thể theo dõi tiến trình trên {0}."
-
 #: frappe/desk/page/backups/backups.py:96
 msgid "Queued for backup. You will receive an email with the download link"
+msgstr ""
+
+#: frappe/core/doctype/submission_queue/submission_queue.py:186
+msgid "Queued for {0}. You can track the progress over {1}."
 msgstr ""
 
 #. Label of the queues (Data) field in DocType 'System Health Report Workers'
@@ -21350,7 +21343,7 @@ msgstr ""
 msgid "Queues"
 msgstr "Hàng đợi"
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:97
+#: frappe/desk/doctype/bulk_update/bulk_update.py:98
 msgid "Queuing {0} for Submission"
 msgstr "Đang xếp hàng {0} để gửi bài"
 
@@ -21436,7 +21429,7 @@ msgstr "Đánh giá"
 
 #. Label of the raw_commands (Code) field in DocType 'Print Format'
 #: frappe/printing/doctype/print_format/print_format.json
-#: frappe/printing/doctype/print_format/print_format.py:98
+#: frappe/printing/doctype/print_format/print_format.py:97
 msgid "Raw Commands"
 msgstr "Lệnh thô"
 
@@ -21578,7 +21571,7 @@ msgstr ""
 msgid "Reason"
 msgstr "Lý do"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:919
+#: frappe/public/js/frappe/views/reports/query_report.js:926
 msgid "Rebuild"
 msgstr "Xây dựng lại"
 
@@ -21960,12 +21953,12 @@ msgstr "Tham khảo: {0} {1}"
 msgid "Referrer"
 msgstr "Người giới thiệu"
 
-#: frappe/printing/page/print/print.js:93 frappe/public/js/frappe/desk.js:168
-#: frappe/public/js/frappe/desk.js:554
+#: frappe/printing/page/print/print.js:93 frappe/public/js/frappe/desk.js:170
+#: frappe/public/js/frappe/desk.js:555
 #: frappe/public/js/frappe/form/form.js:1251
 #: frappe/public/js/frappe/form/templates/print_layout.html:6
 #: frappe/public/js/frappe/list/base_list.js:67
-#: frappe/public/js/frappe/views/reports/query_report.js:1918
+#: frappe/public/js/frappe/views/reports/query_report.js:1923
 #: frappe/public/js/frappe/views/treeview.js:507
 #: frappe/public/js/frappe/widgets/chart_widget.js:296
 #: frappe/public/js/frappe/widgets/number_card_widget.js:358
@@ -22008,7 +22001,7 @@ msgstr "Làm mới"
 
 #: frappe/core/doctype/system_settings/system_settings.js:57
 #: frappe/core/doctype/user/user.js:373
-#: frappe/desk/page/setup_wizard/setup_wizard.js:218
+#: frappe/desk/page/setup_wizard/setup_wizard.js:230
 msgid "Refreshing..."
 msgstr "Tươi mát..."
 
@@ -22123,7 +22116,7 @@ msgstr "Xóa công việc thất bại"
 msgid "Remove Field"
 msgstr "Xóa trường"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:402
+#: frappe/public/js/frappe/ui/filters/filter.js:404
 msgid "Remove Filter"
 msgstr ""
 
@@ -22257,18 +22250,17 @@ msgstr ""
 msgid "Repeats {0}"
 msgstr "Lặp lại {0}"
 
-#: frappe/core/doctype/role_replication/role_replication.js:7
-#: frappe/core/doctype/role_replication/role_replication.js:14
+#: frappe/core/doctype/role/role.js:64
 msgid "Replicate"
 msgstr "Sao chép"
 
-#: frappe/core/doctype/role_replication/role_replication.js:8
-msgid "Replicating..."
-msgstr "Nhân rộng..."
+#: frappe/core/doctype/role/role.js:40 frappe/core/doctype/role/role.js:52
+msgid "Replicate Role"
+msgstr ""
 
-#: frappe/core/doctype/role_replication/role_replication.js:13
-msgid "Replication completed."
-msgstr "Sao chép hoàn tất."
+#: frappe/core/doctype/role/role.js:63
+msgid "Replicating Role..."
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'Contact'
 #. Option for the 'Status' (Select) field in DocType 'Communication'
@@ -22345,7 +22337,7 @@ msgstr ""
 #: frappe/desk/doctype/workspace_sidebar_item/workspace_sidebar_item.json
 #: frappe/email/doctype/auto_email_report/auto_email_report.json
 #: frappe/printing/doctype/print_format/print_format.json
-#: frappe/printing/doctype/print_format/print_format.py:104
+#: frappe/printing/doctype/print_format/print_format.py:103
 #: frappe/public/js/frappe/request.js:617
 #: frappe/public/js/frappe/ui/toolbar/search_utils.js:95
 #: frappe/public/js/frappe/utils/utils.js:981
@@ -22371,7 +22363,7 @@ msgstr "Cột Báo cáo"
 msgid "Report Description"
 msgstr "Mô tả báo cáo"
 
-#: frappe/core/doctype/report/report.py:165
+#: frappe/core/doctype/report/report.py:172
 msgid "Report Document Error"
 msgstr "Báo cáo tài liệu lỗi"
 
@@ -22418,7 +22410,7 @@ msgstr "Người quản lý báo cáo"
 #: frappe/core/report/prepared_report_analytics/prepared_report_analytics.py:39
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.json
 #: frappe/desk/doctype/number_card/number_card.json
-#: frappe/public/js/frappe/views/reports/query_report.js:2114
+#: frappe/public/js/frappe/views/reports/query_report.js:2119
 msgid "Report Name"
 msgstr "Tên báo cáo"
 
@@ -22466,7 +22458,7 @@ msgstr "Báo cáo không có dữ liệu, vui lòng sửa đổi bộ lọc ho�
 msgid "Report has no numeric fields, please change the Report Name"
 msgstr "Báo cáo không có trường số, vui lòng thay đổi Tên Báo cáo"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1046
+#: frappe/public/js/frappe/views/reports/query_report.js:1053
 msgid "Report initiated, click to view status"
 msgstr "Đã bắt đầu báo cáo, nhấp để xem trạng thái"
 
@@ -22482,11 +22474,11 @@ msgstr "Đã hết thời gian báo cáo."
 msgid "Report updated successfully"
 msgstr "Báo cáo được cập nhật thành công"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1410
+#: frappe/public/js/frappe/views/reports/report_view.js:1433
 msgid "Report was not saved (there were errors)"
 msgstr "Báo cáo chưa được lưu (có lỗi)"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2152
+#: frappe/public/js/frappe/views/reports/query_report.js:2157
 msgid "Report with more than 10 columns looks better in Landscape mode."
 msgstr "Báo cáo có hơn 10 cột trông đẹp hơn ở chế độ Ngang."
 
@@ -22522,7 +22514,7 @@ msgstr "Báo cáo"
 msgid "Reports & Masters"
 msgstr "Báo cáo & Bản gốc"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:962
+#: frappe/public/js/frappe/views/reports/query_report.js:969
 msgid "Reports already in Queue"
 msgstr "Báo cáo đã có trong hàng đợi"
 
@@ -22633,12 +22625,12 @@ msgstr ""
 #: frappe/desk/doctype/form_tour/form_tour.js:101
 #: frappe/desk/doctype/global_search_settings/global_search_settings.js:19
 #: frappe/desk/doctype/module_onboarding/module_onboarding.js:17
-#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:341
+#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:347
 #: frappe/website/doctype/portal_settings/portal_settings.js:19
 msgid "Reset"
 msgstr "Đặt lại"
 
-#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:264
+#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:269
 msgid "Reset All"
 msgstr ""
 
@@ -22675,7 +22667,7 @@ msgstr "Đặt lại bố cục"
 msgid "Reset OTP Secret"
 msgstr "Đặt lại bí mật OTP"
 
-#: frappe/core/doctype/user/user.js:164 frappe/www/login.html:194
+#: frappe/core/doctype/user/user.js:164 frappe/www/login.html:193
 #: frappe/www/me.html:48 frappe/www/update-password.html:3
 #: frappe/www/update-password.html:32
 msgid "Reset Password"
@@ -22846,7 +22838,7 @@ msgstr "Tiếp tục gửi"
 
 #. Label of the retry (Int) field in DocType 'Email Queue'
 #: frappe/core/doctype/data_import/data_import.js:111
-#: frappe/desk/page/setup_wizard/setup_wizard.js:304
+#: frappe/desk/page/setup_wizard/setup_wizard.js:316
 #: frappe/email/doctype/email_queue/email_queue.json
 msgid "Retry"
 msgstr "Thử lại"
@@ -22977,7 +22969,7 @@ msgstr ""
 #. Label of the permissions_section (Section Break) field in DocType 'User
 #. Document Type'
 #: frappe/core/doctype/user_document_type/user_document_type.json
-#: frappe/public/js/frappe/roles_editor.js:117
+#: frappe/public/js/frappe/roles_editor.js:142
 msgid "Role Permissions"
 msgstr "Quyền của vai trò"
 
@@ -22986,12 +22978,13 @@ msgid "Role Permissions Activity Log"
 msgstr ""
 
 #. Label of a Link in the Users Workspace
+#: frappe/core/doctype/role/role.js:21
 #: frappe/core/page/permission_manager/permission_manager.js:4
 #: frappe/core/workspace/users/users.json
 msgid "Role Permissions Manager"
 msgstr "Trình quản lý quyền của vai trò"
 
-#: frappe/public/js/frappe/list/list_view.js:1968
+#: frappe/public/js/frappe/list/list_view.js:1974
 msgctxt "Button in list view menu"
 msgid "Role Permissions Manager"
 msgstr "Quản lý vai trò"
@@ -23009,11 +23002,6 @@ msgstr "Hồ sơ vai trò"
 #: frappe/core/doctype/user/user.json
 msgid "Role Profiles"
 msgstr "Hồ sơ vai trò"
-
-#. Name of a DocType
-#: frappe/core/doctype/role_replication/role_replication.json
-msgid "Role Replication"
-msgstr "Sao chép vai trò"
 
 #. Label of the role_and_level (Section Break) field in DocType 'Custom
 #. DocPerm'
@@ -23328,8 +23316,8 @@ msgstr "SQL"
 
 #. Description of the 'Condition' (Small Text) field in DocType 'Bulk Update'
 #: frappe/desk/doctype/bulk_update/bulk_update.json
-msgid "SQL Conditions. Example: status=\"Open\""
-msgstr "Điều kiện SQL. Ví dụ: trạng thái=\"Mở\""
+msgid "SQL Conditions. Example: {\"status\" : \"open\", \"priority\" : \"medium\"}"
+msgstr ""
 
 #. Label of the sql_explain_html (HTML) field in DocType 'Recorder Query'
 #: frappe/core/doctype/recorder/recorder.js:85
@@ -23347,7 +23335,7 @@ msgstr "Đầu ra SQL"
 msgid "SQL Queries"
 msgstr "Truy vấn SQL"
 
-#: frappe/database/query.py:2179
+#: frappe/database/query.py:2175
 msgid "SQL functions are not allowed as strings in SELECT: {0}. Use dict syntax like {{'COUNT': '*'}} instead."
 msgstr "Các hàm SQL không được phép dưới dạng chuỗi trong CHỌN: {0}. Thay vào đó, hãy sử dụng cú pháp chính tả như {{'COUNT': '*'}}."
 
@@ -23449,14 +23437,14 @@ msgstr "Thứ Bảy"
 #: frappe/public/js/frappe/form/quick_entry.js:186
 #: frappe/public/js/frappe/list/list_settings.js:37
 #: frappe/public/js/frappe/list/list_settings.js:250
-#: frappe/public/js/frappe/list/list_view.js:2030
-#: frappe/public/js/frappe/ui/toolbar/toolbar.js:337
+#: frappe/public/js/frappe/list/list_view.js:2036
+#: frappe/public/js/frappe/ui/toolbar/toolbar.js:336
 #: frappe/public/js/frappe/utils/common.js:452
 #: frappe/public/js/frappe/views/kanban/kanban_settings.js:45
 #: frappe/public/js/frappe/views/kanban/kanban_settings.js:189
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:379
-#: frappe/public/js/frappe/views/reports/query_report.js:2106
-#: frappe/public/js/frappe/views/reports/report_view.js:1797
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:380
+#: frappe/public/js/frappe/views/reports/query_report.js:2111
+#: frappe/public/js/frappe/views/reports/report_view.js:1820
 #: frappe/public/js/frappe/views/workspace/workspace.js:361
 #: frappe/public/js/frappe/widgets/base_widget.js:142
 #: frappe/public/js/frappe/widgets/quick_list_widget.js:120
@@ -23469,8 +23457,8 @@ msgstr "Lưu"
 msgid "Save Anyway"
 msgstr "Dù sao vẫn lưu"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1441
-#: frappe/public/js/frappe/views/reports/report_view.js:1804
+#: frappe/public/js/frappe/views/reports/report_view.js:1464
+#: frappe/public/js/frappe/views/reports/report_view.js:1827
 msgid "Save As"
 msgstr "Lưu dưới dạng"
 
@@ -23478,11 +23466,11 @@ msgstr "Lưu dưới dạng"
 msgid "Save Customizations"
 msgstr "Lưu tùy chỉnh"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2109
+#: frappe/public/js/frappe/views/reports/query_report.js:2114
 msgid "Save Report"
 msgstr "Lưu báo cáo"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:107
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:108
 msgid "Save filters"
 msgstr "Lưu bộ lọc"
 
@@ -23518,7 +23506,7 @@ msgctxt "Freeze message while saving a document"
 msgid "Saving"
 msgstr "Tiết kiệm"
 
-#: frappe/public/js/frappe/list/list_view.js:2041
+#: frappe/public/js/frappe/list/list_view.js:2047
 msgid "Saving Changes..."
 msgstr "Đang lưu thay đổi..."
 
@@ -23738,12 +23726,12 @@ msgstr "Kịch bản"
 #: frappe/public/js/frappe/list/base_list.js:921
 #: frappe/public/js/frappe/list/list_sidebar_group_by.js:141
 #: frappe/public/js/frappe/list/list_sidebar_stat.html:4
-#: frappe/public/js/frappe/list/list_view.js:2050
+#: frappe/public/js/frappe/list/list_view.js:2056
 #: frappe/public/js/frappe/ui/address_autocomplete/autocomplete_dialog.js:20
 #: frappe/public/js/frappe/ui/sidebar/sidebar.js:469
 #: frappe/public/js/frappe/ui/toolbar/search.js:49
 #: frappe/public/js/frappe/ui/toolbar/search.js:68
-#: frappe/public/js/frappe/views/reports/report_view.js:1677
+#: frappe/public/js/frappe/views/reports/report_view.js:1700
 #: frappe/templates/discussions/search.html:2
 #: frappe/templates/includes/search_template.html:26
 msgid "Search"
@@ -23956,10 +23944,10 @@ msgstr "Chọn"
 #: frappe/public/js/frappe/form/controls/multicheck.js:182
 #: frappe/public/js/frappe/form/controls/multiselect_list.js:19
 #: frappe/public/js/frappe/form/grid_row.js:483
-#: frappe/public/js/frappe/list/list_view.js:740
-#: frappe/public/js/frappe/list/list_view.js:805
+#: frappe/public/js/frappe/list/list_view.js:741
+#: frappe/public/js/frappe/list/list_view.js:806
 #: frappe/public/js/frappe/views/file/file_view.js:363
-#: frappe/public/js/frappe/views/reports/report_view.js:1665
+#: frappe/public/js/frappe/views/reports/report_view.js:1688
 msgid "Select All"
 msgstr "Chọn tất cả"
 
@@ -23984,11 +23972,11 @@ msgstr "Chọn Cột"
 msgid "Select Columns"
 msgstr "Chọn cột"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:406
+#: frappe/desk/page/setup_wizard/setup_wizard.js:418
 msgid "Select Country"
 msgstr "Chọn quốc gia"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:419
+#: frappe/desk/page/setup_wizard/setup_wizard.js:431
 msgid "Select Currency"
 msgstr "Chọn loại tiền tệ"
 
@@ -24056,7 +24044,7 @@ msgstr "Chọn trường để chèn"
 msgid "Select Fields To Update"
 msgstr "Chọn trường để cập nhật"
 
-#: frappe/public/js/frappe/list/list_view.js:2026
+#: frappe/public/js/frappe/list/list_view.js:2032
 msgid "Select Filters"
 msgstr "Chọn Bộ lọc"
 
@@ -24076,7 +24064,7 @@ msgstr "Chọn Nhóm Theo..."
 msgid "Select Kanban"
 msgstr ""
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:398
+#: frappe/desk/page/setup_wizard/setup_wizard.js:410
 msgid "Select Language"
 msgstr "Chọn ngôn ngữ"
 
@@ -24121,7 +24109,7 @@ msgstr "Chọn Báo cáo"
 msgid "Select Table Columns for {0}"
 msgstr "Chọn các cột trong bảng cho {0}"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:412
+#: frappe/desk/page/setup_wizard/setup_wizard.js:424
 msgid "Select Time Zone"
 msgstr "Chọn múi giờ"
 
@@ -24186,13 +24174,13 @@ msgstr "Chọn ít nhất 1 bản ghi để in"
 msgid "Select atleast 2 actions"
 msgstr "Chọn ít nhất 2 hành động"
 
-#: frappe/public/js/frappe/list/list_view.js:1487
+#: frappe/public/js/frappe/list/list_view.js:1493
 msgctxt "Description of a list view shortcut"
 msgid "Select list item"
 msgstr "Chọn mục danh sách"
 
-#: frappe/public/js/frappe/list/list_view.js:1439
-#: frappe/public/js/frappe/list/list_view.js:1455
+#: frappe/public/js/frappe/list/list_view.js:1445
+#: frappe/public/js/frappe/list/list_view.js:1461
 msgctxt "Description of a list view shortcut"
 msgid "Select multiple list items"
 msgstr "Chọn nhiều mục danh sách"
@@ -24378,7 +24366,7 @@ msgstr ""
 msgid "Send enquiries to this email address"
 msgstr ""
 
-#: frappe/templates/includes/login/login.js:71 frappe/www/login.html:220
+#: frappe/templates/includes/login/login.js:71 frappe/www/login.html:219
 msgid "Send login link"
 msgstr ""
 
@@ -24592,11 +24580,11 @@ msgstr "Cài đặt mặc định phiên"
 #. Label of the session_defaults (Table) field in DocType 'Session Default
 #. Settings'
 #: frappe/core/doctype/session_default_settings/session_default_settings.json
-#: frappe/public/js/frappe/ui/toolbar/toolbar.js:336
+#: frappe/public/js/frappe/ui/toolbar/toolbar.js:335
 msgid "Session Defaults"
 msgstr "Mặc định phiên"
 
-#: frappe/public/js/frappe/ui/toolbar/toolbar.js:321
+#: frappe/public/js/frappe/ui/toolbar/toolbar.js:322
 msgid "Session Defaults Saved"
 msgstr "Mặc định phiên đã lưu"
 
@@ -24625,7 +24613,7 @@ msgstr "Phiên"
 msgid "Set"
 msgstr "Đặt"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:606
+#: frappe/public/js/frappe/ui/filters/filter.js:613
 msgctxt "Field value is set"
 msgid "Set"
 msgstr "Đặt"
@@ -24663,7 +24651,7 @@ msgstr "Đặt bộ lọc"
 msgid "Set Filters for {0}"
 msgstr "Đặt Bộ lọc cho {0}"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2269
+#: frappe/public/js/frappe/views/reports/query_report.js:2274
 msgid "Set Level"
 msgstr "Đặt cấp độ"
 
@@ -24775,7 +24763,11 @@ msgid "Set non-standard precision for a Float, Currency or Percent field"
 msgstr "Đặt độ chính xác không chuẩn cho trường Thực tế, Tiền tệ hoặc Phần trăm"
 
 #. Label of the set_only_once (Check) field in DocType 'DocField'
+#. Label of the set_only_once (Check) field in DocType 'Custom Field'
+#. Label of the set_only_once (Check) field in DocType 'Customize Form Field'
 #: frappe/core/doctype/docfield/docfield.json
+#: frappe/custom/doctype/custom_field/custom_field.json
+#: frappe/custom/doctype/customize_form_field/customize_form_field.json
 msgid "Set only once"
 msgstr "Chỉ đặt một lần"
 
@@ -24831,7 +24823,7 @@ msgstr "Đặt Mẫu địa chỉ này làm mặc định vì không có mặc �
 msgid "Setting up Global Search documents."
 msgstr "Cài đặt tài liệu tìm kiếm toàn cục."
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:292
+#: frappe/desk/page/setup_wizard/setup_wizard.js:304
 msgid "Setting up your system"
 msgstr "Thiết lập hệ thống của bạn"
 
@@ -24845,7 +24837,7 @@ msgstr "Thiết lập hệ thống của bạn"
 #: frappe/core/doctype/doctype/doctype.json frappe/core/doctype/user/user.json
 #: frappe/integrations/workspace/integrations/integrations.json
 #: frappe/public/js/frappe/form/templates/print_layout.html:25
-#: frappe/public/js/frappe/ui/toolbar/toolbar.js:294
+#: frappe/public/js/frappe/ui/toolbar/toolbar.js:299
 #: frappe/public/js/frappe/views/workspace/workspace.js:387
 #: frappe/website/doctype/web_form/web_form.json
 #: frappe/website/doctype/web_page/web_page.json
@@ -24886,14 +24878,14 @@ msgstr "Cài đặt > Người dùng"
 msgid "Setup > User Permissions"
 msgstr "Cài đặt > Quyền của người dùng"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1971
-#: frappe/public/js/frappe/views/reports/report_view.js:1775
+#: frappe/public/js/frappe/views/reports/query_report.js:1976
+#: frappe/public/js/frappe/views/reports/report_view.js:1798
 msgid "Setup Auto Email"
 msgstr ""
 
 #. Label of the setup_complete (Check) field in DocType 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
-#: frappe/desk/page/setup_wizard/setup_wizard.js:218
+#: frappe/desk/page/setup_wizard/setup_wizard.js:230
 msgid "Setup Complete"
 msgstr "Thiết lập hoàn tất"
 
@@ -24903,7 +24895,7 @@ msgstr "Thiết lập hoàn tất"
 msgid "Setup Series for transactions"
 msgstr "Chuỗi cài đặt cho giao dịch"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:243
+#: frappe/desk/page/setup_wizard/setup_wizard.js:255
 msgid "Setup failed"
 msgstr "Thiết lập không thành công"
 
@@ -24971,7 +24963,7 @@ msgstr "Phím tắt"
 
 #: frappe/public/js/frappe/widgets/base_widget.js:46
 #: frappe/public/js/frappe/widgets/base_widget.js:178
-#: frappe/templates/includes/login/login.js:84 frappe/www/login.html:31
+#: frappe/templates/includes/login/login.js:84 frappe/www/login.html:30
 #: frappe/www/update-password.html:49 frappe/www/update-password.html:60
 #: frappe/www/update-password.html:120
 msgid "Show"
@@ -25182,7 +25174,7 @@ msgstr "Hiển thị tiêu đề"
 msgid "Show Title in Link Fields"
 msgstr "Hiển thị Tiêu đề trong Trường Liên kết"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1580
+#: frappe/public/js/frappe/views/reports/report_view.js:1603
 msgid "Show Totals"
 msgstr "Hiển thị tổng số"
 
@@ -25193,6 +25185,10 @@ msgstr "Hiển thị Chuyến tham quan"
 #: frappe/core/doctype/data_import/data_import.js:476
 msgid "Show Traceback"
 msgstr "Hiển thị dấu vết"
+
+#: frappe/core/doctype/role/role.js:30
+msgid "Show Users"
+msgstr ""
 
 #. Label of the show_values_over_chart (Check) field in DocType 'Dashboard
 #. Chart'
@@ -25334,7 +25330,7 @@ msgstr ""
 msgid "Show {0} List"
 msgstr "Hiển thị {0} Danh sách"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:555
+#: frappe/public/js/frappe/views/reports/report_view.js:560
 msgid "Showing only Numeric fields from Report"
 msgstr "Chỉ hiển thị các trường số từ Báo cáo"
 
@@ -25391,8 +25387,8 @@ msgstr ""
 msgid "Sign Up is disabled"
 msgstr "Đăng ký bị vô hiệu hóa"
 
-#: frappe/templates/signup.html:16 frappe/www/login.html:140
-#: frappe/www/login.html:156 frappe/www/update-password.html:71
+#: frappe/templates/signup.html:16 frappe/www/login.html:139
+#: frappe/www/login.html:155 frappe/www/update-password.html:71
 msgid "Sign up"
 msgstr "Đăng ký"
 
@@ -25416,11 +25412,11 @@ msgstr "Đăng ký"
 msgid "Signature"
 msgstr "Chữ ký"
 
-#: frappe/www/login.html:168
+#: frappe/www/login.html:167
 msgid "Signup Disabled"
 msgstr "Đăng ký bị vô hiệu hóa"
 
-#: frappe/www/login.html:169
+#: frappe/www/login.html:168
 msgid "Signups have been disabled for this website."
 msgstr "Đăng ký đã bị vô hiệu hóa cho trang web này."
 
@@ -25474,13 +25470,13 @@ msgstr "Kích thước (MB)"
 msgid "Size exceeds the maximum allowed file size."
 msgstr "Kích thước vượt quá kích thước tệp tối đa cho phép."
 
-#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:326
+#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:332
 #: frappe/public/js/frappe/widgets/onboarding_widget.js:82
 #: frappe/public/js/onboarding_tours/onboarding_tours.js:18
 msgid "Skip"
 msgstr "Bỏ qua"
 
-#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:267
+#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:273
 msgid "Skip All"
 msgstr ""
 
@@ -25737,7 +25733,7 @@ msgstr ""
 
 #. Label of the source (Data) field in DocType 'Web Page View'
 #. Label of the source (Small Text) field in DocType 'Website Route Redirect'
-#: frappe/public/js/frappe/utils/utils.js:2045
+#: frappe/public/js/frappe/utils/utils.js:2039
 #: frappe/website/doctype/web_page_view/web_page_view.json
 #: frappe/website/doctype/website_route_redirect/website_route_redirect.json
 #: frappe/website/report/website_analytics/website_analytics.js:38
@@ -25857,7 +25853,7 @@ msgstr "Tiêu chuẩn không được đặt"
 msgid "Standard Permissions"
 msgstr "Quyền tiêu chuẩn"
 
-#: frappe/printing/doctype/print_format/print_format.py:82
+#: frappe/printing/doctype/print_format/print_format.py:81
 msgid "Standard Print Format cannot be updated"
 msgstr "Định dạng in tiêu chuẩn không thể cập nhật"
 
@@ -25887,11 +25883,11 @@ msgstr ""
 msgid "Standard rich text editor with controls"
 msgstr "Trình soạn thảo văn bản đa dạng thức tiêu chuẩn có điều khiển"
 
-#: frappe/core/doctype/role/role.py:46
+#: frappe/core/doctype/role/role.py:47
 msgid "Standard roles cannot be disabled"
 msgstr "Không thể tắt vai trò tiêu chuẩn"
 
-#: frappe/core/doctype/role/role.py:32
+#: frappe/core/doctype/role/role.py:33
 msgid "Standard roles cannot be renamed"
 msgstr "Không thể đổi tên các vai trò tiêu chuẩn"
 
@@ -25962,7 +25958,7 @@ msgstr "Đã bắt đầu"
 msgid "Started At"
 msgstr "Bắt đầu tại"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:293
+#: frappe/desk/page/setup_wizard/setup_wizard.js:305
 msgid "Starting Frappe ..."
 msgstr "Bắt đầu Frappe ..."
 
@@ -26074,8 +26070,8 @@ msgstr "Khoảng thời gian thống kê"
 #: frappe/integrations/doctype/integration_request/integration_request.json
 #: frappe/integrations/doctype/oauth_bearer_token/oauth_bearer_token.json
 #: frappe/public/js/frappe/list/list_settings.js:362
-#: frappe/public/js/frappe/list/list_view.js:2467
-#: frappe/public/js/frappe/views/reports/report_view.js:1026
+#: frappe/public/js/frappe/list/list_view.js:2473
+#: frappe/public/js/frappe/views/reports/report_view.js:1049
 #: frappe/website/doctype/personal_data_deletion_request/personal_data_deletion_request.json
 #: frappe/website/doctype/personal_data_deletion_step/personal_data_deletion_step.json
 #: frappe/workflow/doctype/workflow_action/workflow_action.json
@@ -26269,7 +26265,7 @@ msgstr "Hàng đợi gửi"
 msgid "Submit"
 msgstr "Gửi"
 
-#: frappe/public/js/frappe/list/list_view.js:2342
+#: frappe/public/js/frappe/list/list_view.js:2348
 msgctxt "Button in list view actions menu"
 msgid "Submit"
 msgstr "Gửi"
@@ -26289,7 +26285,7 @@ msgctxt "Primary action of prompt dialog"
 msgid "Submit"
 msgstr "Gửi"
 
-#: frappe/public/js/frappe/desk.js:227
+#: frappe/public/js/frappe/desk.js:229
 msgctxt "Submit password for Email Account"
 msgid "Submit"
 msgstr "Gửi"
@@ -26327,7 +26323,7 @@ msgstr "Gửi tài liệu này để hoàn thành bước này."
 msgid "Submit this document to confirm"
 msgstr "Gửi tài liệu này để xác nhận"
 
-#: frappe/public/js/frappe/list/list_view.js:2347
+#: frappe/public/js/frappe/list/list_view.js:2353
 msgctxt "Title of confirmation dialog"
 msgid "Submit {0} documents?"
 msgstr "Gửi tài liệu {0}?"
@@ -26335,7 +26331,7 @@ msgstr "Gửi tài liệu {0}?"
 #. Option for the 'Comment Type' (Select) field in DocType 'Comment'
 #: frappe/core/doctype/comment/comment.json
 #: frappe/public/js/frappe/model/indicator.js:95
-#: frappe/public/js/frappe/ui/filters/filter.js:538
+#: frappe/public/js/frappe/ui/filters/filter.js:545
 #: frappe/website/doctype/web_form/templates/web_form.html:152
 msgid "Submitted"
 msgstr "Đã gửi"
@@ -26353,7 +26349,7 @@ msgctxt "Freeze message while submitting a document"
 msgid "Submitting"
 msgstr "Đang gửi"
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:100
+#: frappe/desk/doctype/bulk_update/bulk_update.py:101
 msgid "Submitting {0}"
 msgstr "Đang gửi {0}"
 
@@ -26425,7 +26421,7 @@ msgstr "Tiêu đề thành công"
 msgid "Successful Job Count"
 msgstr "Số lượng công việc thành công"
 
-#: frappe/model/workflow.py:384
+#: frappe/model/workflow.py:388
 msgid "Successful Transactions"
 msgstr "Giao dịch thành công"
 
@@ -26524,7 +26520,7 @@ msgstr "Đình chỉ gửi"
 msgid "Switch Camera"
 msgstr "Chuyển đổi máy ảnh"
 
-#: frappe/public/js/frappe/desk.js:96
+#: frappe/public/js/frappe/desk.js:98
 #: frappe/public/js/frappe/ui/theme_switcher.js:11
 msgid "Switch Theme"
 msgstr "Chuyển chủ đề"
@@ -26625,7 +26621,7 @@ msgstr "Hệ thống"
 msgid "System Console"
 msgstr ""
 
-#: frappe/custom/doctype/custom_field/custom_field.py:410
+#: frappe/custom/doctype/custom_field/custom_field.py:411
 msgid "System Generated Fields can not be renamed"
 msgstr "Không thể đổi tên các trường do hệ thống tạo"
 
@@ -26718,7 +26714,6 @@ msgstr "Nhật ký hệ thống"
 #: frappe/core/doctype/report/report.json frappe/core/doctype/role/role.json
 #: frappe/core/doctype/role_permission_for_page_and_report/role_permission_for_page_and_report.json
 #: frappe/core/doctype/role_profile/role_profile.json
-#: frappe/core/doctype/role_replication/role_replication.json
 #: frappe/core/doctype/rq_job/rq_job.json
 #: frappe/core/doctype/rq_worker/rq_worker.json
 #: frappe/core/doctype/scheduled_job_log/scheduled_job_log.json
@@ -27165,6 +27160,10 @@ msgstr ""
 msgid "The Auto Repeat for this document has been disabled."
 msgstr "Tính năng Tự động lặp lại cho tài liệu này đã bị tắt."
 
+#: frappe/desk/doctype/bulk_update/bulk_update.py:43
+msgid "The Bulk Update could not happen due to <b>{0}</b>"
+msgstr ""
+
 #: frappe/public/js/frappe/form/grid.js:1310
 msgid "The CSV format is case sensitive"
 msgstr "Định dạng CSV phân biệt chữ hoa chữ thường"
@@ -27196,7 +27195,7 @@ msgstr ""
 msgid "The User record for this request has been auto-deleted due to inactivity by system admins."
 msgstr "Bản ghi Người dùng cho yêu cầu này đã tự động bị xóa do quản trị viên hệ thống không hoạt động."
 
-#: frappe/public/js/frappe/desk.js:162
+#: frappe/public/js/frappe/desk.js:164
 msgid "The application has been updated to a new version, please refresh this page"
 msgstr "Ứng dụng đã được cập nhật lên phiên bản mới, vui lòng làm mới trang này"
 
@@ -27237,7 +27236,7 @@ msgstr ""
 msgid "The contents of this email are strictly confidential. Please do not forward this email to anyone."
 msgstr ""
 
-#: frappe/public/js/frappe/list/list_view.js:709
+#: frappe/public/js/frappe/list/list_view.js:711
 msgid "The count shown is an estimated count. Click here to see the accurate count."
 msgstr ""
 
@@ -27311,7 +27310,7 @@ msgstr ""
 msgid "The link will expire in {0} minutes"
 msgstr "Liên kết sẽ hết hạn sau {0} phút"
 
-#: frappe/www/login.py:194
+#: frappe/www/login.py:187
 msgid "The link you trying to login is invalid or expired."
 msgstr "Liên kết bạn đang cố đăng nhập không hợp lệ hoặc đã hết hạn."
 
@@ -27478,7 +27477,7 @@ msgstr "Không có sự kiện sắp tới cho bạn."
 msgid "There are no {0} for this {1}, why don't you start one!"
 msgstr "Không có {0} cho {1} này, tại sao bạn không bắt đầu một cái!"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:998
+#: frappe/public/js/frappe/views/reports/query_report.js:1005
 msgid "There are {0} with the same filters already in the queue:"
 msgstr "Có {0} với các bộ lọc tương tự đã có trong hàng đợi:"
 
@@ -27511,7 +27510,7 @@ msgstr "Không có gì mới để cho bạn thấy ngay bây giờ."
 msgid "There is some problem with the file url: {0}"
 msgstr ""
 
-#: frappe/public/js/frappe/views/reports/query_report.js:995
+#: frappe/public/js/frappe/views/reports/query_report.js:1002
 msgid "There is {0} with the same filters already in the queue:"
 msgstr "Có {0} với các bộ lọc tương tự đã có trong hàng đợi:"
 
@@ -27523,7 +27522,7 @@ msgstr "Phải có ít nhất một quy tắc cấp phép."
 msgid "There was an error building this page"
 msgstr "Đã xảy ra lỗi khi xây dựng trang này"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:218
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:219
 msgid "There was an error saving filters"
 msgstr "Đã xảy ra lỗi khi lưu bộ lọc"
 
@@ -27580,11 +27579,11 @@ msgstr "Xác thực của bên thứ ba"
 msgid "This Currency is disabled. Enable to use in transactions"
 msgstr "Loại tiền tệ này bị vô hiệu hóa. Cho phép sử dụng trong giao dịch"
 
-#: frappe/public/js/frappe/views/kanban/kanban_view.js:427
+#: frappe/public/js/frappe/views/kanban/kanban_view.js:428
 msgid "This Kanban Board will be private"
 msgstr ""
 
-#: frappe/public/js/frappe/ui/filters/filter.js:665
+#: frappe/public/js/frappe/ui/filters/filter.js:672
 msgid "This Month"
 msgstr "Tháng Này"
 
@@ -27592,15 +27591,15 @@ msgstr "Tháng Này"
 msgid "This PDF cannot be uploaded as it contains unsafe content."
 msgstr "Không thể tải lên bản PDF này vì nó chứa nội dung không an toàn."
 
-#: frappe/public/js/frappe/ui/filters/filter.js:669
+#: frappe/public/js/frappe/ui/filters/filter.js:676
 msgid "This Quarter"
 msgstr "Quý này"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:661
+#: frappe/public/js/frappe/ui/filters/filter.js:668
 msgid "This Week"
 msgstr "Tuần này"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:673
+#: frappe/public/js/frappe/ui/filters/filter.js:680
 msgid "This Year"
 msgstr "Năm nay"
 
@@ -27645,8 +27644,8 @@ msgid "This document can not be deleted right now as it's being modified by anot
 msgstr "Không thể xóa tài liệu này ngay bây giờ vì nó đang được người dùng khác sửa đổi. Vui lòng thử lại sau một thời gian."
 
 #: frappe/core/doctype/submission_queue/submission_queue.py:171
-msgid "This document has already been queued for submission. You can track the progress over {0}."
-msgstr "Tài liệu này đã được xếp hàng để nộp. Bạn có thể theo dõi tiến trình trên {0}."
+msgid "This document has already been queued for {0}. You can track the progress over {1}."
+msgstr ""
 
 #: frappe/www/confirm_workflow_action.html:8
 msgid "This document has been modified after the email was sent."
@@ -27721,7 +27720,7 @@ msgstr ""
 msgid "This goes above the slideshow."
 msgstr "Điều này vượt lên trên trình chiếu."
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2346
+#: frappe/public/js/frappe/views/reports/query_report.js:2351
 msgid "This is a background report. Please set the appropriate filters and then generate a new one."
 msgstr ""
 
@@ -27771,7 +27770,7 @@ msgstr "Điều này có thể được in trên nhiều trang"
 msgid "This month"
 msgstr "Tháng này"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1074
+#: frappe/public/js/frappe/views/reports/query_report.js:1081
 msgid "This report contains {0} rows and is too big to display in browser, you can {1} this report instead."
 msgstr ""
 
@@ -27930,7 +27929,7 @@ msgstr "Cửa sổ thời gian (Giây)"
 #: frappe/core/doctype/system_settings/system_settings.json
 #: frappe/core/doctype/user/user.json
 #: frappe/core/web_form/edit_profile/edit_profile.json
-#: frappe/desk/page/setup_wizard/setup_wizard.js:411
+#: frappe/desk/page/setup_wizard/setup_wizard.js:423
 #: frappe/website/doctype/web_page_view/web_page_view.json
 msgid "Time Zone"
 msgstr "Múi giờ"
@@ -28164,7 +28163,7 @@ msgstr ""
 msgid "To configure Auto Repeat, enable \"Allow Auto Repeat\" from {0}."
 msgstr "Để định cấu hình Tự động lặp lại, hãy bật \"Cho phép tự động lặp lại\" từ {0}."
 
-#: frappe/www/login.html:76
+#: frappe/www/login.html:75
 msgid "To enable it follow the instructions in the following link: {0}"
 msgstr "Để kích hoạt nó, hãy làm theo hướng dẫn trong liên kết sau: {0}"
 
@@ -28224,12 +28223,12 @@ msgid "ToDo"
 msgstr "Việc cần làm"
 
 #: frappe/public/js/frappe/form/controls/date.js:58
-#: frappe/public/js/frappe/ui/filters/filter.js:732
+#: frappe/public/js/frappe/ui/filters/filter.js:739
 #: frappe/public/js/frappe/views/calendar/calendar.js:281
 msgid "Today"
 msgstr "Hôm nay"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1624
+#: frappe/public/js/frappe/views/reports/report_view.js:1647
 msgid "Toggle Chart"
 msgstr "Chuyển đổi biểu đồ"
 
@@ -28271,12 +28270,12 @@ msgstr "URI mã thông báo"
 msgid "Token is missing"
 msgstr "Mã thông báo bị thiếu"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:738
+#: frappe/public/js/frappe/ui/filters/filter.js:745
 msgid "Tomorrow"
 msgstr "Ngày mai"
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:79
-#: frappe/model/workflow.py:331
+#: frappe/desk/doctype/bulk_update/bulk_update.py:80
+#: frappe/model/workflow.py:335
 msgid "Too Many Documents"
 msgstr "Quá Nhiều Tài Liệu"
 
@@ -28359,8 +28358,8 @@ msgstr "Chủ đề"
 
 #: frappe/desk/query_report.py:699
 #: frappe/public/js/frappe/views/reports/print_grid.html:50
-#: frappe/public/js/frappe/views/reports/query_report.js:1376
-#: frappe/public/js/frappe/views/reports/report_view.js:1605
+#: frappe/public/js/frappe/views/reports/query_report.js:1383
+#: frappe/public/js/frappe/views/reports/report_view.js:1628
 msgid "Total"
 msgstr "Tổng cộng"
 
@@ -28410,11 +28409,11 @@ msgstr ""
 msgid "Total:"
 msgstr "Tổng cộng:"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1305
+#: frappe/public/js/frappe/views/reports/report_view.js:1328
 msgid "Totals"
 msgstr "Tổng số"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1280
+#: frappe/public/js/frappe/views/reports/report_view.js:1303
 msgid "Totals Row"
 msgstr "Hàng tổng"
 
@@ -28475,7 +28474,7 @@ msgstr ""
 msgid "Track milestones for any document"
 msgstr "Theo dõi các mốc quan trọng của bất kỳ tài liệu nào"
 
-#: frappe/public/js/frappe/utils/utils.js:2109
+#: frappe/public/js/frappe/utils/utils.js:2103
 msgid "Tracking URL generated and copied to clipboard"
 msgstr ""
 
@@ -28511,7 +28510,7 @@ msgstr "Sự chuyển tiếp"
 msgid "Translatable"
 msgstr "Có thể dịch"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:2407
+#: frappe/public/js/frappe/views/reports/query_report.js:2412
 msgid "Translate Data"
 msgstr "Dịch dữ liệu"
 
@@ -28522,7 +28521,7 @@ msgstr "Dịch dữ liệu"
 msgid "Translate Link Fields"
 msgstr "Dịch các trường liên kết"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1720
+#: frappe/public/js/frappe/views/reports/report_view.js:1743
 msgid "Translate values"
 msgstr "Dịch các giá trị"
 
@@ -28981,7 +28980,7 @@ msgstr "Truy vấn SQL không an toàn"
 #: frappe/printing/page/print_format_builder/print_format_builder_column_selector.html:9
 #: frappe/public/js/frappe/data_import/data_exporter.js:164
 #: frappe/public/js/frappe/form/controls/multicheck.js:185
-#: frappe/public/js/frappe/views/reports/report_view.js:1666
+#: frappe/public/js/frappe/views/reports/report_view.js:1689
 msgid "Unselect All"
 msgstr "Bỏ chọn tất cả"
 
@@ -29014,11 +29013,11 @@ msgstr "Hủy đăng ký Thông số"
 msgid "Unsubscribed"
 msgstr "Hủy đăng ký"
 
-#: frappe/database/query.py:1182
+#: frappe/database/query.py:1178
 msgid "Unsupported function or operator: {0}"
 msgstr "Hàm hoặc toán tử không được hỗ trợ: {0}"
 
-#: frappe/database/query.py:2270
+#: frappe/database/query.py:2266
 msgid "Unsupported {0}: {1}"
 msgstr "Không được hỗ trợ {0}: {1}"
 
@@ -29084,7 +29083,7 @@ msgstr "Cập nhật thứ tự giải quyết móc"
 msgid "Update Order"
 msgstr "Cập nhật đơn hàng"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:502
+#: frappe/desk/page/setup_wizard/setup_wizard.js:507
 msgid "Update Password"
 msgstr "Cập nhật mật khẩu"
 
@@ -29141,7 +29140,7 @@ msgstr "Đã cập nhật"
 msgid "Updated Successfully"
 msgstr "Cập nhật thành công"
 
-#: frappe/public/js/frappe/desk.js:448
+#: frappe/public/js/frappe/desk.js:449
 msgid "Updated To A New Version 🎉"
 msgstr "Đã cập nhật lên phiên bản mới 🎉"
 
@@ -29178,7 +29177,7 @@ msgstr "Cập nhật tùy chọn chuỗi đặt tên"
 msgid "Updating related fields..."
 msgstr "Đang cập nhật các lĩnh vực liên quan..."
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:128
+#: frappe/desk/doctype/bulk_update/bulk_update.py:129
 msgid "Updating {0}"
 msgstr "Đang cập nhật {0}"
 
@@ -29431,7 +29430,7 @@ msgstr "Người dùng không thể tạo"
 msgid "User Cannot Search"
 msgstr "Người dùng không thể tìm kiếm"
 
-#: frappe/public/js/frappe/desk.js:552
+#: frappe/public/js/frappe/desk.js:553
 msgid "User Changed"
 msgstr "Người dùng đã thay đổi"
 
@@ -29539,12 +29538,12 @@ msgstr "Quyền của người dùng"
 #. Label of a Link in the Users Workspace
 #: frappe/core/page/permission_manager/permission_manager_help.html:97
 #: frappe/core/workspace/users/users.json
-#: frappe/public/js/frappe/views/reports/query_report.js:2093
-#: frappe/public/js/frappe/views/reports/report_view.js:1823
+#: frappe/public/js/frappe/views/reports/query_report.js:2098
+#: frappe/public/js/frappe/views/reports/report_view.js:1846
 msgid "User Permissions"
 msgstr "Quyền của người dùng"
 
-#: frappe/public/js/frappe/list/list_view.js:1957
+#: frappe/public/js/frappe/list/list_view.js:1963
 msgctxt "Button in list view menu"
 msgid "User Permissions"
 msgstr "Quyền hạn người dùng"
@@ -29646,7 +29645,7 @@ msgstr "Người dùng phải luôn chọn"
 msgid "User permission already exists"
 msgstr "Quyền của người dùng đã tồn tại"
 
-#: frappe/www/login.py:171
+#: frappe/www/login.py:164
 msgid "User with email address {0} does not exist"
 msgstr ""
 
@@ -29674,7 +29673,7 @@ msgstr "Người dùng {0} không có quyền truy cập vào tài liệu này"
 msgid "User {0} does not have doctype access via role permission for document {1}"
 msgstr "Người dùng {0} không có quyền truy cập loại tài liệu thông qua quyền vai trò đối với tài liệu {1}"
 
-#: frappe/desk/doctype/workspace/workspace.py:313
+#: frappe/desk/doctype/workspace/workspace.py:309
 msgid "User {0} does not have the permission to create a Workspace."
 msgstr "Người dùng {0} không có quyền tạo Không gian làm việc."
 
@@ -29712,7 +29711,7 @@ msgstr "URI thông tin người dùng"
 #. Label of the username (Data) field in DocType 'User Social Login'
 #: frappe/core/doctype/user/user.json
 #: frappe/core/doctype/user_social_login/user_social_login.json
-#: frappe/www/login.py:110
+#: frappe/www/login.py:107
 msgid "Username"
 msgstr "Tên người dùng"
 
@@ -29749,7 +29748,7 @@ msgstr ""
 msgid "Uses system's theme to switch between light and dark mode"
 msgstr ""
 
-#: frappe/public/js/frappe/desk.js:154
+#: frappe/public/js/frappe/desk.js:156
 msgid "Using this console may allow attackers to impersonate you and steal your information. Do not enter or paste code that you do not understand."
 msgstr ""
 
@@ -29981,7 +29980,7 @@ msgstr "Đang xác minh..."
 msgid "Version"
 msgstr "Phiên bản"
 
-#: frappe/public/js/frappe/desk.js:166
+#: frappe/public/js/frappe/desk.js:168
 msgid "Version Updated"
 msgstr "Phiên bản được cập nhật"
 
@@ -29991,6 +29990,7 @@ msgid "Video URL"
 msgstr ""
 
 #. Label of the view_name (Select) field in DocType 'Form Tour'
+#: frappe/core/doctype/role/role.js:26 frappe/core/doctype/role/role.js:35
 #: frappe/desk/doctype/form_tour/form_tour.json
 msgid "View"
 msgstr "Xem"
@@ -30172,7 +30172,7 @@ msgstr "Kho hàng"
 #: frappe/core/doctype/docfield/docfield.json
 #: frappe/custom/doctype/custom_field/custom_field.json
 #: frappe/custom/doctype/customize_form_field/customize_form_field.json
-#: frappe/public/js/frappe/router.js:619
+#: frappe/public/js/frappe/router.js:618
 #: frappe/workflow/doctype/workflow_state/workflow_state.json
 msgid "Warning"
 msgstr "Cảnh báo"
@@ -30264,7 +30264,7 @@ msgstr "Trang web"
 msgid "Web Page Block"
 msgstr "Khối trang web"
 
-#: frappe/public/js/frappe/utils/utils.js:2037
+#: frappe/public/js/frappe/utils/utils.js:2031
 msgid "Web Page URL"
 msgstr ""
 
@@ -30571,7 +30571,7 @@ msgstr ""
 msgid "Weighted Distribution"
 msgstr ""
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:391
+#: frappe/desk/page/setup_wizard/setup_wizard.js:403
 msgid "Welcome"
 msgstr "Chào mừng"
 
@@ -30674,7 +30674,7 @@ msgstr "Bộ lọc ký tự đại diện"
 msgid "Will add \"%\" before and after the query"
 msgstr "Sẽ thêm \"%\" trước và sau truy vấn"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:493
+#: frappe/desk/page/setup_wizard/setup_wizard.js:498
 msgid "Will be your login ID"
 msgstr "Sẽ là ID đăng nhập của bạn"
 
@@ -30806,7 +30806,7 @@ msgstr "Trường trạng thái quy trình làm việc"
 msgid "Workflow State not set"
 msgstr "Trạng thái quy trình làm việc chưa được đặt"
 
-#: frappe/model/workflow.py:281 frappe/model/workflow.py:289
+#: frappe/model/workflow.py:285 frappe/model/workflow.py:293
 msgid "Workflow State transition not allowed from {0} to {1}"
 msgstr "Không được phép chuyển đổi trạng thái quy trình làm việc từ {0} sang {1}"
 
@@ -30814,7 +30814,7 @@ msgstr "Không được phép chuyển đổi trạng thái quy trình làm vi�
 msgid "Workflow States Don't Exist"
 msgstr "Trạng thái quy trình làm việc không tồn tại"
 
-#: frappe/model/workflow.py:405
+#: frappe/model/workflow.py:409
 msgid "Workflow Status"
 msgstr "Trạng thái quy trình làm việc"
 
@@ -30864,7 +30864,7 @@ msgstr "Quy trình làm việc được cập nhật thành công"
 msgid "Workspace"
 msgstr "Không gian làm việc"
 
-#: frappe/public/js/frappe/router.js:181
+#: frappe/public/js/frappe/router.js:180
 msgid "Workspace <b>{0}</b> does not exist"
 msgstr "Không gian làm việc <b>{0}</b> không tồn tại"
 
@@ -30959,7 +30959,7 @@ msgstr "Viết"
 msgid "Wrong Fetch From value"
 msgstr "Tìm nạp sai giá trị từ"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:544
+#: frappe/public/js/frappe/views/reports/report_view.js:549
 msgid "X Axis Field"
 msgstr "Trường trục X"
 
@@ -30982,13 +30982,13 @@ msgstr ""
 msgid "Y Axis"
 msgstr "Trục Y"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:551
+#: frappe/public/js/frappe/views/reports/report_view.js:556
 msgid "Y Axis Fields"
 msgstr "Trường trục Y"
 
 #. Label of the y_field (Select) field in DocType 'Dashboard Chart Field'
 #: frappe/desk/doctype/dashboard_chart_field/dashboard_chart_field.json
-#: frappe/public/js/frappe/views/reports/query_report.js:1277
+#: frappe/public/js/frappe/views/reports/query_report.js:1284
 msgid "Y Field"
 msgstr "Trường Y"
 
@@ -31052,7 +31052,7 @@ msgstr "Màu vàng"
 #: frappe/integrations/doctype/webhook/webhook.py:132
 #: frappe/printing/doctype/print_format/print_format.json
 #: frappe/public/js/form_builder/utils.js:333
-#: frappe/public/js/frappe/form/controls/link.js:579
+#: frappe/public/js/frappe/form/controls/link.js:588
 #: frappe/public/js/frappe/list/base_list.js:950
 #: frappe/public/js/frappe/list/list_sidebar_group_by.js:170
 #: frappe/public/js/frappe/views/reports/query_report.js:47
@@ -31065,12 +31065,12 @@ msgctxt "Approve confirmation dialog"
 msgid "Yes"
 msgstr "Đồng ý"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:544
+#: frappe/public/js/frappe/ui/filters/filter.js:551
 msgctxt "Checkbox is checked"
 msgid "Yes"
 msgstr "Đồng ý"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:726
+#: frappe/public/js/frappe/ui/filters/filter.js:733
 msgid "Yesterday"
 msgstr "Hôm qua"
 
@@ -31091,7 +31091,7 @@ msgstr "Bạn đã thêm 1 hàng vào {0}"
 msgid "You added {0} rows to {1}"
 msgstr "Bạn đã thêm {0} hàng vào {1}"
 
-#: frappe/public/js/frappe/router.js:648
+#: frappe/public/js/frappe/router.js:647
 msgid "You are about to open an external link. To confirm, click the link again."
 msgstr "Bạn sắp mở một liên kết bên ngoài. Để xác nhận, hãy nhấp vào liên kết một lần nữa."
 
@@ -31127,13 +31127,9 @@ msgstr ""
 msgid "You are not allowed to delete a standard Website Theme"
 msgstr ""
 
-#: frappe/core/doctype/report/report.py:407
+#: frappe/core/doctype/report/report.py:414
 msgid "You are not allowed to edit the report."
 msgstr "Bạn không được phép chỉnh sửa báo cáo."
-
-#: frappe/desk/doctype/workspace/workspace.py:87
-msgid "You are not allowed to edit this workspace"
-msgstr ""
 
 #: frappe/core/doctype/data_import/exporter.py:121
 #: frappe/core/doctype/data_import/exporter.py:125
@@ -31148,7 +31144,7 @@ msgstr "Bạn không được phép xuất {} doctype"
 msgid "You are not allowed to perform bulk actions"
 msgstr ""
 
-#: frappe/desk/doctype/bulk_update/bulk_update.py:59
+#: frappe/desk/doctype/bulk_update/bulk_update.py:60
 #: frappe/desk/reportview.py:601 frappe/utils/print_format.py:40
 msgid "You are not allowed to perform bulk actions."
 msgstr ""
@@ -31364,11 +31360,11 @@ msgstr "Bạn không có đủ quyền để hoàn thành hành động"
 msgid "You do not have import permission for {0}"
 msgstr "Bạn không có quyền nhập đối với {0}"
 
-#: frappe/database/query.py:993
+#: frappe/database/query.py:989
 msgid "You do not have permission to access child table field: {0}"
 msgstr "Bạn không có quyền truy cập vào trường bảng con: {0}"
 
-#: frappe/database/query.py:1006
+#: frappe/database/query.py:1002
 msgid "You do not have permission to access field: {0}"
 msgstr "Bạn không có quyền truy cập vào trường: {0}"
 
@@ -31460,7 +31456,7 @@ msgstr "Bạn phải đăng nhập để gửi biểu mẫu này"
 msgid "You need the '{0}' permission on {1} {2} to perform this action."
 msgstr "Bạn cần có quyền '{0}' trên {1} {2} để thực hiện hành động này."
 
-#: frappe/desk/doctype/workspace/workspace.py:144
+#: frappe/desk/doctype/workspace/workspace.py:140
 #: frappe/desk/doctype/workspace_sidebar/workspace_sidebar.py:75
 msgid "You need to be Workspace Manager to delete a public workspace."
 msgstr ""
@@ -31489,11 +31485,15 @@ msgstr "Bạn cần phải đăng nhập để truy cập trang này"
 msgid "You need to be logged in to access this {0}."
 msgstr "Bạn cần phải đăng nhập để truy cập {0} này."
 
+#: frappe/desk/doctype/workspace/workspace.py:106
+msgid "You need to be {0} to rename this document"
+msgstr ""
+
 #: frappe/public/js/frappe/widgets/links_widget.js:68
 msgid "You need to create these first:"
 msgstr "Bạn cần tạo những thứ này trước:"
 
-#: frappe/www/login.html:76
+#: frappe/www/login.html:75
 msgid "You need to enable JavaScript for your app to work."
 msgstr ""
 
@@ -31568,7 +31568,7 @@ msgstr "Bạn đã hủy theo dõi tài liệu này"
 msgid "You viewed this"
 msgstr "Bạn đã xem cái này"
 
-#: frappe/public/js/frappe/router.js:659
+#: frappe/public/js/frappe/router.js:658
 msgid "You will be redirected to:"
 msgstr "Bạn sẽ được chuyển hướng đến:"
 
@@ -31580,7 +31580,7 @@ msgstr "Bạn đã được mời tham gia {0}"
 msgid "You've been invited to join {0}."
 msgstr "Bạn đã được mời tham gia {0}."
 
-#: frappe/public/js/frappe/desk.js:549
+#: frappe/public/js/frappe/desk.js:550
 msgid "You've logged in as another user from another tab. Refresh this page to continue using system."
 msgstr ""
 
@@ -31592,11 +31592,11 @@ msgstr "YouTube"
 msgid "Your CSV file is being generated and will appear in the Attachments section once ready. Additionally, you will get notified when the file is available for download."
 msgstr ""
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:404
+#: frappe/desk/page/setup_wizard/setup_wizard.js:416
 msgid "Your Country"
 msgstr "Đất nước của bạn"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:396
+#: frappe/desk/page/setup_wizard/setup_wizard.js:408
 msgid "Your Language"
 msgstr "Ngôn ngữ của bạn"
 
@@ -31775,8 +31775,8 @@ msgstr ""
 msgid "commented"
 msgstr "đã bình luận"
 
-#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:255
 #: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:259
+#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:263
 msgid "completed"
 msgstr ""
 
@@ -31910,7 +31910,7 @@ msgstr ""
 msgid "empty"
 msgstr "trống"
 
-#: frappe/public/js/frappe/form/controls/link.js:599
+#: frappe/public/js/frappe/form/controls/link.js:608
 msgctxt "Comparison value is empty"
 msgid "empty"
 msgstr "trống"
@@ -31989,21 +31989,21 @@ msgstr "biểu tượng"
 msgid "import"
 msgstr "nhập liệu"
 
-#: frappe/public/js/frappe/form/controls/link.js:636
-#: frappe/public/js/frappe/form/controls/link.js:641
-#: frappe/public/js/frappe/form/controls/link.js:654
-#: frappe/public/js/frappe/form/controls/link.js:661
+#: frappe/public/js/frappe/form/controls/link.js:645
+#: frappe/public/js/frappe/form/controls/link.js:650
+#: frappe/public/js/frappe/form/controls/link.js:663
+#: frappe/public/js/frappe/form/controls/link.js:670
 msgid "is disabled"
 msgstr "bị vô hiệu hóa"
 
-#: frappe/public/js/frappe/form/controls/link.js:635
-#: frappe/public/js/frappe/form/controls/link.js:642
-#: frappe/public/js/frappe/form/controls/link.js:655
-#: frappe/public/js/frappe/form/controls/link.js:660
+#: frappe/public/js/frappe/form/controls/link.js:644
+#: frappe/public/js/frappe/form/controls/link.js:651
+#: frappe/public/js/frappe/form/controls/link.js:664
+#: frappe/public/js/frappe/form/controls/link.js:669
 msgid "is enabled"
 msgstr "được kích hoạt"
 
-#: frappe/templates/signup.html:11 frappe/www/login.html:11
+#: frappe/templates/signup.html:11 frappe/www/login.html:10
 msgid "jane@example.com"
 msgstr "jane@example.com"
 
@@ -32136,8 +32136,8 @@ msgid "on_update_after_submit"
 msgstr "on_update_after_submit"
 
 #: frappe/public/js/frappe/utils/utils.js:427
-#: frappe/website/doctype/web_form/web_form.js:355 frappe/www/login.html:90
-#: frappe/www/login.py:112
+#: frappe/website/doctype/web_form/web_form.js:355 frappe/www/login.html:89
+#: frappe/www/login.py:109
 msgid "or"
 msgstr "hoặc"
 
@@ -32265,11 +32265,11 @@ msgstr "từ hôm qua"
 msgid "started"
 msgstr "bắt đầu"
 
-#: frappe/desk/page/setup_wizard/setup_wizard.js:208
+#: frappe/desk/page/setup_wizard/setup_wizard.js:220
 msgid "starting the setup..."
 msgstr "bắt đầu thiết lập..."
 
-#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:249
+#: frappe/public/js/frappe/ui/user_onboarding/OnboardingPanel.vue:253
 msgid "steps completed"
 msgstr ""
 
@@ -32339,11 +32339,11 @@ msgstr ""
 msgid "updated to {0}"
 msgstr "đã cập nhật lên {0}"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:360
+#: frappe/public/js/frappe/ui/filters/filter.js:362
 msgid "use % as wildcard"
 msgstr "sử dụng % làm ký tự đại diện"
 
-#: frappe/public/js/frappe/ui/filters/filter.js:359
+#: frappe/public/js/frappe/ui/filters/filter.js:361
 msgid "values separated by commas"
 msgstr "các giá trị được phân tách bằng dấu phẩy"
 
@@ -32471,7 +32471,7 @@ msgstr "{0} = {1}"
 msgid "{0} Calendar"
 msgstr "{0} Lịch"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:624
+#: frappe/public/js/frappe/views/reports/report_view.js:629
 msgid "{0} Chart"
 msgstr "{0} Biểu đồ"
 
@@ -32528,7 +32528,7 @@ msgstr "{0} Không được phép thay đổi {1} sau khi gửi từ {2} thành 
 msgid "{0} Report"
 msgstr "{0} Báo cáo"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:989
+#: frappe/public/js/frappe/views/reports/query_report.js:996
 msgid "{0} Reports"
 msgstr "{0} Báo cáo"
 
@@ -32577,7 +32577,7 @@ msgstr "{0} và {1}"
 msgid "{0} are currently {1}"
 msgstr "{0} hiện là {1}"
 
-#: frappe/printing/doctype/print_format/print_format.py:98
+#: frappe/printing/doctype/print_format/print_format.py:97
 msgid "{0} are required"
 msgstr "{0} là bắt buộc"
 
@@ -32640,7 +32640,7 @@ msgstr "{0} đã thay đổi {1} thành {2}"
 msgid "{0} contains an invalid Fetch From expression, Fetch From can't be self-referential."
 msgstr "{0} chứa biểu thức Tìm nạp từ không hợp lệ, Tìm nạp từ không thể tự tham chiếu."
 
-#: frappe/public/js/frappe/form/controls/link.js:674
+#: frappe/public/js/frappe/form/controls/link.js:683
 msgid "{0} contains {1}"
 msgstr "{0} chứa {1}"
 
@@ -32665,7 +32665,7 @@ msgstr ""
 msgid "{0} days ago"
 msgstr "{0} ngày trước"
 
-#: frappe/public/js/frappe/form/controls/link.js:676
+#: frappe/public/js/frappe/form/controls/link.js:685
 msgid "{0} does not contain {1}"
 msgstr "{0} không chứa {1}"
 
@@ -32674,7 +32674,7 @@ msgstr "{0} không chứa {1}"
 msgid "{0} does not exist in row {1}"
 msgstr "{0} không tồn tại trong hàng {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:649
+#: frappe/public/js/frappe/form/controls/link.js:658
 msgid "{0} equals {1}"
 msgstr "{0} bằng {1}"
 
@@ -32702,7 +32702,7 @@ msgstr "{0} giờ"
 msgid "{0} has already assigned default value for {1}."
 msgstr "{0} đã gán giá trị mặc định cho {1}."
 
-#: frappe/database/query.py:1317
+#: frappe/database/query.py:1313
 msgid "{0} has invalid backtick notation: {1}"
 msgstr "{0} có ký hiệu dấu ngược không hợp lệ: {1}"
 
@@ -32723,7 +32723,7 @@ msgstr "{0} nếu bạn không được chuyển hướng trong vòng {1} giây"
 msgid "{0} in row {1} cannot have both URL and child items"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:715
+#: frappe/public/js/frappe/form/controls/link.js:724
 msgid "{0} is a descendant of {1}"
 msgstr ""
 
@@ -32735,11 +32735,11 @@ msgstr ""
 msgid "{0} is a not a valid zip file"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:679
+#: frappe/public/js/frappe/form/controls/link.js:688
 msgid "{0} is after {1}"
 msgstr "{0} đứng sau {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:717
+#: frappe/public/js/frappe/form/controls/link.js:726
 msgid "{0} is an ancestor of {1}"
 msgstr ""
 
@@ -32751,16 +32751,16 @@ msgstr "{0} là trường Dữ liệu không hợp lệ."
 msgid "{0} is an invalid email address in 'Recipients'"
 msgstr "{0} là địa chỉ email không hợp lệ trong 'Người nhận'"
 
-#: frappe/public/js/frappe/form/controls/link.js:684
+#: frappe/public/js/frappe/form/controls/link.js:693
 msgid "{0} is before {1}"
 msgstr "{0} ở trước {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:713
+#: frappe/public/js/frappe/form/controls/link.js:722
 msgid "{0} is between {1}"
 msgstr "{0} nằm trong khoảng {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:710
-#: frappe/public/js/frappe/views/reports/report_view.js:1521
+#: frappe/public/js/frappe/form/controls/link.js:719
+#: frappe/public/js/frappe/views/reports/report_view.js:1544
 msgid "{0} is between {1} and {2}"
 msgstr ""
 
@@ -32769,41 +32769,41 @@ msgstr ""
 msgid "{0} is currently {1}"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:647
-#: frappe/public/js/frappe/form/controls/link.js:665
+#: frappe/public/js/frappe/form/controls/link.js:656
+#: frappe/public/js/frappe/form/controls/link.js:674
 msgid "{0} is disabled"
 msgstr "{0} bị tắt"
 
-#: frappe/public/js/frappe/form/controls/link.js:646
-#: frappe/public/js/frappe/form/controls/link.js:666
+#: frappe/public/js/frappe/form/controls/link.js:655
+#: frappe/public/js/frappe/form/controls/link.js:675
 msgid "{0} is enabled"
 msgstr "{0} được bật"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1490
+#: frappe/public/js/frappe/views/reports/report_view.js:1513
 msgid "{0} is equal to {1}"
 msgstr "{0} bằng {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:691
-#: frappe/public/js/frappe/views/reports/report_view.js:1510
+#: frappe/public/js/frappe/form/controls/link.js:700
+#: frappe/public/js/frappe/views/reports/report_view.js:1533
 msgid "{0} is greater than or equal to {1}"
 msgstr "{0} lớn hơn hoặc bằng {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:681
-#: frappe/public/js/frappe/views/reports/report_view.js:1500
+#: frappe/public/js/frappe/form/controls/link.js:690
+#: frappe/public/js/frappe/views/reports/report_view.js:1523
 msgid "{0} is greater than {1}"
 msgstr "{0} lớn hơn {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:696
-#: frappe/public/js/frappe/views/reports/report_view.js:1515
+#: frappe/public/js/frappe/form/controls/link.js:705
+#: frappe/public/js/frappe/views/reports/report_view.js:1538
 msgid "{0} is less than or equal to {1}"
 msgstr "{0} nhỏ hơn hoặc bằng {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:686
-#: frappe/public/js/frappe/views/reports/report_view.js:1505
+#: frappe/public/js/frappe/form/controls/link.js:695
+#: frappe/public/js/frappe/views/reports/report_view.js:1528
 msgid "{0} is less than {1}"
 msgstr "{0} nhỏ hơn {1}"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1540
+#: frappe/public/js/frappe/views/reports/report_view.js:1563
 msgid "{0} is like {1}"
 msgstr "{0} giống như {1}"
 
@@ -32811,7 +32811,7 @@ msgstr "{0} giống như {1}"
 msgid "{0} is mandatory"
 msgstr "{0} là bắt buộc"
 
-#: frappe/public/js/frappe/form/controls/link.js:719
+#: frappe/public/js/frappe/form/controls/link.js:728
 msgid "{0} is not a descendant of {1}"
 msgstr ""
 
@@ -32852,7 +32852,7 @@ msgstr ""
 msgid "{0} is not a valid Phone Number"
 msgstr ""
 
-#: frappe/model/workflow.py:266
+#: frappe/model/workflow.py:270
 msgid "{0} is not a valid Workflow State. Please update your Workflow and try again."
 msgstr ""
 
@@ -32876,69 +32876,69 @@ msgstr ""
 msgid "{0} is not an allowed role for {1}"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:721
+#: frappe/public/js/frappe/form/controls/link.js:730
 msgid "{0} is not an ancestor of {1}"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:668
-#: frappe/public/js/frappe/views/reports/report_view.js:1495
+#: frappe/public/js/frappe/form/controls/link.js:677
+#: frappe/public/js/frappe/views/reports/report_view.js:1518
 msgid "{0} is not equal to {1}"
 msgstr "{0} không bằng {1}"
 
-#: frappe/public/js/frappe/views/reports/report_view.js:1542
+#: frappe/public/js/frappe/views/reports/report_view.js:1565
 msgid "{0} is not like {1}"
 msgstr "{0} không giống {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:672
-#: frappe/public/js/frappe/views/reports/report_view.js:1536
+#: frappe/public/js/frappe/form/controls/link.js:681
+#: frappe/public/js/frappe/views/reports/report_view.js:1559
 msgid "{0} is not one of {1}"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:702
-#: frappe/public/js/frappe/views/reports/report_view.js:1546
+#: frappe/public/js/frappe/form/controls/link.js:711
+#: frappe/public/js/frappe/views/reports/report_view.js:1569
 msgid "{0} is not set"
 msgstr "{0} chưa được đặt"
 
-#: frappe/printing/doctype/print_format/print_format.py:176
+#: frappe/printing/doctype/print_format/print_format.py:175
 msgid "{0} is now default print format for {1} doctype"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:689
+#: frappe/public/js/frappe/form/controls/link.js:698
 msgid "{0} is on or after {1}"
 msgstr "{0} ở trên hoặc sau {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:694
+#: frappe/public/js/frappe/form/controls/link.js:703
 msgid "{0} is on or before {1}"
 msgstr "{0} ở trên hoặc trước {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:670
-#: frappe/public/js/frappe/views/reports/report_view.js:1529
+#: frappe/public/js/frappe/form/controls/link.js:679
+#: frappe/public/js/frappe/views/reports/report_view.js:1552
 msgid "{0} is one of {1}"
 msgstr ""
 
 #: frappe/email/doctype/email_account/email_account.py:392
 #: frappe/model/naming.py:224
-#: frappe/printing/doctype/print_format/print_format.py:101
-#: frappe/printing/doctype/print_format/print_format.py:104
+#: frappe/printing/doctype/print_format/print_format.py:100
+#: frappe/printing/doctype/print_format/print_format.py:103
 #: frappe/utils/csvutils.py:157
 msgid "{0} is required"
 msgstr ""
 
-#: frappe/public/js/frappe/form/controls/link.js:699
-#: frappe/public/js/frappe/views/reports/report_view.js:1545
+#: frappe/public/js/frappe/form/controls/link.js:708
+#: frappe/public/js/frappe/views/reports/report_view.js:1568
 msgid "{0} is set"
 msgstr "{0} được đặt"
 
-#: frappe/public/js/frappe/form/controls/link.js:723
-#: frappe/public/js/frappe/views/reports/report_view.js:1524
+#: frappe/public/js/frappe/form/controls/link.js:732
+#: frappe/public/js/frappe/views/reports/report_view.js:1547
 msgid "{0} is within {1}"
 msgstr "{0} nằm trong {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:704
+#: frappe/public/js/frappe/form/controls/link.js:713
 msgid "{0} is {1}"
 msgstr ""
 
-#: frappe/public/js/frappe/list/list_view.js:1876
+#: frappe/public/js/frappe/list/list_view.js:1882
 msgid "{0} items selected"
 msgstr "{0} mục đã chọn"
 
@@ -33018,12 +33018,12 @@ msgstr ""
 msgid "{0} not allowed to be renamed"
 msgstr "{0} không được phép đổi tên"
 
-#: frappe/core/doctype/report/report.py:444
-#: frappe/public/js/frappe/list/list_view.js:1256
+#: frappe/core/doctype/report/report.py:451
+#: frappe/public/js/frappe/list/list_view.js:1262
 msgid "{0} of {1}"
 msgstr "{0} trong số {1}"
 
-#: frappe/public/js/frappe/list/list_view.js:1258
+#: frappe/public/js/frappe/list/list_view.js:1264
 msgid "{0} of {1} ({2} rows with children)"
 msgstr "{0} trong số {1} ({2} hàng có con)"
 
@@ -33085,7 +33085,7 @@ msgstr ""
 msgid "{0} restricted documents"
 msgstr ""
 
-#: frappe/public/js/frappe/roles_editor.js:68
+#: frappe/public/js/frappe/roles_editor.js:93
 msgid "{0} role does not have permission on any doctype"
 msgstr "Vai trò {0} không có quyền đối với bất kỳ loại tài liệu nào"
 
@@ -33163,7 +33163,7 @@ msgstr "{0} đã hủy chia sẻ tài liệu này với {1}"
 msgid "{0} updated"
 msgstr "{0} đã cập nhật"
 
-#: frappe/public/js/frappe/form/controls/multiselect_list.js:212
+#: frappe/public/js/frappe/form/controls/multiselect_list.js:213
 msgid "{0} values selected"
 msgstr "Đã chọn giá trị {0}"
 
@@ -33353,7 +33353,7 @@ msgstr "{0}: tên trường không thể được đặt thành từ khóa dành
 msgid "{0}: {1}"
 msgstr "{0}: {1}"
 
-#: frappe/public/js/frappe/form/controls/link.js:945
+#: frappe/public/js/frappe/form/controls/link.js:954
 msgid "{0}: {1} did not match any results."
 msgstr ""
 
@@ -33361,7 +33361,7 @@ msgstr ""
 msgid "{0}: {1} is set to state {2}"
 msgstr "{0}: {1} được đặt ở trạng thái {2}"
 
-#: frappe/public/js/frappe/views/reports/query_report.js:1335
+#: frappe/public/js/frappe/views/reports/query_report.js:1342
 msgid "{0}: {1} vs {2}"
 msgstr ""
 

@@ -32,6 +32,7 @@ class Report(Document):
 		add_total_row: DF.Check
 		add_translate_data: DF.Check
 		columns: DF.Table[ReportColumn]
+		default_print_format: DF.Link | None
 		disabled: DF.Check
 		filters: DF.Table[ReportFilter]
 		is_standard: DF.Literal["No", "Yes"]
@@ -81,6 +82,9 @@ class Report(Document):
 
 		if self.report_type == "Report Builder":
 			self.update_report_json()
+
+		if self.default_print_format and self.has_value_changed("default_print_format"):
+			self.validate_default_print_format()
 
 	def before_insert(self):
 		self.set_doctype_roles()
@@ -407,6 +411,23 @@ class Report(Document):
 			data.append(_row)
 
 		return data
+
+	def validate_default_print_format(self):
+		pf = frappe.db.get_value(
+			"Print Format",
+			self.default_print_format,
+			["report", "print_format_for", "print_format_type", "disabled"],
+			as_dict=True,
+		)
+
+		if (
+			not pf
+			or pf.report != self.name
+			or pf.print_format_for != "Report"
+			or pf.print_format_type != "JS"
+			or pf.disabled
+		):
+			frappe.throw(_("Selected Print Format is invalid for this Report."))
 
 	@frappe.whitelist()
 	def toggle_disable(self, disable: bool):
