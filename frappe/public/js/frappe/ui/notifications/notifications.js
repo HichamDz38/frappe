@@ -234,12 +234,12 @@ class NotificationsView extends BaseNotificationsView {
 
 		this.dropdown_items = [];
 		this.notifications_fetched = false;
-		this.unread_count = 0;
+		this.unread_count = frappe.boot.notification_unread_count || 0;
 
 		if (this.settings && this.settings.seen == 0) {
 			this.toggle_notification_icon(false);
 		}
-		this.fetch_unread_count();
+		this.update_count_badge(this.unread_count);
 	}
 
 	update_dropdown() {
@@ -416,16 +416,6 @@ class NotificationsView extends BaseNotificationsView {
 				user: frappe.session.user,
 			}
 		);
-	}
-
-	fetch_unread_count() {
-		frappe
-			.call("frappe.desk.doctype.notification_log.notification_log.get_unread_count")
-			.then((r) => {
-				const count = r.message || 0;
-				this.unread_count = count;
-				this.update_count_badge(count);
-			});
 	}
 
 	setup_notification_listeners() {

@@ -207,11 +207,6 @@ def trigger_indicator_hide():
 	frappe.publish_realtime("indicator_hide", user=frappe.session.user)
 
 
-@frappe.whitelist()
-def get_unread_count():
-	return frappe.db.count("Notification Log", {"read": 0, "for_user": frappe.session.user})
-
-
 def set_notifications_as_unseen(user):
 	try:
 		frappe.db.set_value("Notification Settings", user, "seen", 0, update_modified=False)
