@@ -402,9 +402,12 @@ class NotificationsView extends BaseNotificationsView {
 		if (!$suffix?.length) return;
 
 		if (count > 0) {
-			$suffix.text(count > 99 ? "99+" : count).removeClass("hidden");
+			$suffix
+				.text(count > 99 ? "99+" : count)
+				.attr("aria-label", __("{0} unread notifications", [count]))
+				.removeClass("hidden");
 		} else {
-			$suffix.addClass("hidden");
+			$suffix.removeAttr("aria-label").addClass("hidden");
 		}
 	}
 
