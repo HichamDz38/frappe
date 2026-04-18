@@ -50,14 +50,29 @@
 
 	&::before {
 		position: absolute;
-		top: 0;
-		right: 0;
 		left: auto;
 		height: 6px;
 		width: 6px;
 		margin: 0;
 		z-index: 1;
 	}
+}
+
+.desktop-notification-icon.indicator::before {
+	top: 0;
+	right: 0;
+}
+
+.sidebar-notification .sidebar-item-icon.indicator::before {
+	top: 5px;
+	right: 6px;
+	height: 5.5px;
+	width: 5.5px;
+	transition: opacity 0.2s ease-in-out;
+}
+
+.sidebar-notification:hover .sidebar-item-icon.indicator::before {
+	opacity: 0;
 }
 
 .sidebar-notification-count {
@@ -71,7 +86,7 @@
 	border-radius: 10px;
 }
 
-.sidebar-notification .item-anchor {
+.sidebar-notification .standard-sidebar-item .item-anchor {
 	overflow: visible;
 }
 
