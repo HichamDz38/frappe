@@ -657,7 +657,7 @@ frappe.ui.Sidebar = class Sidebar {
 				this.set_active_workspace_item();
 				return;
 			}
-			if (sidebar_item_map[entity_name]) {
+			if (sidebar_item_map && sidebar_item_map[entity_name]) {
 				this.setup(sidebar_item_map[entity_name][0]);
 				return;
 			}
