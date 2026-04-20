@@ -445,7 +445,10 @@ class Report(Document):
 			or letter_head.disabled
 		):
 			frappe.throw(
-				_("Selected Letter Head '{0}' is invalid for '{1}' Report.").format(self.letter_head, self.name)
+				_("Selected Letter Head '{0}' is invalid for '{1}' Report.").format(
+					self.letter_head, self.name
+				)
+			)
 
 	@frappe.whitelist()
 	def toggle_disable(self, disable: bool):
