@@ -428,6 +428,9 @@ class Report(Document):
 			frappe.throw(_("Selected Print Format is invalid for this Report."))
 
 	def validate_letter_head(self):
+		if not self.letter_head:
+			return
+
 		letter_head = frappe.db.get_value(
 			"Letter Head",
 			self.letter_head,
@@ -441,7 +444,11 @@ class Report(Document):
 			or (self.is_standard == "Yes" and letter_head.standard != "Yes")
 			or letter_head.disabled
 		):
-			frappe.throw(_("Selected Letter Head is invalid for this Report."))
+			frappe.throw(
+				_("Selected Letter Head '{0}' is invalid for '{1}' Report.").format(
+					self.letter_head, self.name
+				)
+			)
 
 	@frappe.whitelist()
 	def toggle_disable(self, disable: bool):
