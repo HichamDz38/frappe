@@ -30,10 +30,9 @@
   "footer_image_width",
   "header_section",
   "content",
+  "custom_css",
   "footer_section",
   "footer",
-  "style_section",
-  "custom_css",
   "scripts_section",
   "header_script",
   "footer_script",
@@ -86,7 +85,6 @@
    "label": "Letter Head Image"
   },
   {
-   "depends_on": "eval: doc.source === 'Image'",
    "fieldname": "image",
    "fieldtype": "Attach Image",
    "label": "Image"
@@ -98,11 +96,10 @@
    "label": "Header"
   },
   {
-   "depends_on": "eval: doc.source==='HTML'",
+   "depends_on": "eval:doc.source==='HTML'",
    "description": "Letter Head in HTML",
    "fieldname": "content",
    "fieldtype": "HTML Editor",
-   "ignore_xss_filter": 1,
    "label": "Header HTML",
    "oldfieldname": "content",
    "oldfieldtype": "Text Editor"
@@ -114,11 +111,10 @@
    "label": "Footer"
   },
   {
-   "depends_on": "eval: doc.footer_source==='HTML'",
+   "depends_on": "eval:doc.footer_source==='HTML'",
    "description": "Footer will display correctly only in PDF",
    "fieldname": "footer",
    "fieldtype": "HTML Editor",
-   "ignore_xss_filter": 1,
    "label": "Footer HTML"
   },
   {
@@ -172,14 +168,14 @@
    "options": "Image\nHTML"
   },
   {
-   "depends_on": "eval: doc.source==='HTML'",
+   "depends_on": "eval:doc.source==='HTML'",
    "fieldname": "header_script",
    "fieldtype": "Code",
    "label": "Header Script",
    "options": "Javascript"
   },
   {
-   "depends_on": "eval: doc.footer_source==='HTML'",
+   "depends_on": "eval:doc.footer_source==='HTML'",
    "fieldname": "footer_script",
    "fieldtype": "Code",
    "label": "Footer Script",
@@ -187,8 +183,8 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "eval: doc.header_script || doc.footer_script",
-   "depends_on": "eval: doc.source === 'HTML' || doc.footer_source === 'HTML'",
+   "collapsible_depends_on": "eval:doc.header_script || doc.footer_script",
+   "depends_on": "eval:doc.source === 'HTML' || doc.footer_source === 'HTML'",
    "fieldname": "scripts_section",
    "fieldtype": "Section Break",
    "label": "Scripts"
@@ -232,18 +228,11 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval: doc.source === 'HTML' || doc.footer_source === 'HTML'",
+   "depends_on": "eval:doc.source === 'HTML'",
    "fieldname": "custom_css",
    "fieldtype": "Code",
    "label": "Custom CSS",
    "options": "CSS"
-  },
-  {
-   "collapsible": 1,
-   "depends_on": "eval: doc.source === 'HTML' || doc.footer_source === 'HTML'",
-   "fieldname": "style_section",
-   "fieldtype": "Section Break",
-   "label": "Style"
   }
  ],
  "icon": "fa fa-font",
@@ -251,7 +240,7 @@
  "links": [],
  "make_attachments_public": 1,
  "max_attachments": 3,
- "modified": "2026-04-22 20:25:24.438817",
+ "modified": "2026-04-24 13:17:34.972069",
  "modified_by": "Administrator",
  "module": "Printing",
  "name": "Letter Head",

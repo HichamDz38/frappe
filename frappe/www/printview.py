@@ -230,17 +230,17 @@ def get_rendered_template(
 
 	if letter_head.content:
 		letter_head.content = frappe.utils.jinja.render_template(letter_head.content, {"doc": doc.as_dict()})
-		if letter_head.header_script:
-			letter_head.content += f"""
-				<script>
-					{letter_head.header_script}
-				</script>
-			"""
 		if letter_head.custom_css:
 			letter_head.content += f"""
 			<style>
 				{letter_head.custom_css}
 			</style>
+			"""
+		if letter_head.header_script:
+			letter_head.content += f"""
+				<script>
+					{letter_head.header_script}
+				</script>
 			"""
 
 	if letter_head.footer:
