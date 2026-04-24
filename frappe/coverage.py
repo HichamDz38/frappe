@@ -22,6 +22,7 @@ STANDARD_EXCLUSIONS = [
 	"*/node_modules/*",
 	"*/doctype/*/*_dashboard.py",
 	"*/patches/*",
+	"*/.github/*",
 ]
 
 # tested via commands' test suite
@@ -78,7 +79,12 @@ class CodeCoverage:
 			if self.app == "frappe":
 				omit.extend(FRAPPE_EXCLUSIONS)
 
-			self.coverage = Coverage(source=[source_path], omit=omit, include=STANDARD_INCLUSIONS)
+			self.coverage = Coverage(
+				source=[source_path],
+				omit=omit,
+				include=STANDARD_INCLUSIONS,
+				data_suffix=True,
+			)
 			self.coverage.start()
 		return self
 
