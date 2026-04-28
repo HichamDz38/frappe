@@ -77,6 +77,9 @@ class Report(Document):
 			if frappe.session.user != "Administrator":
 				frappe.throw(_("Only Administrator can save a standard report. Please rename and save."))
 
+			if not cint(getattr(frappe.local.conf, "developer_mode", 0)):
+				frappe.throw(_("Standard reports can only be created in developer mode."))
+
 		if self.report_type == "Report Builder":
 			self.update_report_json()
 
