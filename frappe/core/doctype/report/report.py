@@ -77,8 +77,7 @@ class Report(Document):
 			if frappe.session.user != "Administrator":
 				frappe.throw(_("Only Administrator can save a standard report. Please rename and save."))
 
-			if not cint(getattr(frappe.local.conf, "developer_mode", 0)):
-				frappe.throw(_("Standard reports can only be created in developer mode."))
+			self.validate_standard_report_developer_mode()
 
 		if self.report_type == "Report Builder":
 			self.update_report_json()
@@ -414,6 +413,10 @@ class Report(Document):
 			data.append(_row)
 
 		return data
+
+	def validate_standard_report_developer_mode(self):
+		if not cint(frappe.conf.developer_mode):
+			frappe.throw(_("Standard reports can only be created in developer mode."))
 
 	def validate_default_print_format(self):
 		pf = frappe.db.get_value(
