@@ -92,13 +92,6 @@ def format_value(value, df=None, doc=None, currency=None, translated=False, form
 		# I don't know why we support currency option for float
 		currency = currency or get_field_currency(df, doc)
 
-		# show 1.000000 as 1
-		# options should not specified
-		if not df.options and value is not None:
-			temp = cstr(value).split(".")
-			if len(temp) == 1 or cint(temp[1]) == 0:
-				precision = 0
-
 		return fmt_money(value, precision=precision, currency=currency)
 
 	elif df.get("fieldtype") == "Percent":
@@ -141,7 +134,6 @@ def format_value(value, df=None, doc=None, currency=None, translated=False, form
 			meta = frappe.get_meta(df.parent)
 			_field = meta.get_field(df.options)
 			doctype = _field.options
-
 		return doc.__link_titles.get(f"{doctype}::{value}", value)
 
 	elif df.get("fieldtype") == "Select":

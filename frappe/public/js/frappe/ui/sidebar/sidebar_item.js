@@ -60,6 +60,7 @@ frappe.ui.sidebar_item.TypeLink = class SidebarItem {
 					let filters_json = JSON.parse(
 						frappe.utils.get_filter_as_json(JSON.parse(this.item.filters))
 					);
+					filters_json = this.transform_filters(filters_json);
 					if (this.item.link_type == "DocType") {
 						args.doc_view = "List";
 						args.route_options = filters_json;
@@ -68,10 +69,17 @@ frappe.ui.sidebar_item.TypeLink = class SidebarItem {
 				path = frappe.utils.generate_route(args);
 			}
 		}
-		if (path) {
-			return encodeURI(path);
-		}
+		return path;
 	}
+	transform_filters(filters_json) {
+		for (const [key, value] of Object.entries(filters_json)) {
+			if (Array.isArray(value)) {
+				filters_json[key] = value[1];
+			}
+		}
+		return filters_json;
+	}
+
 	prepare() {}
 	make() {
 		this.path = this.get_path();
@@ -103,7 +111,7 @@ frappe.ui.sidebar_item.TypeLink = class SidebarItem {
 		if (frappe.utils.is_mac()) {
 			shortcut = shortcut.replace("Ctrl+", "⌘");
 		}
-		return `<span class="sidebar-item-suffix keyboard-shortcut">${shortcut}</span>`;
+		return `<span class="keyboard-shortcut">${shortcut}</span>`;
 	}
 	setup_editing_controls() {
 		this.menu_items = this.get_menu_items();
@@ -177,7 +185,7 @@ frappe.ui.sidebar_item.TypeSectionBreak = class SectionBreakSidebarItem extends 
 		this.full_template = $(this.wrapper);
 	}
 	make() {
-		if (this.nested_items.length == 0) {
+		if (this.nested_items.length == 0 && !frappe.app.sidebar.editor.edit_mode) {
 			return;
 		}
 		super.make();
@@ -224,7 +232,6 @@ frappe.ui.sidebar_item.TypeSectionBreak = class SectionBreakSidebarItem extends 
 			} else {
 				$(me.wrapper.find(".section-break")).addClass("hidden");
 				$(me.wrapper.find(".divider")).removeClass("hidden");
-				$(me.wrapper).removeAttr("data-original-title");
 				me.old_state = me.collapsed;
 				me.open();
 				if (me.item.indent) {

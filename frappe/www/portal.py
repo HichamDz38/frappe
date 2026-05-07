@@ -6,6 +6,8 @@ from frappe.model.document import Document
 from frappe.utils.data import quoted
 from frappe.www.list import get_list_context, get_list_data
 
+no_cache = 1
+
 
 def get_context(context, **dict_params):
 	frappe.local.form_dict.update(dict_params)
@@ -52,7 +54,7 @@ def get(
 	list_context = frappe.flags.list_context
 
 	if not raw_result:
-		return {"result": []}
+		return {"result": [], "txt": txt}
 
 	if txt:
 		list_context.default_subtitle = _('Filtered by "{0}"').format(txt)
@@ -84,4 +86,5 @@ def get(
 		"result": result,
 		"show_more": show_more,
 		"next_start": limit_start + limit,
+		"txt": txt,
 	}
