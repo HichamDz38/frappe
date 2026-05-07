@@ -88,6 +88,32 @@ def send_sms(receiver_list: str | list[str], msg: str, sender_name: str = "", su
 		msgprint(_("Please Update SMS Settings"))
 
 
+def is_nested_path(path):
+	return "." in (path or "") or "[" in (path or "")
+
+
+def validate_nested_params_for_json_mode(sms_settings, use_json):
+	if use_json:
+		return
+
+	nested_params = []
+	if is_nested_path(sms_settings.message_parameter):
+		nested_params.append(sms_settings.message_parameter)
+	if is_nested_path(sms_settings.receiver_parameter):
+		nested_params.append(sms_settings.receiver_parameter)
+
+	for d in sms_settings.get("parameters"):
+		if not d.header and is_nested_path(d.parameter):
+			nested_params.append(d.parameter)
+
+	if nested_params:
+		throw(
+			_(
+				"Nested SMS parameter paths require JSON mode. Set header Content-Type to application/json. Offending parameters: {0}"
+			).format(", ".join(sorted(set(nested_params))))
+		)
+
+
 def create_nested_param(data, key, value):
 	if "." not in key and "[" not in key:
 		data[key] = value
@@ -104,9 +130,21 @@ def create_nested_param(data, key, value):
 				if part[cursor] == "[":
 					end = part.find("]", cursor)
 					if end == -1:
-						tokens.append(part[cursor:])
-						break
-					tokens.append(int(part[cursor + 1 : end]))
+						throw(
+							_(
+								"Invalid nested SMS parameter path: {0}. Missing closing ']' for an array index."
+							).format(path)
+						)
+
+					index_text = part[cursor + 1 : end].strip()
+					if not index_text.isdigit():
+						throw(
+							_(
+								"Invalid nested SMS parameter path: {0}. Array index '{1}' must be a non-negative integer."
+							).format(path, part[cursor + 1 : end])
+						)
+
+					tokens.append(int(index_text))
 					cursor = end + 1
 				else:
 					next_bracket = part.find("[", cursor)
@@ -117,13 +155,34 @@ def create_nested_param(data, key, value):
 					cursor = next_bracket
 		return tokens
 
+	def get_container_name(container):
+		if isinstance(container, dict):
+			return "object"
+		if isinstance(container, list):
+			return "array"
+		return type(container).__name__
+
+	def throw_invalid_path(path, token, parent):
+		throw(
+			_(
+				"Invalid nested SMS parameter path '{0}': token '{1}' expects a different container, but found {2}."
+			).format(path, token, get_container_name(parent))
+		)
+
 	tokens = parse_key_tokens(key)
+	if not tokens:
+		throw(_("Invalid nested SMS parameter path: {0}").format(key))
+	if isinstance(tokens[0], int):
+		throw_invalid_path(key, tokens[0], data)
+
 	parent = data
 	for i, token in enumerate(tokens):
 		is_last = i == len(tokens) - 1
 		next_token = None if is_last else tokens[i + 1]
 
 		if isinstance(token, int):
+			if not isinstance(parent, list):
+				throw_invalid_path(key, token, parent)
 			while len(parent) <= token:
 				parent.append(None)
 
@@ -132,18 +191,24 @@ def create_nested_param(data, key, value):
 				return
 
 			expected_container = list if isinstance(next_token, int) else dict
-			if not isinstance(parent[token], expected_container):
+			if parent[token] is None:
 				parent[token] = expected_container()
+			elif not isinstance(parent[token], expected_container):
+				throw_invalid_path(key, next_token, parent[token])
 			parent = parent[token]
 			continue
 
+		if not isinstance(parent, dict):
+			throw_invalid_path(key, token, parent)
 		if is_last:
 			parent[token] = value
 			return
 
 		expected_container = list if isinstance(next_token, int) else dict
-		if token not in parent or not isinstance(parent[token], expected_container):
+		if token not in parent:
 			parent[token] = expected_container()
+		elif not isinstance(parent[token], expected_container):
+			throw_invalid_path(key, next_token, parent[token])
 		parent = parent[token]
 
 
@@ -151,6 +216,7 @@ def send_via_gateway(arg):
 	ss = frappe.get_doc("SMS Settings", "SMS Settings")
 	headers = get_headers(ss)
 	use_json = headers.get("Content-Type") == "application/json"
+	validate_nested_params_for_json_mode(ss, use_json)
 
 	message = frappe.safe_decode(arg.get("message"))
 	args = {}

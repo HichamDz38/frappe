@@ -2,6 +2,7 @@
 # License: MIT. See LICENSE
 import datetime
 import time
+from unittest.mock import patch
 
 import pyotp
 
@@ -16,6 +17,7 @@ from frappe.twofactor import (
 	get_default,
 	get_otpsecret_for_,
 	get_verification_obj,
+	send_token_via_sms,
 	should_run_2fa,
 	two_factor_is_enabled_for_,
 )
@@ -195,6 +197,61 @@ class TestTwoFactor(IntegrationTestCase):
 		with self.freeze_time(datetime.datetime.now()):
 			otp = get_otp(self.user)
 			self.assertTrue(confirm_otp_token(self.login_manager, otp=otp, tmp_id=tmp_id))
+
+	def test_send_token_via_sms_uses_json_mode_for_nested_params(self):
+		sms_doc = frappe._dict(
+			{
+				"message_parameter": "messages[0].text",
+				"receiver_parameter": "messages[0].destinations[0].to",
+				"use_post": 1,
+				"sms_gateway_url": "https://example.test/sms/2/text/advanced",
+				"parameters": [
+					frappe._dict({"header": 1, "parameter": "Authorization", "value": "App KEY"}),
+					frappe._dict({"header": 1, "parameter": "Content-Type", "value": "application/json"}),
+					frappe._dict({"header": 0, "parameter": "messages[0].from", "value": "ServiceSMS"}),
+				],
+			}
+		)
+
+		with (
+			patch("frappe.twofactor.pyotp.HOTP") as hotp_cls,
+			patch("frappe.twofactor.frappe.get_doc", return_value=sms_doc),
+			patch("frappe.twofactor.enqueue") as mock_enqueue,
+		):
+			hotp_cls.return_value.at.return_value = "123456"
+			result = send_token_via_sms("secret", token="1", phone_no="201")
+
+		self.assertTrue(result)
+		mock_enqueue.assert_called_once()
+		kwargs = mock_enqueue.call_args.kwargs
+		self.assertTrue(kwargs["use_json"])
+		self.assertEqual(kwargs["headers"]["Content-Type"], "application/json")
+		self.assertEqual(kwargs["params"]["messages"][0]["destinations"][0]["to"], "201")
+
+	def test_send_token_via_sms_rejects_nested_params_without_json_mode(self):
+		sms_doc = frappe._dict(
+			{
+				"message_parameter": "messages[0].text",
+				"receiver_parameter": "messages[0].destinations[0].to",
+				"use_post": 1,
+				"sms_gateway_url": "https://example.test/sms/2/text/advanced",
+				"parameters": [
+					frappe._dict({"header": 1, "parameter": "Authorization", "value": "App KEY"}),
+					frappe._dict({"header": 0, "parameter": "messages[0].from", "value": "ServiceSMS"}),
+				],
+			}
+		)
+
+		with (
+			patch("frappe.twofactor.pyotp.HOTP") as hotp_cls,
+			patch("frappe.twofactor.frappe.get_doc", return_value=sms_doc),
+			patch("frappe.twofactor.enqueue") as mock_enqueue,
+			self.assertRaises(frappe.ValidationError),
+		):
+			hotp_cls.return_value.at.return_value = "123456"
+			send_token_via_sms("secret", token="1", phone_no="201")
+
+		mock_enqueue.assert_not_called()
 
 
 def create_http_request():

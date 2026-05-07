@@ -308,7 +308,12 @@ def send_token_via_sms(otpsecret, token=None, phone_no=None):
 		return frappe.get_attr(send_token_hook_methods[-1])(otpsecret, token, phone_no)
 
 	try:
-		from frappe.core.doctype.sms_settings.sms_settings import send_request
+		from frappe.core.doctype.sms_settings.sms_settings import (
+			create_nested_param,
+			get_headers,
+			send_request,
+			validate_nested_params_for_json_mode,
+		)
 	except Exception:
 		return False
 
@@ -321,14 +326,24 @@ def send_token_via_sms(otpsecret, token=None, phone_no=None):
 
 	hotp = pyotp.HOTP(otpsecret)
 	otp = hotp.at(int(token))
-	args = {ss.message_parameter: get_rendered_otp_message(otp)}
+	headers = get_headers(ss)
+	use_json = headers.get("Content-Type") == "application/json"
+	validate_nested_params_for_json_mode(ss, use_json)
 
+	args = {}
+	create_nested_param(args, ss.message_parameter, get_rendered_otp_message(otp))
 	for d in ss.get("parameters"):
-		args[d.parameter] = d.value
+		if not d.header:
+			create_nested_param(args, d.parameter, d.value)
+	create_nested_param(args, ss.receiver_parameter, phone_no)
 
-	args[ss.receiver_parameter] = phone_no
-
-	sms_args = {"params": args, "gateway_url": ss.sms_gateway_url, "use_post": ss.use_post}
+	sms_args = {
+		"params": args,
+		"gateway_url": ss.sms_gateway_url,
+		"use_post": ss.use_post,
+		"headers": headers,
+		"use_json": use_json,
+	}
 	enqueue(
 		method=send_request,
 		queue="short",
