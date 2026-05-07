@@ -89,16 +89,62 @@ def send_sms(receiver_list: str | list[str], msg: str, sender_name: str = "", su
 
 
 def create_nested_param(data, key, value):
-	if "." in key:
-		parent = data
-		key_parts = key.split(".")
-		for k in key_parts[:-1]:
-			if k not in parent:
-				parent[k] = {}
-			parent = parent[k]
-		parent[key_parts[-1]] = value
-	else:
+	if "." not in key and "[" not in key:
 		data[key] = value
+		return
+
+	def parse_key_tokens(path):
+		tokens = []
+		for part in path.split("."):
+			if not part:
+				continue
+
+			cursor = 0
+			while cursor < len(part):
+				if part[cursor] == "[":
+					end = part.find("]", cursor)
+					if end == -1:
+						tokens.append(part[cursor:])
+						break
+					tokens.append(int(part[cursor + 1 : end]))
+					cursor = end + 1
+				else:
+					next_bracket = part.find("[", cursor)
+					if next_bracket == -1:
+						tokens.append(part[cursor:])
+						break
+					tokens.append(part[cursor:next_bracket])
+					cursor = next_bracket
+		return tokens
+
+	tokens = parse_key_tokens(key)
+	parent = data
+	for i, token in enumerate(tokens):
+		is_last = i == len(tokens) - 1
+		next_token = None if is_last else tokens[i + 1]
+
+		if isinstance(token, int):
+			while len(parent) <= token:
+				parent.append(None)
+
+			if is_last:
+				parent[token] = value
+				return
+
+			expected_container = list if isinstance(next_token, int) else dict
+			if not isinstance(parent[token], expected_container):
+				parent[token] = expected_container()
+			parent = parent[token]
+			continue
+
+		if is_last:
+			parent[token] = value
+			return
+
+		expected_container = list if isinstance(next_token, int) else dict
+		if token not in parent or not isinstance(parent[token], expected_container):
+			parent[token] = expected_container()
+		parent = parent[token]
 
 
 def send_via_gateway(arg):
@@ -107,14 +153,15 @@ def send_via_gateway(arg):
 	use_json = headers.get("Content-Type") == "application/json"
 
 	message = frappe.safe_decode(arg.get("message"))
-	args = {ss.message_parameter: message}
+	args = {}
+	create_nested_param(args, ss.message_parameter, message)
 	for d in ss.get("parameters"):
 		if not d.header:
 			create_nested_param(args, d.parameter, d.value)
 
 	success_list = []
 	for d in arg.get("receiver_list"):
-		args[ss.receiver_parameter] = d
+		create_nested_param(args, ss.receiver_parameter, d)
 		status = send_request(ss.sms_gateway_url, args, headers, ss.use_post, use_json)
 
 		if 200 <= status < 300:
@@ -134,7 +181,7 @@ def get_headers(sms_settings=None):
 	headers = {"Accept": "text/plain, text/html, */*"}
 	for d in sms_settings.get("parameters"):
 		if d.header == 1:
-			create_nested_param(headers, d.parameter, d.value)
+			headers[d.parameter] = d.value
 
 	return headers
 
