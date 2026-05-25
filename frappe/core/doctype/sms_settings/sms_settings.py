@@ -212,10 +212,27 @@ def create_nested_param(data, key, value):
 		parent = parent[token]
 
 
+def is_json_content_type(headers):
+	if not headers:
+		return False
+
+	content_type = None
+	for key, value in headers.items():
+		if isinstance(key, str) and key.lower() == "content-type":
+			content_type = value
+			break
+
+	if not isinstance(content_type, str):
+		return False
+
+	media_type = content_type.split(";", 1)[0].strip().lower()
+	return media_type == "application/json"
+
+
 def send_via_gateway(arg):
 	ss = frappe.get_doc("SMS Settings", "SMS Settings")
 	headers = get_headers(ss)
-	use_json = headers.get("Content-Type") == "application/json"
+	use_json = is_json_content_type(headers)
 	validate_nested_params_for_json_mode(ss, use_json)
 
 	message = frappe.safe_decode(arg.get("message"))
